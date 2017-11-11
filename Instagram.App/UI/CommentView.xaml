@@ -1,0 +1,267 @@
+﻿<UserControl x:Class="Instagram.App.CommentView"
+              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+        xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+        xmlns:fa="http://schemas.fontawesome.io/icons/"
+        xmlns:local="clr-namespace:Instagram.App"
+        xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:UI="clr-namespace:Instagram.App.UI"             
+             mc:Ignorable="d" Height="auto" Width="auto">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <local:LoginConverter x:Key="LoginConverter"/>
+        <local:SearchConverter x:Key="SearchConverter"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition MinWidth="270" Width=" Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="140" />
+        </Grid.RowDefinitions>
+        <dxlc:LayoutControl IsCollapsible="True" Orientation="Vertical" Grid.Column="1" Grid.RowSpan="2">
+            
+            <dxlc:LayoutGroup IsCollapsible="True" View="GroupBox" Orientation="Vertical" Header="خصائص">
+                <dxlc:LayoutItem Label="اسم الجدول" LabelPosition="Top">
+                        <dxe:ComboBoxEdit Name="nameoftable" ShowNullText="True" ItemsSource="{Binding Items_}" SelectedItem="{Binding Select,UpdateSourceTrigger=PropertyChanged}"  SelectedIndex="0" NullValue="جدول 1" Margin="0,0,0,10">
+                            <dxe:ComboBoxEdit.StyleSettings>
+                                <dxe:ComboBoxStyleSettings/>
+                            </dxe:ComboBoxEdit.StyleSettings>
+                        </dxe:ComboBoxEdit>
+                </dxlc:LayoutItem>
+                <!--TargetAccount-Area-->
+                <dxlc:LayoutItem Label="عنوان الحساب" LabelPosition="Top">
+                    <dxe:TextEdit NullText="www.Instagram.com/Account" 
+                                  Text="{Binding Comment.Target,UpdateSourceTrigger=PropertyChanged}" NullTextForeground="#87000000"
+                                  IsEnabled="{Binding ElementName=IsTarget,Path=IsChecked,Converter={StaticResource ConverterIsEnabled}}"
+                                  />
+                </dxlc:LayoutItem>
+                <dxlc:LayoutItem>
+                    <dxe:CheckEdit IsChecked="False" x:Name="IsTarget"  Content="إستهداف منشور محدد"/>
+                </dxlc:LayoutItem>
+
+                <!--Target-Area-->
+                <dxlc:LayoutItem Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=IsTarget}">
+                    <dxe:TextEdit NullText="المنشور المستهدف" Text="{Binding Comment.TargetPost,UpdateSourceTrigger=PropertyChanged}" NullTextForeground="#87000000" />
+                </dxlc:LayoutItem>
+                <dxlc:LayoutItem>
+                    <dxe:CheckEdit IsChecked="{Binding Comment.IsSleep,UpdateSourceTrigger=PropertyChanged}" x:Name="IsSleep"  Content="تفعيل الفاصل الزمني"/>
+                </dxlc:LayoutItem>
+                <!--الفاصل الزمني بين كل عملية في البرنامج-->
+                <dxlc:LayoutGroup Visibility="{Binding ElementName=IsSleep,Path=IsChecked,Converter={StaticResource BooleanToVisibilityConverter}}" >
+
+                    <dxlc:LayoutItem LabelPosition="Top" LabelHorizontalAlignment="Right" Label="الوحدة">
+                        <dxe:ComboBoxEdit SelectedIndex="-1" NullText="ثواني" Text="{Binding Comment.Unit,UpdateSourceTrigger=PropertyChanged}" 
+                                                           >
+                            <dxe:ComboBoxEditItem Content="ثواني" />
+                            <dxe:ComboBoxEditItem Content="دقائق" />
+                            <dxe:ComboBoxEditItem Content="ساعات" />
+                        </dxe:ComboBoxEdit>
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem LabelPosition="Top" LabelHorizontalAlignment="Right" Label="المدة">
+                        <dxe:TextEdit NullText="0" Mask="Numeric" Text="{Binding Comment.Sleep,UpdateSourceTrigger=PropertyChanged,FallbackValue=10}"
+                                                           />
+                    </dxlc:LayoutItem>
+                </dxlc:LayoutGroup>
+                <!--SendComments-->
+                <!--===============================================-->
+                <dxlc:LayoutGroup  Orientation="Horizontal">
+                    <!--Mention-Area-->
+                    <dxlc:LayoutItem Label="منشن" LabelPosition="Top">
+                        <!--<dxe:TextEdit NullText="@Mention" Text="{Binding Comment.Tag,UpdateSourceTrigger=PropertyChanged}"  NullTextForeground="#87000000" />-->
+                        <dxe:ButtonEdit NullText="@Mention" AllowDefaultButton="False" Text="{Binding Comment.Tag,UpdateSourceTrigger=PropertyChanged}" NullTextForeground="#87000000">
+                            <dxe:ButtonInfo GlyphKind="Cancel"
+                                            Command="{Binding Comment.CommandAddTags}" CommandParameter="abc" 
+                                            ToolTip="اضافة منشن"
+                                            />
+                            <dxe:ButtonInfo GlyphKind="Down"
+                                            Command="{Binding Comment.CommandAddTags}" CommandParameter="abc" 
+                                            ToolTip="اضافة منشن"
+                                            />
+                        </dxe:ButtonEdit>
+
+                    </dxlc:LayoutItem>
+                    <!--<dxlc:LayoutItem Width="61">
+                        --><!--<Button Margin="0,18,0,0" Command="{Binding Comment.CommandAddTags}" CommandParameter="abc" Template="{DynamicResource Follow}" Content="........."/>--><!--
+                    </dxlc:LayoutItem>-->
+                </dxlc:LayoutGroup>
+                <dxlc:LayoutItem Label="اضافة تعليق" LabelPosition="Top" Margin="0,10,0,0">
+                    <dxe:TextEdit PrintTextWrapping="WrapWithOverflow" Height="Auto" MinHeight="40" HorizontalContentAlignment="Center" Text="{Binding Comment.Text,UpdateSourceTrigger=PropertyChanged}" MaxHeight="250" MaxLength="999999999"/>
+                </dxlc:LayoutItem>
+                <dxlc:LayoutItem>
+                    <Button Template="{DynamicResource Follow}" Content="بدء الارسال" Command="{Binding Comment.Command_Comment}" CommandParameter="SendAComment"/>
+                </dxlc:LayoutItem>
+                <!--===============================================-->
+            </dxlc:LayoutGroup>
+            <!--الاحصائيات-->
+            <dxlc:LayoutGroup IsCollapsible="True"  Header="الاحصائيات" Orientation="Vertical" View="GroupBox">
+                <dxlc:LayoutItem>
+                    <dxlc:LayoutGroup>
+                        <dxlc:LayoutItem>
+                            <TextBlock HorizontalAlignment="Right" FontSize="14" Text="{Binding Comment.SentSuccess,UpdateSourceTrigger=PropertyChanged,FallbackValue=0}"/>
+                        </dxlc:LayoutItem>
+                        <dxlc:LayoutItem Width="180">
+                            <TextBlock HorizontalAlignment="Right" FontSize="14">:تم ارسال تعليق</TextBlock>
+                        </dxlc:LayoutItem>
+                    </dxlc:LayoutGroup>
+                </dxlc:LayoutItem>
+                <dxlc:LayoutItem Margin="0,5,0,0">
+                    <dxlc:LayoutGroup>
+                        <dxlc:LayoutItem>
+                            <TextBlock HorizontalAlignment="Right" FontSize="14" Text="{Binding Comment.UnableToSend,UpdateSourceTrigger=PropertyChanged,FallbackValue=0}"/>
+                        </dxlc:LayoutItem>
+                        <dxlc:LayoutItem Width="180">
+                            <TextBlock HorizontalAlignment="Right" FontSize="14">تعذر ارسال التعليق</TextBlock>
+                        </dxlc:LayoutItem>
+                    </dxlc:LayoutGroup>
+                </dxlc:LayoutItem>
+                <dxlc:LayoutItem Margin="0,5,0,0">
+                    <dxlc:LayoutGroup>
+                        <dxlc:LayoutItem>
+                            <TextBlock HorizontalAlignment="Right" FontSize="14" Text="{Binding Comment.SendMentionSuccess,UpdateSourceTrigger=PropertyChanged,FallbackValue=0}"/>
+                        </dxlc:LayoutItem>
+                        <dxlc:LayoutItem Width="180">
+                            <TextBlock HorizontalAlignment="Right" FontSize="14">:اشخاص تمت منشنتهم</TextBlock>
+                        </dxlc:LayoutItem>
+                    </dxlc:LayoutGroup>
+                </dxlc:LayoutItem>
+            </dxlc:LayoutGroup>
+        </dxlc:LayoutControl>
+        <dxg:GridControl Name="MainGrid"  Visibility="Collapsed"  ItemsSource="{Binding container.Selected,UpdateSourceTrigger=PropertyChanged}" >
+            <dxg:GridControl.View>
+                <dxg:TableView AutoWidth="True"  ShowGroupPanel="False"  ShowTotalSummary="True" AllowPerPixelScrolling="True" IsDeferredScrolling="True"   AllowEditing="True"  />
+            </dxg:GridControl.View>
+            <dxg:GridControl.Columns>
+                <dxg:GridColumn  FieldName="اسم الحساب" Binding="{Binding publisher}"/>
+                <dxg:GridColumn FieldName="عنوان الحساب" Binding="{Binding UidOfpublisher}"/>
+                <dxg:GridColumn FieldName="عنوان المنشور" Binding="{Binding UidOfpost}"/>
+            </dxg:GridControl.Columns>
+
+        </dxg:GridControl>
+        <dxg:GridControl  ItemsSource="{Binding container.Selected}" 
+              SelectedItems="{Binding SelectedItems,UpdateSourceTrigger=PropertyChanged}"     
+                          Grid.Row="0"
+                          SelectionMode="Row" 
+                          AutoGenerateColumns="KeepOld"
+                          >
+            <dxg:GridControl.View>
+                <dxg:TableView  ShowGroupPanel="False" AutoWidth="True" AllowCellMerge="True" ShowTotalSummary="True" >
+
+                </dxg:TableView>
+            </dxg:GridControl.View>
+
+            <dxg:GridControl.Columns>
+
+                <dxg:GridColumn Header="الناشر"
+                                Binding="{Binding publisher}"
+                                VisibleIndex="0"
+                                >
+                    <dxg:GridColumn.EditSettings>
+                        <dxe:TextEditSettings TextWrapping="NoWrap"/>
+                    </dxg:GridColumn.EditSettings>
+                </dxg:GridColumn>
+                <dxg:GridColumn Header="عنوان الناشر" 
+                                Binding="{Binding UidOfpublisher}" 
+                                VisibleIndex="1"
+                                >
+                    <dxg:GridColumn.EditSettings>
+                        <dxe:TextEditSettings TextWrapping="NoWrap">
+
+                        </dxe:TextEditSettings>
+                    </dxg:GridColumn.EditSettings>
+                </dxg:GridColumn>
+                <dxg:GridColumn Header="نُشر قبل" 
+                                Binding="{Binding publishedat}" 
+                                VisibleIndex="2"/>
+                <dxg:GridColumn Header="المحتوى المرئي" 
+                                Binding="{Binding ContextMedia}" 
+                                VisibleIndex="3"
+                                >
+                    <dxg:GridColumn.EditSettings>
+                        <dxe:TextEditSettings TextWrapping="NoWrap">
+
+                        </dxe:TextEditSettings>
+                    </dxg:GridColumn.EditSettings>
+                </dxg:GridColumn>
+                <dxg:GridColumn  Header="المحتوى النصي" 
+                                Binding="{Binding Context}" 
+                                VisibleIndex="4">
+                    <dxg:GridColumn.EditSettings>
+                        <dxe:TextEditSettings TextWrapping="NoWrap">
+
+                        </dxe:TextEditSettings>
+                    </dxg:GridColumn.EditSettings>
+                </dxg:GridColumn>
+                <dxg:GridColumn Header="احصائيات المنشور" Width="auto" VisibleIndex="5" >
+                    <dxg:GridColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid Width="auto">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="auto" MinWidth="40"/>
+                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="auto" MinWidth="40"/>
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.Column="1" MaxHeight="16" CornerRadius="5" Margin="2" Background="#FF2F373E" MinWidth="20" >
+                                    <TextBlock Grid.Column="1" Margin="5,0,5,0" TextAlignment="Center" Foreground="#ecf0f1" Text="{Binding RowData.Row.Likes,UpdateSourceTrigger=PropertyChanged,FallbackValue=0}"></TextBlock>
+                                </Border>
+                                <fa:ImageAwesome Grid.Column="0" ToolTip="عدد الاعجابات" Icon="Heart" Margin="2,0,0,0" HorizontalAlignment="Center"  Stretch="Uniform"  Foreground="#FFEE093D"/>
+                                <Border Grid.Column="3" CornerRadius="3" Margin="2" Background="#FF2F373E" MinWidth="20" MaxHeight="16"   >
+                                    <TextBlock Grid.Column="3" Foreground="#ecf0f1" Text="{Binding RowData.Row.Views,UpdateSourceTrigger=PropertyChanged,FallbackValue=0}" TextAlignment="Center"/>
+                                </Border>
+                                <fa:ImageAwesome Grid.Column="2" ToolTip="عدد المشاهدات" Icon="Eye" Margin="2,0,0,0" HorizontalAlignment="Center"  Stretch="Uniform" Foreground="#FF0077EE"/>
+                            </Grid>
+
+                        </DataTemplate>
+                    </dxg:GridColumn.CellTemplate>
+                </dxg:GridColumn>
+                <dxg:GridColumn Header="النوع" VisibleIndex="6" Width="50">
+                    <dxg:GridColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid Width="auto">
+                                <fa:ImageAwesome MaxWidth="20" ToolTip="فيديو" Visibility="{Binding RowData.Row.TypesOfMedia
+                                    ,Converter={StaticResource SearchConverter},
+                                    ConverterParameter=TypesOfMedia_vid}"
+                            Icon="VideoCamera">
+                                    <fa:ImageAwesome.Foreground>
+                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                            <GradientStop Color="#FFEE093D" Offset="0.03"/>
+                                            <GradientStop Color="#FD7C182F" Offset="1"/>
+                                            <GradientStop Color="#FF501E2A" Offset="0.997"/>
+                                            <GradientStop Color="#00252526" Offset="1"/>
+                                            <GradientStop Color="#FEDC0B3A"/>
+                                        </LinearGradientBrush>
+                                    </fa:ImageAwesome.Foreground>
+                                </fa:ImageAwesome>
+                                <fa:ImageAwesome MaxWidth="20" ToolTip="صورة" Icon="PictureOutline"
+                                     Visibility="{Binding RowData.Row.TypesOfMedia
+                                    ,Converter={StaticResource SearchConverter},
+                                    ConverterParameter=TypesOfMedia_imgs}">
+                                    <fa:ImageAwesome.Foreground>
+                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                            <GradientStop Color="#FF007ACC" Offset="0.03"/>
+                                            <GradientStop Color="#FD7C182F" Offset="1"/>
+                                            <GradientStop Color="#FF501E2A" Offset="0.997"/>
+                                            <GradientStop Color="#00252526" Offset="1"/>
+                                            <GradientStop Color="#FF007ACC"/>
+                                        </LinearGradientBrush>
+                                    </fa:ImageAwesome.Foreground>
+                                </fa:ImageAwesome>
+                            </Grid>
+                        </DataTemplate>
+                    </dxg:GridColumn.CellTemplate>
+                </dxg:GridColumn >
+            </dxg:GridControl.Columns>
+
+        </dxg:GridControl>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <local:Logger   Width="Auto" Height="Auto"/>
+        </Grid>
+    </Grid>
+</UserControl>

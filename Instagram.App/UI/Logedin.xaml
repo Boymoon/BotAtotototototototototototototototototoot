@@ -1,0 +1,36 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+             xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"     
+             xmlns:local="clr-namespace:Instagram.App.UI"
+             xmlns:vm="clr-namespace:Instagram.App"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" x:Class="Instagram.App.UI.Logedin"
+             mc:Ignorable="d" Height="112.047"  MinWidth="243">
+
+
+
+    <dxlc:LayoutGroup Orientation="Vertical" View="GroupBox" Header="معلومات الحساب" >
+        <dxlc:LayoutItem>
+                <TextBlock 
+                  Text="{Binding AccountOperations.Username,UpdateSourceTrigger=PropertyChanged,FallbackValue=-}" FontSize="14" FontFamily="Segoe UI Semilight"/>
+            </dxlc:LayoutItem>
+            <dxlc:LayoutItem Margin="130,-23,0,0">
+            <Button Command="{Binding AccountOperations.LogoutCommand}" CommandParameter="signout" Uid="Signout" Content="خروج" Template="{DynamicResource CustomButton}"/>
+            </dxlc:LayoutItem>
+            <dxlc:LayoutGroup View="Group">
+                <dxlc:LayoutItem Margin="0,20,0,0">
+                <TextBlock TextAlignment="Right"><Run Text="{Binding AccountOperations.Following,UpdateSourceTrigger=PropertyChanged,FallbackValue=-}"/> <Run Text=":المُتابعون" FontSize="14" FontFamily="Segoe UI Semilight"/></TextBlock>
+                </dxlc:LayoutItem>
+                <dxlc:LayoutItem Margin="0,20,0,0">
+                <TextBlock TextAlignment="Right"><Run Text="{Binding AccountOperations.Follower,UpdateSourceTrigger=PropertyChanged,FallbackValue=-}"/> <Run Text=":المتابعين" FontSize="14" FontFamily="Segoe UI Semilight"/></TextBlock>
+                </dxlc:LayoutItem>
+            </dxlc:LayoutGroup>
+        </dxlc:LayoutGroup>
+   
+
+
+</UserControl>

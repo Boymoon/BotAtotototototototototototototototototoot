@@ -1,0 +1,16 @@
+﻿<Application x:Class="Instagram.App.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Instagram.App"
+             StartupUri="UI/MainWindow.xaml" Startup="OnAppStartup_UpdateThemeName" Exit="Application_Exit">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles/Button.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <FontFamily  x:Key="FontAwesome">/Fonts/fontawesome-webfont.ttf#FontAwesome</FontFamily>
+            <FontFamily  x:Key="FontAwesome1">/Fonts/FontAwesome.otf#FontAwesome</FontFamily>
+            <local:IsEnabledConverter x:Key="ConverterIsEnabled"/>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

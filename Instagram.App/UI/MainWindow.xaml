@@ -1,0 +1,486 @@
+﻿<dx:DXWindow
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
+        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+        xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+        xmlns:fa="http://schemas.fontawesome.io/icons/"
+        xmlns:local="clr-namespace:Instagram.App"
+    xmlns:dxnav="http://schemas.devexpress.com/winfx/2008/xaml/navigation"
+
+        xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:UI="clr-namespace:Instagram.App.UI" mc:Ignorable="d" x:Class="Instagram.App.MainWindow"
+        Title="الواجهة الرئيسية" Height="800" Width="936.282" WindowStartupLocation="CenterScreen"  WindowState="Maximized" IsAeroMode="False">
+    <dx:DXWindow.Resources>
+        <local:LoginConverter x:Key="LoginConverter"/>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
+    </dx:DXWindow.Resources>
+
+
+    <Grid>
+
+
+
+
+        <dx:DXTabControl Visibility="Visible">
+            <dx:DXTabControl.View>
+                <dx:TabControlScrollView HeaderLocation="Top" HeaderOrientation="Horizontal" NewButtonShowMode="NoWhere" RemoveTabItemsOnHiding="False"/>
+            </dx:DXTabControl.View>
+            <dx:DXTabItem Header="الحسابات">
+                <dx:DXTabControl>
+                    <dx:DXTabItem Header="اضافة حسابات" VisibleInHeaderMenu="True">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="180"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="259"/>
+                            </Grid.ColumnDefinitions>
+                            <!--صفحة إضافة الحسابات-->
+                            <dxlc:LayoutControl MinHeight="260"  Grid.Column="1" Orientation="Vertical" Margin="0,0,-1,0" Grid.RowSpan="2">
+                                <dxlc:LayoutGroup Orientation="Vertical" Header="اضافة حساب" View="GroupBox">
+                                    <dxlc:LayoutItem LabelPosition="Top" Label="اسم المستخدم">
+                                        <dxe:TextEdit Text="{Binding ElementName=x,Path=DataContext.ModelMainWindow.Username,UpdateSourceTrigger=PropertyChanged}"/>
+
+                                    </dxlc:LayoutItem>
+                                    <dxlc:LayoutItem LabelPosition="Top" Label="كلمة المرور" d:IsLocked="True">
+                                        <dxe:PasswordBoxEdit Text="{Binding ElementName=x,Path=DataContext.ModelMainWindow.Password,UpdateSourceTrigger=PropertyChanged}"/>
+                                    </dxlc:LayoutItem>
+                                    <dxlc:LayoutGroup Orientation="Horizontal" Margin="0,8,0,0">
+                                        <dxlc:LayoutItem Height="23" Width="104" Margin="-27,0,0,0">
+                                            <Button Content="استيراد" Template="{DynamicResource CustomButton}" 
+                                                    Uid="users" HorizontalAlignment="Left" HorizontalContentAlignment="Left" Margin="27,0,0,0" Width="70" Cursor="Hand"
+                                                    Command="{Binding ModelMainWindow.ImportaccountCommand}"
+                                                    CommandParameter="Import"
+                                                    />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem Height="23">
+                                            <Button Content="اضافة حساب" Template="{DynamicResource CustomButton}" 
+                                                     Uid="userplus" Cursor="Hand"
+                                                    Command="{Binding ModelMainWindow.AddaccountsCommand}"
+                                                    CommandParameter="Add"
+                                                    />
+                                        </dxlc:LayoutItem>
+                                    </dxlc:LayoutGroup>
+                                </dxlc:LayoutGroup>
+
+                            </dxlc:LayoutControl>
+
+                            <dxg:GridControl Name="x" AutoGenerateColumns="KeepOld" AllowUpdateTwoWayBoundPropertiesOnSynchronization="True" SelectedItem="{Binding Selected}" ItemsSource="{Binding Accounts_,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"  >
+                                <dxg:GridControl.Columns>
+                                    <dxg:GridColumn FieldName="اسم المستخدم"
+                                                    Binding="{Binding Username}"  />
+                                    <dxg:GridColumn FieldName="كلمة المرور" 
+                                                    Binding="{Binding Password}"/>
+                                </dxg:GridControl.Columns>
+                                <dxg:GridControl.View>
+                                    <dxg:TableView ShowGroupPanel="False" ShowIndicator="True" MultiSelectMode="Cell" ShowTotalSummary="True" AutoWidth="True" AllowCellMerge="True"  ShowSelectionRectangle="True" />
+                                </dxg:GridControl.View>
+                            </dxg:GridControl>
+                            <local:Logger  Grid.Row="1" Width="Auto" Height="Auto"/>
+
+                        </Grid>
+                    </dx:DXTabItem>
+                    <dx:DXTabItem Header="تسجيل الدخول" >
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="280"/>
+                            </Grid.ColumnDefinitions>
+                            <dxlc:LayoutControl MinHeight="260"  Grid.Column="1" Grid.ColumnSpan="1" Grid.Row="0" Grid.RowSpan="2" Orientation="Vertical" Width="270">
+                                <dxlc:LayoutGroup Visibility="{Binding ModelMainWindow.IsLogedin,UpdateSourceTrigger=PropertyChanged,Converter={StaticResource LoginConverter},ConverterParameter=Login,FallbackValue=Collapsed}" Orientation="Vertical" Header="تسجيل الدخول" View="GroupBox">
+                                    <dxlc:LayoutItem LabelPosition="Top" Label="اسم المستخدم">
+                                        <dxe:TextEdit Text="{Binding Selected.Username,UpdateSourceTrigger=PropertyChanged}"/>
+
+                                    </dxlc:LayoutItem>
+                                    <dxlc:LayoutItem LabelPosition="Top" Label="كلمة المرور">
+                                        <dxe:PasswordBoxEdit Text="{Binding Selected.Password,UpdateSourceTrigger=PropertyChanged}"/>
+                                    </dxlc:LayoutItem>
+                                    <dxlc:LayoutGroup Orientation="Horizontal" Margin="0,8,0,0">
+
+                                        <dxlc:LayoutItem Height="23">
+                                            <Button Content="{Binding ModelMainWindow.StateOfLogin,UpdateSourceTrigger=PropertyChanged}" 
+                                                    Template="{DynamicResource CustomButton}" 
+                                                    Uid="Signin" Cursor="Hand"
+                                                    Command="{Binding ModelMainWindow.SigninCommand}"
+                                                    CommandParameter="Add"
+                                                    />
+                                        </dxlc:LayoutItem>
+                                    </dxlc:LayoutGroup>
+                                </dxlc:LayoutGroup>
+                                <dxlc:LayoutItem Visibility="{Binding ModelMainWindow.IsLogedin, Converter={StaticResource BooleanToVisibilityConverter},FallbackValue=Visible}">
+
+                                    <UI:Logedin x:Name="Logedin"/>
+
+                                </dxlc:LayoutItem>
+
+                                <dxlc:LayoutGroup Orientation="Vertical"  View="GroupBox" Visibility="{Binding ModelMainWindow.IsLogedin, Converter={StaticResource BooleanToVisibilityConverter},FallbackValue=Visible}" Header="الإعدادات">
+                                    <dxlc:LayoutItem LabelPosition="Top" LabelHorizontalAlignment="Right" Label="عنوان الحساب المستهدف">
+                                        <dxe:TextEdit NullText="https://www.instagram.com/Account/" Name="uid" Text="{Binding AccountOperations.Uid,UpdateSourceTrigger=PropertyChanged}"/>
+                                    </dxlc:LayoutItem>
+                                    <dxlc:LayoutItem LabelPosition="Top"  Name="FollowAll" LabelHorizontalAlignment="Right" Margin="0,3,0,0">
+                                        <dxe:CheckEdit Content="مُتابعة جميع متابعين الحساب المستهدف" IsChecked="{Binding AccountOperations.FollowAll,FallbackValue=false}"
+                                                       />
+                                    </dxlc:LayoutItem>
+                                    <dxlc:LayoutItem LabelPosition="Top"  Name="IsGetFollowup" LabelHorizontalAlignment="Right" Margin="0,3,0,0">
+                                        <dxe:CheckEdit Content="جلب عدد المتابعين" IsChecked="{Binding AccountOperations.IsGetFollowup,FallbackValue=True,UpdateSourceTrigger=PropertyChanged}"
+                                                       DataContext="{Binding ElementName=FollowAll,Path=DataContext}"
+                                                       />
+                                    </dxlc:LayoutItem>
+                                    <!--خيار الفاصل الزمني-->
+                                    <dxlc:LayoutItem LabelPosition="Left" Name="Sleep" LabelHorizontalAlignment="Right">
+                                        <dxe:CheckEdit Content="تفعيل الفاصل الزمني" Name="XSleepCheck" IsChecked="{Binding AccountOperations.IsSleep,UpdateSourceTrigger=PropertyChanged,FallbackValue=false}"
+                                                       DataContext="{Binding ElementName=FollowAll,Path=DataContext}"
+                                                       />
+                                    </dxlc:LayoutItem>
+                                    <!--الفاصل الزمني بين كل عملية في البرنامج-->
+                                    <dxlc:LayoutGroup Visibility="{Binding ElementName=XSleepCheck,Path=IsChecked,Converter={StaticResource BooleanToVisibilityConverter}}" >
+
+                                        <dxlc:LayoutItem LabelPosition="Top" LabelHorizontalAlignment="Right" Label="الوحدة">
+                                            <dxe:ComboBoxEdit NullText="ثواني" Text="{Binding AccountOperations.Unit_Sleep,UpdateSourceTrigger=PropertyChanged}" 
+                                             DataContext="{Binding ElementName=FollowWhohasFollowingFrom_To,Path=DataContext}" ImmediatePopup="False" AutoComplete="False" AllowCollectionView="False"
+                                                           >
+                                                <dxe:ComboBoxEditItem Content="ثواني" />
+                                                <dxe:ComboBoxEditItem Content="دقائق" />
+                                                <dxe:ComboBoxEditItem Content="ساعات" />
+                                            </dxe:ComboBoxEdit>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem LabelPosition="Top" LabelHorizontalAlignment="Right" Label="المدة">
+                                            <dxe:TextEdit NullText="0" Mask="Numeric" Text="{Binding AccountOperations.Sleep,UpdateSourceTrigger=PropertyChanged,FallbackValue=10}"
+                                                           DataContext="{Binding ElementName=FollowWhohasFollowingFrom_To,Path=DataContext}"
+                                                           />
+                                        </dxlc:LayoutItem>
+                                    </dxlc:LayoutGroup>
+
+                                    <!--خاصية متابعة من والى-->
+                                    <dxlc:LayoutItem LabelPosition="Left" Name="FollowWhohasFollowingFrom_To"  Label="*" ToolTip="خيار يتطلب تحديد عدد المتابعين" LabelHorizontalAlignment="Right" Margin="-9,2,0,0" Foreground="#E3FF1B1B">
+                                        <dxe:CheckEdit Content="مُتابعة الذين متابعينهم " x:Name="IsFollowGreaterthan" IsEnabled="{Binding AccountOperations.IsGetFollowup,UpdateSourceTrigger=PropertyChanged}" IsChecked="{Binding AccountOperations.FollowWhohasFollowingFrom_To,UpdateSourceTrigger=PropertyChanged}"
+                                                       />
+                                    </dxlc:LayoutItem>
+                                    <!--يتبع لخاصية  متابعة الذين متابعينهم من والى-->
+                                    <dxlc:LayoutGroup Visibility="{Binding ElementName=IsFollowGreaterthan,Path=IsChecked,Converter={StaticResource BooleanToVisibilityConverter}}" >
+                                        <dxlc:LayoutItem LabelPosition="Top" LabelHorizontalAlignment="Right" Label="الى">
+                                            <dxe:TextEdit NullText="0" Mask="Numeric" Text="{Binding AccountOperations.To,UpdateSourceTrigger=PropertyChanged,FallbackValue=100}"
+                                                           DataContext="{Binding ElementName=FollowWhohasFollowingFrom_To,Path=DataContext}"
+                                                           />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem LabelPosition="Top" LabelHorizontalAlignment="Right" Label="من">
+                                            <dxe:TextEdit NullText="0" Mask="Numeric" Text="{Binding AccountOperations.From,UpdateSourceTrigger=PropertyChanged,FallbackValue=0}"
+                                                          DataContext="{Binding ElementName=FollowWhohasFollowingFrom_To,Path=DataContext}"
+                                                           />
+                                        </dxlc:LayoutItem>
+                                    </dxlc:LayoutGroup>
+                                    <dxlc:LayoutItem Margin="0,10,0,0">
+                                        <Grid>
+                                            <Button  Margin="75,0,75,0" 
+                                                 Visibility="{Binding AccountOperations.IsRunning,
+                                            UpdateSourceTrigger=PropertyChanged,
+                                            Converter={StaticResource BooleanToVisibilityConverter}}" 
+                                                 Template="{DynamicResource CustomButton}"
+                                                 Name="SearchUsingOptionsCommand"
+                                                 Command="{Binding AccountOperations.SearchUsingOptionsCommand}"
+                                                 CommandParameter="SearchUsingOptionsCommand__" 
+                                                 Uid="Play" 
+                                                 Content="تنفيذ" />
+                                            <Button  Name="ABCd"
+                                                Margin="20,0,20,0"
+                                                     Visibility="Visible"
+                                                     Template="{DynamicResource BtnWhiteWithIcon}"
+                                                     Content="....جاري الاتصال"
+                                                     Uid="ban"
+                                                     >
+                                                <Button.Triggers>
+                                                    <EventTrigger RoutedEvent="MouseEnter">
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <DoubleAnimation Storyboard.TargetProperty="Width" To="200" Duration="0:0:0:1" ></DoubleAnimation>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </EventTrigger>
+                                                    <EventTrigger RoutedEvent="MouseLeave">
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <DoubleAnimation Storyboard.TargetProperty="Width" To="100" Duration="0:0:0:1" ></DoubleAnimation>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </EventTrigger>
+                                                </Button.Triggers>
+                                                <Button.BorderBrush>
+                                                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                        <GradientStop Color="#FF3399FF" Offset="0"/>
+                                                        <GradientStop Color="#FF112E4B" Offset="1"/>
+                                                    </LinearGradientBrush>
+                                                </Button.BorderBrush>
+                                            
+
+
+                                            </Button>
+                                        </Grid>
+                                    </dxlc:LayoutItem>
+                                </dxlc:LayoutGroup>
+                                <dxlc:LayoutGroup Orientation="Vertical" View="GroupBox" Visibility="{Binding ModelMainWindow.IsLogedin,Converter={StaticResource BooleanToVisibilityConverter},FallbackValue=Visible}" Header="الاحصائيات">
+                                    <!--غير متابعون-->
+                                    <dxlc:LayoutGroup>
+                                        <dxlc:LayoutItem Margin="0,0,0,0">
+                                            <TextBlock TextAlignment="Left" FontWeight="Light" >
+                                            <Run Block.TextAlignment="Right" Text="{Binding AccountOperations.AmountOfFollowers,UpdateSourceTrigger=PropertyChanged,FallbackValue=0}"
+                                                  DataContext="{Binding ElementName=FollowAll,Path=DataContext}"
+                                                 />
+                                            </TextBlock>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem>
+                                            <TextBlock TextAlignment="Right">
+                                            <Run Block.TextAlignment="Right">:غير متابعون</Run>
+                                            </TextBlock>
+                                        </dxlc:LayoutItem>
+                                    </dxlc:LayoutGroup>
+                                    <!--عدد المُتَابَعون  -->
+                                    <dxlc:LayoutGroup Margin="0,10,0,0">
+                                        <dxlc:LayoutItem Margin="0,0,0,0">
+                                            <TextBlock  FontWeight="Light"  TextAlignment="Left" >
+                                            <Run Block.TextAlignment="Right" Text="{Binding AccountOperations.AmountOfFollowing,UpdateSourceTrigger=PropertyChanged,FallbackValue=0}"
+                                                  DataContext="{Binding ElementName=FollowAll,Path=DataContext}"
+                                                 />
+                                            </TextBlock>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem>
+                                            <TextBlock TextAlignment="Right">
+                                            <Run Block.TextAlignment="Right">: مُتَابَعون</Run>
+                                            </TextBlock>
+                                        </dxlc:LayoutItem>
+                                    </dxlc:LayoutGroup>
+                                    <dxlc:LayoutGroup Margin="0,10,0,0">
+                                        <dxlc:LayoutItem Margin="0,0,0,0">
+                                            <TextBlock  FontWeight="Light"  TextAlignment="Left" >
+                                            <Run Block.TextAlignment="Right" Text="{Binding AccountOperations.AmountOfRequested,UpdateSourceTrigger=PropertyChanged,FallbackValue=0}"
+                                                  DataContext="{Binding ElementName=FollowAll,Path=DataContext}"
+                                                 />
+                                            </TextBlock>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem>
+                                            <TextBlock TextWrapping="Wrap" TextAlignment="Right">
+                                            <Run Block.TextAlignment="Right">:بحاجة للموافقة</Run>
+                                            </TextBlock>
+                                        </dxlc:LayoutItem>
+
+                                    </dxlc:LayoutGroup>
+                                    <!--تعذر متابعتهم-->
+                                    <dxlc:LayoutGroup Margin="0,10,0,0">
+                                        <dxlc:LayoutItem Margin="0,0,0,0">
+                                            <TextBlock  FontWeight="Light"  TextAlignment="Left" >
+                                            <Run Block.TextAlignment="Right" Text="{Binding AccountOperations.AmountOfNone,UpdateSourceTrigger=PropertyChanged,FallbackValue=0}"
+                                                  DataContext="{Binding ElementName=FollowAll,Path=DataContext}"
+                                                 />
+                                            </TextBlock>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem>
+                                            <TextBlock TextWrapping="Wrap" TextAlignment="Right">
+                                            <Run Block.TextAlignment="Right">:تعذر متابعتهم</Run>
+                                            </TextBlock>
+                                        </dxlc:LayoutItem>
+
+                                    </dxlc:LayoutGroup>
+                                    <!--العدد الكلي او الاجمالي-->
+                                    <dxlc:LayoutGroup Margin="0,10,0,0">
+                                        <dxlc:LayoutItem Margin="0,0,0,0">
+                                            <TextBlock  FontWeight="Light"  TextAlignment="Left" >
+                                            <Run Block.TextAlignment="Right" Text="{Binding AccountOperations.Amount,UpdateSourceTrigger=PropertyChanged,FallbackValue=0}"
+                                                 DataContext="{Binding ElementName=FollowAll,Path=DataContext}"
+                                                 />
+                                            </TextBlock>
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem>
+                                            <TextBlock TextAlignment="Right">
+                                            <Run Block.TextAlignment="Right">:الكلي</Run>
+                                            </TextBlock>
+                                        </dxlc:LayoutItem>
+                                    </dxlc:LayoutGroup>
+
+                                </dxlc:LayoutGroup>
+
+
+                            </dxlc:LayoutControl>
+                            <!--Bottom Of Page-->
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition Height="180">
+
+                                    </RowDefinition>
+                                </Grid.RowDefinitions>
+                                <dxg:GridControl
+                                                 Visibility="{Binding ElementName=x,Path=DataContext.ModelMainWindow.IsLogedin,UpdateSourceTrigger=PropertyChanged,Converter={StaticResource LoginConverter},ConverterParameter=Login}"                                                 DesignTimeUseDistinctSampleValues="True" 
+                                                 x:Name="gridc" AutoGenerateColumns="KeepOld" 
+                                                 SelectedItem="{Binding Selected}" 
+                                                 ItemsSource="{Binding Accounts_}" 
+                                                 EnableSmartColumnsGeneration="True">
+                                    <dxg:GridControl.Columns>
+                                        <dxg:GridColumn FieldName="اسم المستخدم" Binding="{Binding Username}" />
+                                        <dxg:GridColumn FieldName="كلمة المرور" Binding="{Binding Password}"/>
+                                    </dxg:GridControl.Columns>
+                                    <dxg:GridControl.View>
+                                        <dxg:TableView AutoWidth="True" ShowGroupPanel="False" AllowPerPixelScrolling="True" ShowTotalSummary="True">
+                                            <!--بحاجة للتعديل ==========================================================================-->
+                                            <dxg:TableView.ContextMenu>
+                                                <ContextMenu>
+                                                    <MenuItem Header="مسح" Command="{Binding AccountOperations.Clean}" ToolTip="مسح كامل العناصر">
+                                                        <MenuItem.Icon>
+                                                            <fa:ImageAwesome Icon="Trash">
+                                                                <fa:ImageAwesome.Foreground>
+                                                                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                        <GradientStop Color="#FF3399FF" Offset="0"/>
+                                                                        <GradientStop Color="#FF005C9B" Offset="1"/>
+                                                                    </LinearGradientBrush>
+                                                                </fa:ImageAwesome.Foreground>
+                                                            </fa:ImageAwesome>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                </ContextMenu>
+                                            </dxg:TableView.ContextMenu>
+                                        </dxg:TableView>
+                                    </dxg:GridControl.View>
+                                </dxg:GridControl>
+                                <dxg:GridControl  Name="Gridcontrol_PART_Follow" 
+                                                  Visibility="{Binding ElementName=x,Path=DataContext.ModelMainWindow.IsLogedin,UpdateSourceTrigger=PropertyChanged,Converter={StaticResource LoginConverter},ConverterParameter=other}"
+                                                  AutoGenerateColumns="KeepOld"
+                                                  CurrentItem="{Binding Login,UpdateSourceTrigger=PropertyChanged}" 
+                                                  SelectedItems="{Binding SelectedItems,UpdateSourceTrigger=PropertyChanged}"
+                                                  ItemsSource="{Binding Source={x:Static local:CollectionsHelper.Followers}}"  SelectionMode="Row"  >
+
+                                    <dxg:GridControl.Columns>
+                                        <dxg:GridColumn FieldName="اسم المستخدم" Binding="{Binding Username}" />
+                                        <dxg:GridColumn FieldName="رابط المستخدم" Binding="{Binding Uid}"/>
+                                        <dxg:GridColumn FieldName="المتابعين" Width="50" Binding="{Binding Followers}"/>
+                                        <dxg:GridColumn FieldName=" " Width="50" Binding="{Binding IsFollower}">
+                                            <dxg:GridColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Button Uid="check" Name="Follow" Visibility="{Binding RowData.Row.IsFollower,FallbackValue=Visible,Converter={StaticResource LoginConverter},ConverterParameter=Follow,UpdateSourceTrigger=PropertyChanged}" 
+                                                            Content="تابع" Template="{DynamicResource Follow}" BorderBrush="#FF707070"
+                                                            Command="{Binding View.DataContext.AccountOperations.UnFollow_FollowCommand}"
+                                                            CommandParameter="Follow"
+                                                            />
+                                                        <Button Uid="check" Name="Following" Content="مُتابع" Template="{DynamicResource  ButtonControlTemplate_Following}"
+                                                            Visibility="{Binding RowData.Row.IsFollower, FallbackValue=Collapsed,Converter={StaticResource LoginConverter},ConverterParameter=Following,UpdateSourceTrigger=PropertyChanged}" 
+                                                            Command="{Binding View.DataContext.AccountOperations.UnFollow_FollowCommand}"
+                                                            CommandParameter="Following"
+                                                            />
+                                                        <Button Uid="check" Name="Requested" Content="بإنتظار الموافقة" Template="{DynamicResource  ButtonControlTemplate_Following}"
+                                                            Visibility="{Binding RowData.Row.IsFollower, FallbackValue=Collapsed,Converter={StaticResource LoginConverter},ConverterParameter=Requested,UpdateSourceTrigger=PropertyChanged}" 
+                                                            Command="{Binding View.DataContext.AccountOperations.UnFollow_FollowCommand}"
+                                                            CommandParameter="Requested"
+                                                            />
+                                                        <Button Uid="exclamationtriangle" Name="None" Template="{DynamicResource CustomButton}"
+                                                            Visibility="{Binding RowData.Row.IsFollower, FallbackValue=Collapsed,Converter={StaticResource LoginConverter},ConverterParameter=None,UpdateSourceTrigger=PropertyChanged}" 
+                                                            Command="{Binding View.DataContext.AccountOperations.UnFollow_FollowCommand}"
+                                                            CommandParameter="None"
+                                                            />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </dxg:GridColumn.CellTemplate>
+                                        </dxg:GridColumn>
+                                    </dxg:GridControl.Columns>
+                                    <dxg:GridControl.View>
+                                        <dxg:TableView  AutoWidth="True"  ShowGroupPanel="False"  ShowTotalSummary="True" AllowPerPixelScrolling="True" IsDeferredScrolling="True"   AllowEditing="True"  >
+                                            <dxg:TableView.ContextMenu>
+                                                <ContextMenu>
+                                                    <MenuItem Header="حذف الكل" Command="{Binding AccountOperations.Clean}" ToolTip="مسح كامل العناصر">
+                                                        <MenuItem.Icon>
+                                                            <fa:ImageAwesome Icon="Trash">
+                                                                <fa:ImageAwesome.Foreground>
+                                                                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                        <GradientStop Color="#FF3399FF" Offset="0"/>
+                                                                        <GradientStop Color="#FF005C9B" Offset="1"/>
+                                                                    </LinearGradientBrush>
+                                                                </fa:ImageAwesome.Foreground>
+                                                            </fa:ImageAwesome>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                    <MenuItem Header="حذف" Command="{Binding AccountOperations.CleanSelected}" ToolTip="مسح كامل العناصر">
+                                                        <MenuItem.Icon>
+                                                            <fa:ImageAwesome Icon="Trash">
+                                                                <fa:ImageAwesome.Foreground>
+                                                                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                        <GradientStop Color="#FF3399FF" Offset="0"/>
+                                                                        <GradientStop Color="#FF005C9B" Offset="1"/>
+                                                                    </LinearGradientBrush>
+                                                                </fa:ImageAwesome.Foreground>
+                                                            </fa:ImageAwesome>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                    <Separator/>
+
+                                                    <MenuItem Header="متابعة" 
+                                                              Command="{Binding AccountOperations.Follow}" 
+                                                              ToolTip="مسح كامل العناصر">
+                                                        <MenuItem.Icon>
+                                                            <fa:ImageAwesome Icon="Plus">
+                                                                <fa:ImageAwesome.Foreground>
+                                                                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                        <GradientStop Color="#FFFF5F5F" Offset="0"/>
+                                                                        <GradientStop Color="#FF8D0000" Offset="1"/>
+                                                                    </LinearGradientBrush>
+                                                                </fa:ImageAwesome.Foreground>
+                                                            </fa:ImageAwesome>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+
+                                                    <MenuItem Header="الغاء متابعة" Command="{Binding AccountOperations.UnFollow}" ToolTip="مسح كامل العناصر">
+                                                        <MenuItem.Icon>
+                                                            <fa:ImageAwesome Icon="Minus">
+                                                                <fa:ImageAwesome.Foreground>
+                                                                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                        <GradientStop Color="#FFFF5F5F" Offset="0"/>
+                                                                        <GradientStop Color="#FF9E0505" Offset="1"/>
+                                                                    </LinearGradientBrush>
+                                                                </fa:ImageAwesome.Foreground>
+                                                            </fa:ImageAwesome>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                </ContextMenu>
+                                            </dxg:TableView.ContextMenu>
+                                        </dxg:TableView>
+
+                                    </dxg:GridControl.View>
+                                </dxg:GridControl>
+                                <local:Logger Grid.Row="1" Width="Auto" Height="Auto"/>
+
+                            </Grid>
+                        </Grid>
+                    </dx:DXTabItem>
+                </dx:DXTabControl>
+            </dx:DXTabItem>
+            <dx:DXTabItem Header="التعليقات">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="150"/>
+                    </Grid.RowDefinitions>
+
+                    <local:CommentView Grid.RowSpan="2"/>
+
+                </Grid>
+            </dx:DXTabItem>
+
+            <dx:DXTabItem Header="البحث">
+                <Grid>
+
+                    <local:SearchView/>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="0"/>
+                        </Grid.ColumnDefinitions>
+
+                    </Grid>
+                </Grid>
+
+            </dx:DXTabItem>
+        </dx:DXTabControl>
+
+
+    </Grid>
+</dx:DXWindow>
