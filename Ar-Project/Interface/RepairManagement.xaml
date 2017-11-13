@@ -1,0 +1,286 @@
+﻿
+    
+    
+    <dx:DXWindow xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" mc:Ignorable="d"
+    x:Class="Ar_Project.Interface.RepairManagement"
+    Title="RepairManagement" Height="656" Width="690.385" IsAeroMode="False" WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow" ResizeMode="NoResize"
+    >
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="363*" Name="A1"/>
+            <ColumnDefinition Width="0*" Name="A2"/>
+            <ColumnDefinition Width="144*"/>
+            <ColumnDefinition Width="158*"/>
+            <ColumnDefinition Width="19*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="71"/>
+            <RowDefinition Height="83"/>
+            <RowDefinition Height="22"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="22"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="22"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="22"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="22"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="22"/>
+            <RowDefinition Height="21.5"/>
+            <RowDefinition Height="124.5"/>
+
+
+        </Grid.RowDefinitions>
+
+
+
+
+
+        <dxlc:GroupBox x:Name="Aadd" Grid.ColumnSpan="5" Grid.RowSpan="14" Margin="0,22,0,2.5" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" >
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="162*"/>
+                    <ColumnDefinition Width="73*"/>
+                    <ColumnDefinition Width="205*"/>
+                    <ColumnDefinition Width="0"/>
+                </Grid.ColumnDefinitions>
+                <!--
+                =====================================================================================================
+
+                ID                                      -> Guid                           ==> ترميز الطلب  
+                NAME                                    ->string                          ==> اسم الطلب
+                PRICE                                   ->string                          ==> السعر
+                DAT                                     ->string                          ==> تاريخ استلام الطلب
+                discounts->معلق                         ->string                          ==> الخصم
+                datrec                                  ->string                          ==> تاريخ تسليم الطلب
+                conprou                                 ->string                          ==> وصف المشكلة
+                typeprou                                ->string                          ==> اجمالي الحساب
+                isdone                                  ->Bool                            ==> تم تسليمه ام لا
+                Kind->discounts                         ->string                          ==> نوع المنتج
+
+                =====================================================================================================
+                
+                -->
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="32"/>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="1"/>
+                    <RowDefinition Height="1"/>
+                    <RowDefinition Height="0"/>
+                    <RowDefinition Height="0"/>
+                    <RowDefinition Height="0"/>
+                    <RowDefinition Height="110"/>
+                    <RowDefinition Height="15"/>
+                    <RowDefinition Height="32"/>
+                </Grid.RowDefinitions>
+
+                <Button x:Name="Btn_Add" Click="Btn_Add_Click" Content="اضافة"  Grid.Row="14" Grid.Column="3" Margin="1,2,0,6"/>
+
+
+
+
+
+
+
+                <dxe:TextEdit Grid.Row="3" CaretIndex="3" x:Name="price" HorizontalContentAlignment="Right" Grid.Column="3"  NullText="السعر"  MaskType="Numeric" />
+                <dxe:TextEdit Grid.Row="1"   CaretIndex="2" x:Name="name" HorizontalContentAlignment="Right" Grid.Column="1"  NullText="اسم العميل" Grid.ColumnSpan="2" />
+                <dxe:TextEdit Grid.Row="12" Name="content_Prou" Grid.ColumnSpan="3" HorizontalContentAlignment="Right"   Grid.Column="1" NullText="وصف المشكلة" TextWrapping="Wrap" />
+                <dxe:DateEdit Grid.Row="3" Name="date" CaretIndex="4" HorizontalContentAlignment="Right" Grid.Column="1" NullText="تاريخ تسليم الطلب" Grid.ColumnSpan="2" Mask="dd/mm/yyyy" />
+                <dxe:TextEdit Grid.Row="5" x:Name="KIND" CaretIndex="5" HorizontalContentAlignment="Right" Grid.Column="3" NullText="نوع الصنف المضاف"  >
+                </dxe:TextEdit>
+                <dxe:TextEdit Grid.Row="5"  CaretIndex="6" HorizontalContentAlignment="Right" NullText="(رقم هاتف العميل(اختياري" x:Name="discounts" Grid.Column="1" Grid.ColumnSpan="2"   />
+
+                
+                <!-- <dxe:TextEdit Grid.Row="3" HorizontalContentAlignment="Right" Grid.Column="1"  />
+
+                <dxe:TextEdit Grid.Row="3" HorizontalContentAlignment="Right" Grid.Column="1" />-->
+                <dxe:TextEdit CaretIndex="1" Grid.Row="1" HorizontalContentAlignment="Right" Grid.Column="3" x:Name="ID"  IsEnabled="False" NullText="ترميز الطلب" />
+                <dxe:ListBoxRadioButton x:Name="UnComplete" Content="لم يتم تسليم الطلب" Grid.ColumnSpan="1"  HorizontalAlignment="Left" Height="100" Margin="0,0,-130,-100" Grid.Row ="14" VerticalAlignment="Stretch" Width="Auto" IsChecked="True"/>
+                <dxe:ListBoxRadioButton x:Name="IsComplete" Content="تم تسليم الطلب" Grid.ColumnSpan="1"   HorizontalAlignment="Left" Height="100" Margin="0 ,-50,-100,-100" Grid.Row="15" VerticalAlignment="Stretch" Width="Auto"/>
+
+            </Grid>
+
+
+
+        </dxlc:GroupBox>
+
+        <dxlc:GroupBox x:Name="addd" Grid.Row="14" Grid.ColumnSpan="5" Margin="0,0,0,-132" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin">
+            <dxg:GridControl AutoGenerateColumns="None" Name="Data_Add" EnableSmartColumnsGeneration="True"  Visibility="Visible"  AllowColumnMRUFilterList="False" IsFilterEnabled="False" AllowMRUFilterList="False" SelectionMode="Cell">
+                <dxg:GridControl.Columns>
+                    <dxg:GridColumn FieldName="رمز المنتج" Binding="{Binding ID}" Width="auto" AllowGrouping="False" AllowMoving="False" AllowResizing="False" AllowSorting="False" Fixed="Left" VisibleIndex="0" />
+                    <dxg:GridColumn FieldName="اسم العميل" Binding="{Binding NAME}" Width="auto" AllowGrouping="False" AllowMoving="False" AllowResizing="False" AllowSorting="False" Fixed="Left" VisibleIndex="1"/>
+                    <dxg:GridColumn FieldName="تاريخ اضافة الصنف" Binding="{Binding DAT}" Width="auto" AllowGrouping="False" AllowMoving="False" AllowResizing="False" AllowSorting="False" Fixed="Left" VisibleIndex="2" UnboundType="Object"/>
+                    <dxg:GridColumn FieldName="موعد تسليم الصنف" Binding="{Binding datrec}" Width="auto" AllowGrouping="False" AllowMoving="False" AllowResizing="False" AllowSorting="False" Fixed="Left" VisibleIndex="3"/>
+                    <dxg:GridColumn FieldName="نوع المشكلة" Binding="{Binding typeprou}" Width="auto" AllowGrouping="False" AllowMoving="False" AllowResizing="False" AllowSorting="False" Fixed="Left" VisibleIndex="4"/>
+                    <dxg:GridColumn FieldName="تكلفة الصيانة" Binding="{Binding PRICE}" Width="auto" AllowGrouping="False" AllowMoving="False" AllowResizing="False" AllowSorting="False" Fixed="Left" VisibleIndex="5"/>
+                    <dxg:GridColumn FieldName="رقم هاتف العميل" Binding="{Binding discounts}" Width="auto" AllowGrouping="False" AllowMoving="False" AllowResizing="False" AllowSorting="False" Fixed="Left" VisibleIndex="6" />
+                    <dxg:GridColumn FieldName="نوع المنتج" Binding="{Binding conprou}" Width="auto" AllowGrouping="False" AllowMoving="False" AllowResizing="False" AllowSorting="False" Fixed="Left" VisibleIndex="7"/>
+
+
+
+                </dxg:GridControl.Columns>
+                <dxg:GridControl.View>
+                    <dxg:TableView AllowPerPixelScrolling="True" ShowTotalSummary="False" AutoWidth="True" AllowEditing="False" ShowGroupPanel="False"/>
+                </dxg:GridControl.View>
+            </dxg:GridControl>
+        </dxlc:GroupBox>
+        <dxlc:GroupBox x:Name="A3" Visibility="Hidden" Grid.ColumnSpan="5" Grid.RowSpan="14" Margin="0,22,0,2.5" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" >
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="162*"/>
+                    <ColumnDefinition Width="73*"/>
+                    <ColumnDefinition Width="205*"/>
+                    <ColumnDefinition Width="0"/>
+                </Grid.ColumnDefinitions>
+                <!--
+                =====================================================================================================
+
+                ID                                      -> Guid                           ==> ترميز الطلب  
+                NAME                                    ->string                          ==> اسم الطلب
+                PRICE                                   ->string                          ==> السعر
+                DAT                                     ->string                          ==> تاريخ استلام الطلب
+                discounts                               ->string                          ==> الخصم
+                datrec                                  ->string                          ==> تاريخ تسليم الطلب
+                conprou                                 ->string                          ==> وصف المشكلة
+                typeprou                                ->string                          ==> اجمالي الحساب
+                isdone                                  ->Bool                            ==> تم تسليمه ام لا
+                
+                =====================================================================================================
+                
+                -->
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="32"/>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="1"/>
+                    <RowDefinition Height="1"/>
+                    <RowDefinition Height="0"/>
+                    <RowDefinition Height="0"/>
+                    <RowDefinition Height="0"/>
+                    <RowDefinition Height="110"/>
+                    <RowDefinition Height="15"/>
+                    <RowDefinition Height="32"/>
+                </Grid.RowDefinitions>
+
+                <Button x:Name="Btn_Edit" Click="Btn_Add1_Click"    Content="تعديل"  Grid.Row="14" Grid.Column="3" Margin="1,2,0,6"/>
+
+
+
+                <!--
+          typeprou
+                    discounts
+                    PRICE
+                    datrec
+                    DAT
+                    NAME
+                    ID
+                    conprou
+                    -->
+
+
+
+                <dxe:TextEdit Grid.Row="3" CaretIndex="3" x:Name="price_edit" HorizontalContentAlignment="Right" Grid.Column="3" Text="{Binding SelectedItem.PRICE,ElementName=Data_Edit}" NullText="السعر"  />
+                <dxe:TextEdit Grid.Row="1"   CaretIndex="2" x:Name="name_edit" HorizontalContentAlignment="Right" Grid.Column="1" Text="{Binding SelectedItem.NAME,ElementName=Data_Edit}" NullText="اسم الطلب" Grid.ColumnSpan="2" />
+                <dxe:TextEdit Grid.Row="12" x:Name="content_Prou_edit" Grid.ColumnSpan="3" HorizontalContentAlignment="Right"  Text="{Binding SelectedItem.conprou,ElementName=Data_Edit}" Grid.Column="1" NullText="وصف المشكلة" TextWrapping="Wrap" />
+                <dxe:DateEdit Grid.Row="3" x:Name="date_edit" CaretIndex="4" HorizontalContentAlignment="Right" Grid.Column="1" Text="{Binding SelectedItem.datrec,ElementName=Data_Edit}"  Mask="dd/mm/yyyy" NullText="تاريخ تسليم الطلب" Grid.ColumnSpan="2" />
+                <dxe:TextEdit Grid.Row="5" x:Name="KIND_EDIT" CaretIndex="5" HorizontalContentAlignment="Right"   Grid.Column="3" NullText="نوع الصنف المضاف" Text="{Binding SelectedItem.typeprou,ElementName=Data_Edit}" >
+               
+
+
+
+                </dxe:TextEdit>
+                <dxe:TextEdit Grid.Row="5"  CaretIndex="6" HorizontalContentAlignment="Right" Text="{Binding SelectedItem.discounts,ElementName=Data_Edit}" NullText="(رقم هاتف العميل(اختياري" x:Name="discounts_Edit" Grid.Column="1" Grid.ColumnSpan="2" />
+
+                <!-- <dxe:TextEdit Grid.Row="3" HorizontalContentAlignment="Right" Grid.Column="1"  />
+
+                <dxe:TextEdit Grid.Row="3" HorizontalContentAlignment="Right" Grid.Column="1" />-->
+                <dxe:TextEdit CaretIndex="1" Grid.Row="1" HorizontalContentAlignment="Right" Grid.Column="3" x:Name="ID1"  Text="{Binding SelectedItem.ID,ElementName=Data_Edit}"  IsEnabled="False" NullText="ترميز الطلب" />
+
+                <!-- <dxe:ListBoxRadioButton x:Name="UnComplete" Content="لم يتم تسليم الطلب" Grid.ColumnSpan="1"  HorizontalAlignment="Left" Height="100" Margin="0,0,-130,-100" Grid.Row ="14" VerticalAlignment="Stretch" Width="Auto" IsChecked="True"/>
+                <dxe:ListBoxRadioButton x:Name="IsComplete" Content="تم تسليم الطلب" Grid.ColumnSpan="1"   HorizontalAlignment="Left" Height="100" Margin="0 ,-50,-100,-100" Grid.Row="15" VerticalAlignment="Stretch" Width="Auto"/>-->
+                <dxe:ListBoxRadioButton x:Name="UnComplete_edit"  Content="لم يتم تسليم الطلب" Grid.ColumnSpan="1"  HorizontalAlignment="Left" Height="100" Margin="0,0,-130,-100" Grid.Row ="14" VerticalAlignment="Stretch" Width="Auto" >
+                    <dxe:ListBoxRadioButton.Style>
+                        <Style TargetType="dxe:ListBoxRadioButton">
+                            <Setter Property="IsChecked" Value="False"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedItem.isdone,ElementName=Data_Edit}" Value="True">
+                                    <Setter Property="IsChecked" Value="True"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </dxe:ListBoxRadioButton.Style>
+
+
+                </dxe:ListBoxRadioButton>
+                <dxe:ListBoxRadioButton x:Name="IsComplete_edit" Content="تم تسليم الطلب" Grid.ColumnSpan="1"   HorizontalAlignment="Left" Height="100" Margin="0 ,-50,-100,-100" Grid.Row="15" VerticalAlignment="Stretch" Width="Auto">
+                    <dxe:ListBoxRadioButton.Style>
+                        <Style TargetType="dxe:ListBoxRadioButton">
+                            <Setter Property="IsChecked" Value="True"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedItem.isdone,ElementName=Data_Edit}" Value="True">
+                                    <Setter Property="IsChecked" Value="False"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </dxe:ListBoxRadioButton.Style>
+
+                </dxe:ListBoxRadioButton>
+
+            </Grid>
+
+
+
+        </dxlc:GroupBox>
+        <dxlc:GroupBox x:Name="A4" Grid.Row="14" Visibility="Hidden" Grid.ColumnSpan="5" Margin="0,0,0,-132" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin">
+            <dxg:GridControl AutoGenerateColumns="None" x:Name="Data_Edit" EnableSmartColumnsGeneration="True"  Visibility="Visible"  AllowColumnMRUFilterList="False" IsFilterEnabled="False" AllowMRUFilterList="False" SelectionMode="Cell">
+                <dxg:GridControl.Columns>
+                    <dxg:GridColumn FieldName="رمز المنتج" Binding="{Binding ID}" Width="auto" AllowGrouping="False" AllowMoving="False" AllowResizing="False" AllowSorting="False" Fixed="Left" VisibleIndex="0" />
+                    <dxg:GridColumn FieldName="اسم العميل" Binding="{Binding NAME}" Width="auto" AllowGrouping="False" AllowMoving="False" AllowResizing="False" AllowSorting="False" Fixed="Left" VisibleIndex="1"/>
+                    <dxg:GridColumn FieldName="تاريخ اضافة الصنف" Binding="{Binding DAT}" Width="auto" AllowGrouping="False" AllowMoving="False" AllowResizing="False" AllowSorting="False" Fixed="Left" VisibleIndex="2" UnboundType="Object"/>
+                    <dxg:GridColumn FieldName="موعد تسليم الصنف" Binding="{Binding datrec}" Width="auto" AllowGrouping="False" AllowMoving="False" AllowResizing="False" AllowSorting="False" Fixed="Left" VisibleIndex="3"/>
+                    <dxg:GridColumn FieldName="نوع المشكلة" Binding="{Binding conprou}" Width="auto" AllowGrouping="False" AllowMoving="False" AllowResizing="False" AllowSorting="False" Fixed="Left" VisibleIndex="4"/>
+                    <dxg:GridColumn FieldName="تكلفة الصيانة" Binding="{Binding PRICE}" Width="auto" AllowGrouping="False" AllowMoving="False" AllowResizing="False" AllowSorting="False" Fixed="Left" VisibleIndex="5"/>
+                    <dxg:GridColumn FieldName="رقم هاتف العميل" Binding="{Binding discounts}" Width="auto" AllowGrouping="False" AllowMoving="False" AllowResizing="False" AllowSorting="False" Fixed="Left" VisibleIndex="6" />
+                    <dxg:GridColumn FieldName="نوع المنتج" Binding="{Binding typeprou }" Width="auto" AllowGrouping="False" AllowMoving="False" AllowResizing="False" AllowSorting="False" Fixed="Left" VisibleIndex="7"/>
+
+
+
+                </dxg:GridControl.Columns>
+                <dxg:GridControl.View>
+                    <dxg:TableView AllowPerPixelScrolling="True" ShowTotalSummary="False" AutoWidth="True" AllowEditing="False" ShowGroupPanel="False"/>
+                </dxg:GridControl.View>
+            </dxg:GridControl>
+        </dxlc:GroupBox>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </Grid>
+</dx:DXWindow>
