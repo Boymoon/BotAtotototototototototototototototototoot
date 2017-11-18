@@ -60,6 +60,14 @@ namespace Instagram.App
             }
         }
         /// <summary>
+        /// امر حذف جميع العناصر من قاعدة البيانات
+        /// /// </summary>
+        public ICommand DeleteAll { get; set; }
+        /// <summary>
+        /// امر حذف عنصر محدد 
+        /// </summary>
+        public ICommand DeleteSelected { get; set; }
+        /// <summary>
         /// امر لتسجيل الدخول
         /// </summary>
         public ICommand SigninCommand { get; set; }

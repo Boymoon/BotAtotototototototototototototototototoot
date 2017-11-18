@@ -81,3 +81,12 @@ C:\Users\Root\Documents\Visual Studio 2015\Projects\Instagram.Application\Instag
 C:\Users\Root\Documents\Visual Studio 2015\Projects\Instagram.Application\Instagram.App\bin\Debug\ja\DevExpress.Xpf.Controls.v15.2.resources.dll
 C:\Users\Root\Documents\Visual Studio 2015\Projects\Instagram.Application\Instagram.App\bin\Debug\ru\DevExpress.Xpf.Controls.v15.2.resources.dll
 C:\Users\Root\Documents\Visual Studio 2015\Projects\Instagram.Application\Instagram.App\bin\Debug\DevExpress.Images.v15.2.dll
+C:\Users\Root\Documents\Visual Studio 2015\Projects\Instagram.Application\Instagram.App\bin\Debug\EntityFramework.dll
+C:\Users\Root\Documents\Visual Studio 2015\Projects\Instagram.Application\Instagram.App\bin\Debug\EntityFramework.SqlServer.dll
+C:\Users\Root\Documents\Visual Studio 2015\Projects\Instagram.Application\Instagram.App\bin\Debug\System.Data.SQLite.dll
+C:\Users\Root\Documents\Visual Studio 2015\Projects\Instagram.Application\Instagram.App\bin\Debug\System.Data.SQLite.EF6.dll
+C:\Users\Root\Documents\Visual Studio 2015\Projects\Instagram.Application\Instagram.App\bin\Debug\System.Data.SQLite.Linq.dll
+C:\Users\Root\Documents\Visual Studio 2015\Projects\Instagram.Application\Instagram.App\bin\Debug\EntityFramework.xml
+C:\Users\Root\Documents\Visual Studio 2015\Projects\Instagram.Application\Instagram.App\bin\Debug\EntityFramework.SqlServer.xml
+C:\Users\Root\Documents\Visual Studio 2015\Projects\Instagram.Application\Instagram.App\bin\Debug\System.Data.SQLite.xml
+C:\Users\Root\Documents\Visual Studio 2015\Projects\Instagram.Application\Instagram.App\bin\Debug\System.Data.SQLite.dll.config

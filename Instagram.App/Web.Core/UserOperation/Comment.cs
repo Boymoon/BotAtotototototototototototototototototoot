@@ -33,7 +33,7 @@ namespace Instagram.App
         }
         public void SendComment_UnderTest(ObservableCollection<ModelPost> PostsContainer_) => sendComment((Posts_) =>
                                               {
-
+                                                  Operations.CurrentOT = OperationsTypes.GetPosts;
                                                   var containerOfPosts = new ObservableCollection<ModelPost>();
                                                   int CountOfposts = 0;
                                                  /* Temp_ = المتصفح  المؤقت */
@@ -447,9 +447,9 @@ namespace Instagram.App
                                                           });
                                                       }
                                                       }
-                                                     /* جلب معلومات المنشور */
+                                                  /* جلب معلومات المنشور */
 
-                                                  
+                                                  Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                                                   try
                                                   {
                                                       garbage.Kill((long)KernalWeb._PID[1]);
@@ -465,6 +465,7 @@ namespace Instagram.App
         /// <param name="GetPost"></param>
         private void sendComment(Action<List<string>> GetPost)
         {
+            Operations.CurrentOT = OperationsTypes.DoComment;
             #region Settings
             KernalWeb.Driver.Manage().Timeouts().ImplicitWait = new TimeSpan(0, 0, 2);
             KernalWeb.Driver.Manage().Timeouts().PageLoad = new TimeSpan(0, 0, 2);
@@ -578,6 +579,7 @@ namespace Instagram.App
                                                     {
                                                         if (StateOfTask)
                                                         {
+                                                            Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                                                             return;
                                                         }
                                                     }
@@ -630,11 +632,14 @@ namespace Instagram.App
             {
                 while (StateOfTask)
                 {
+                    Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                     LoggerViewModel.Log("Finished", TypeOfLog.check);
                     break;
                 }
 
             }
+
+            Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
         }
         /// <summary>
         ///  دالة لإرسال التعليقات

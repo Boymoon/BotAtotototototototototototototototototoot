@@ -243,7 +243,7 @@
                     <VisualState x:Name="Disabled"/>
                 </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
-            <Border x:Name="border"  Background="#FFE6E6E6" BorderThickness="0.5" BorderBrush="{Binding BorderBrush,FallbackValue=#FF101011,RelativeSource={RelativeSource TemplatedParent}}">
+            <Border x:Name="border"  Background="#FFE6E6E6" BorderThickness="0.8" BorderBrush="{Binding BorderBrush,FallbackValue=#FF101011,RelativeSource={RelativeSource TemplatedParent}}">
                 <Grid x:Name="grid">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="27"/>

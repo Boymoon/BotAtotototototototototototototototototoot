@@ -30,7 +30,7 @@ namespace Instagram.App
             }
             try
             {
-
+               // Operations.CurrentOT = OperationsTypes.DoLogin;
                 KernalWeb.Driver.Navigate().GoToUrl("https://www.instagram.com/accounts/login/");
                 Thread.Sleep(4000);
 

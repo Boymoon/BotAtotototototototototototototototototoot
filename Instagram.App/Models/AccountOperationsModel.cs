@@ -60,6 +60,15 @@ namespace Instagram.App
             get => FollowAll_;
             set { FollowAll_ = value; OnPropertyChanged(); IsFollowWIthCondition = true; }
         }
+        private bool UnFollowAll_;
+        /// <summary>
+        /// الغاء المتابعة
+        /// </summary>
+        public bool UnFollowAll
+        {
+            get => UnFollowAll_;
+            set { UnFollowAll_ = value; OnPropertyChanged(); IsFollowWIthCondition = true; }
+        }
         private bool Warning_;
         /// <summary>
         /// استقبال تحذير مبكر بوجود سبام او ما شابه 
@@ -223,6 +232,15 @@ namespace Instagram.App
             get { return Uid_; }
             set { Uid_ = value; }
         }
+        private string ContentbtnLoading_="!!لايوجد اتصال";
+        /// <summary>
+        /// نص الزر  بعد البدء في تنفيذ العملية <see cref="IsRunning"/>
+        /// </summary>
+        public string ContentbtnLoading
+        {
+            get { return ContentbtnLoading_; }
+            set { ContentbtnLoading_ = value;OnPropertyChanged(); }
+        }
 
         private string Following_;
         /// <summary>
@@ -242,7 +260,7 @@ namespace Instagram.App
             get => Followers_;
             set { Followers_ = value; OnPropertyChanged(); }
         }
-        private bool IsRunning_;
+        private bool IsRunning_=false;
         /// <summary>
         /// اذا بدأت عملية  جلب  المتابعين 
         /// </summary>
@@ -279,5 +297,10 @@ namespace Instagram.App
         /// الغاء متابعة المتابعين المحددين في جدول المتابعين
         /// </summary>
         public ICommand UnFollow { get; set; }
+        /// <summary>
+        /// الغاء العمليات الخاصة بواجهة الحسابات -جلب المتابعين وعملياتها 
+        /// <![CDATA[يتم الغاء نوعين  من العمليات فقط ,جلب  المتابعين,متابعة-الغاء متابعة -جلب عدد المتابعين ]]>
+        /// </summary>
+        public ICommand Cancel { get; set; }
     }
 }

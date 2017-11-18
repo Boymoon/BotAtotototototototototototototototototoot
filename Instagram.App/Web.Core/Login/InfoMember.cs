@@ -27,6 +27,7 @@ namespace Instagram.App
         /// </summary>
         public Func<string, string, int> AsyncGetFollowers_ = (string Uid, string Name) =>
          {
+             Operations.CurrentOT = OperationsTypes.DoGetCountAccount;
              int b = 0;
              var driver_serv = ChromeDriverService.CreateDefaultService();
              driver_serv.HideCommandPromptWindow = true;
@@ -82,11 +83,12 @@ namespace Instagram.App
              }
              driver.Close();
              driver_serv.Dispose();
-
+             Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
              return b;
          };
         public string GetFollower()
         {
+            Operations.CurrentOT = OperationsTypes.GetCurrentFollowers;
             string b = "";
             try
             {
@@ -125,6 +127,7 @@ namespace Instagram.App
 
                 }
             }
+            Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
             return b;
         }
         /// <summary>
@@ -135,6 +138,7 @@ namespace Instagram.App
         /// <returns>تمت  المتابعة ام لا|تم الغاء المتابعة ام لا </returns>
         public TypeOfResponse Follow(string name, string Uid, AccountOperations Conditions_,LoginViewModel loginViewModel_)
         {
+            Operations.CurrentOT = OperationsTypes.DoFollow;
             KernalWeb.Driver.Manage().Timeouts().PageLoad = new TimeSpan(0, 0, 60);
             KernalWeb.Driver.Manage().Timeouts().ImplicitWait = new TimeSpan(0, 0, 60);
             var result = new TypeOfResponse();
@@ -142,7 +146,12 @@ namespace Instagram.App
                 return TypeOfResponse.None;
 
             KernalWeb.Driver.Navigate().GoToUrl(Uid);
+            try
+            {
             KernalWeb.Driver.Manage().Window.Size = new System.Drawing.Size(600, 1000);
+
+            }
+            catch (Exception) { }
             try
             {
                 foreach (var item in KernalWeb.Driver.FindElements(By.TagName("button")))
@@ -161,16 +170,40 @@ namespace Instagram.App
                      || Conditions_ != null
                      && item.Text == "Follow"
                      || Conditions_ != null
-                     && Conditions_.FollowAll
+                     && loginViewModel_.AccountOperations.FollowAll
                      && Conditions_.FollowWhohasFollowingFrom_To
                      && item.Text == "Follow"
                      && Conditions_.To >= Conditions_.Followers
                      && Conditions_.From <= Conditions_.Followers
                      || Conditions_ != null
-                     && Conditions_.FollowAll
+                     && loginViewModel_.AccountOperations.FollowAll
                      && item.Text == "Follow"
                      || Conditions_ != null
                      && item.Text == "Follow"
+                     || Conditions_ != null
+                     && Conditions_.FollowWhohasFollowingFrom_To
+                     && (item.Text != "Follow" && item.Text.ToLower() == "following" || item.Text.ToLower() == "requested")
+                     && Conditions_.To >= Conditions_.Followers
+                     && Conditions_.From <= Conditions_.Followers
+                     || Conditions_ != null
+                     && Conditions_.FollowWhohasFollowingFrom_To
+                     && (item.Text != "Follow" && item.Text.ToLower() == "following" || item.Text.ToLower() == "requested")
+                     && Conditions_.To >= Conditions_.Followers
+                     && Conditions_.From <= Conditions_.Followers
+                     || Conditions_ != null
+                     && (item.Text != "Follow" && item.Text.ToLower() == "following" || item.Text.ToLower() == "requested")
+                     || Conditions_ != null
+                     && loginViewModel_.AccountOperations.UnFollowAll
+                     && Conditions_.FollowWhohasFollowingFrom_To
+                     && (item.Text != "Follow" && item.Text.ToLower() == "following" || item.Text.ToLower() == "requested")
+                     && Conditions_.To >= Conditions_.Followers
+                     && Conditions_.From <= Conditions_.Followers
+                     || Conditions_ != null
+                     && loginViewModel_.AccountOperations.UnFollowAll
+                     && (item.Text != "Follow" && item.Text.ToLower() == "following" || item.Text.ToLower() == "requested")
+                     || Conditions_ != null
+                     && (item.Text != "Follow" && item.Text.ToLower() == "following" || item.Text.ToLower() == "requested")
+
                      )
                     {
 
@@ -181,28 +214,57 @@ namespace Instagram.App
 
                             case "follow":
                                 {
-                                    result = TypeOfResponse.None;
-                                    LoggerViewModel.Log(String.Format("you have recently followed => {0}", Conditions_.Username), TypeOfLog.check);
+                                    if (loginViewModel_.AccountOperations.UnFollowAll)
+                                    {
+
+                                        result = TypeOfResponse.None;
+                                    }
+                                    else
+                                    {
+                                        result = TypeOfResponse.Follow;
+                                    }
+                                    LoggerViewModel.Log(String.Format("you have recently canceled => {0}", Conditions_.Username), TypeOfLog.Warning);
+                                    LoggerViewModel.Log(String.Format("you have recently canceled => {0}", loginViewModel_.AccountOperations.UnFollowAll), TypeOfLog.Warning);
+
                                     loginViewModel_.Login = Conditions_;
                                     //ارجاع حالة الحساب 
+                                    Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                                     return result;
                                 }
 
                             case "following":
                                 {
-                                    result = TypeOfResponse.Following;
-                                    LoggerViewModel.Log(String.Format("you have recently followed => {0}", Conditions_.Username), TypeOfLog.check);
+                                    if (loginViewModel_.AccountOperations.UnFollowAll)
+                                    {
+
+                                    result = TypeOfResponse.None;
+                                    }
+                                    else
+                                    {
+                                        result = TypeOfResponse.Following;
+                                    }
+                                    LoggerViewModel.Log(String.Format("you have recently Delete => {0} from your Followings", Conditions_.Username), TypeOfLog.check);
                                     loginViewModel_.Login = Conditions_;
                                     //ارجاع حالة الحساب 
+                                    Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                                     return result;
                                 }
 
                             case "requested":
                                 {
-                                    result = TypeOfResponse.Requested;
+                                    if (loginViewModel_.AccountOperations.UnFollowAll)
+                                    {
+
+                                        result = TypeOfResponse.None;
+                                    }
+                                    else
+                                    {
+                                        result = TypeOfResponse.Requested;
+                                    }
                                     LoggerViewModel.Log(String.Format("you have to wait your request to follow => {0}", Conditions_.Username), TypeOfLog.questioncircle);
                                     loginViewModel_.Login = Conditions_;
                                     //ارجاع حالة الحساب 
+                                    Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                                     return result;
                                 }
                             default:
@@ -210,6 +272,7 @@ namespace Instagram.App
                                 LoggerViewModel.Log("Ops..! your account has been Blocked ", TypeOfLog.exclamationcircle);
                                 loginViewModel_.Login = Conditions_;
                                 //تعذر العثور على القيمة المطلوبة
+                                Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                                 return result;
                         }
 
@@ -219,87 +282,99 @@ namespace Instagram.App
                         if (item.Text == "Follow")
                         {
                             item.Click();
-                            Thread.Sleep(2000);
+                            Thread.Sleep(4 * 1000);
                             switch (item.Text)
                             {
 
                                 case "Follow":
                                     {
                                         //ارجاع حالة الحساب 
+                                        Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                                         return TypeOfResponse.None;
                                     }
 
                                 case "Following":
                                     {
                                         //ارجاع حالة الحساب 
+                                        Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                                         return TypeOfResponse.Following;
                                     }
 
                                 case "Requested":
                                     {
                                         //ارجاع حالة الحساب 
+                                        Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                                         return TypeOfResponse.Requested;
                                     }
                                 default:
                                     //تعذر العثور على القيمة المطلوبة
+                                    Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                                     return TypeOfResponse.None;
                             }
                         }
                         else if (item.Text == "Following")
                         {
                             item.Click();
-                            Thread.Sleep(2000);
+                            Thread.Sleep(4 * 1000);
                             switch (item.Text)
                             {
 
                                 case "Follow":
                                     {
                                         //ارجاع حالة الحساب 
+                                        Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                                         return TypeOfResponse.Follow;
                                     }
 
                                 case "Following":
                                     {
                                         //ارجاع حالة الحساب 
+                                        Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                                         return TypeOfResponse.None;
                                     }
 
                                 case "Requested":
                                     {
                                         //ارجاع حالة الحساب 
+                                        Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                                         return TypeOfResponse.Requested;
                                     }
                                 default:
                                     //تعذر العثور على القيمة المطلوبة
+                                    Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                                     return TypeOfResponse.None;
                             }
                         }
                         else if (item.Text == "Requested")
                         {
                             item.Click();
-                            Thread.Sleep(2000);
+                            Thread.Sleep(4 * 1000);
                             switch (item.Text)
                             {
 
                                 case "Follow":
                                     {
                                         //ارجاع حالة الحساب 
+                                        Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                                         return TypeOfResponse.Follow;
                                     }
 
                                 case "Following":
                                     {
                                         //ارجاع حالة الحساب 
+                                        Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                                         return TypeOfResponse.None;
                                     }
 
                                 case "Requested":
                                     {
                                         //ارجاع حالة الحساب 
+                                        Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                                         return TypeOfResponse.Requested;
                                     }
                                 default:
                                     //تعذر العثور على القيمة المطلوبة
+                                    Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                                     return TypeOfResponse.None;
                             }
                         }
@@ -554,6 +629,7 @@ namespace Instagram.App
 
         public string GetFollowing()
         {
+            Operations.CurrentOT = OperationsTypes.GetCurrentFollwings;
             string b = "";
             foreach (IWebElement itemm in KernalWeb.Driver.FindElements(By.TagName("a")))
             {
@@ -565,11 +641,13 @@ namespace Instagram.App
                 }
 
             }
+            Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
             return b;
         }
 
         public string Getname(string optionalname = null)
         {
+            Operations.CurrentOT = OperationsTypes.GetCurrentName;
             string b = "";
             foreach (IWebElement itemm in KernalWeb.Driver.FindElements(By.TagName("h1")))
             {
@@ -581,6 +659,7 @@ namespace Instagram.App
                 }
 
             }
+            Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
             return b;
         }
 

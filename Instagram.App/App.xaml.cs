@@ -23,6 +23,14 @@ namespace Instagram.App
             DevExpress.Xpf.Core.ApplicationThemeHelper.UpdateApplicationThemeName();
             Task.Run(() =>
             {
+                var LoginDB = new LoginDB(new MainDB());
+                if (!LoginDB.Check("account"))
+                {
+                    LoginDB.AddTable<string>($"username TEXT," +
+                                             $"password TEXT," +
+                                             $"email TEXT"
+                                             , "account");
+                }
                 ContainerCollection<ObservableCollection<ModelPost>>.Init();
                 CollectionsHelper.Init();
                 KernalWeb.Setup();

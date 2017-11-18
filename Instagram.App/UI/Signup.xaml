@@ -68,23 +68,23 @@
 
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
-                            <dxe:TextEdit NullText="100" Margin="4,0,0,0" HorizontalContentAlignment="Right" Width="113.5"
+                            <dxe:TextEdit ToolTip="{Binding ElementName=tooltiop}" NullText="100" Margin="4,0,0,0" HorizontalContentAlignment="Right" Width="113.5"
                              IsEnabled="{Binding ElementName=IsAutoSignup,Path=IsChecked}" NullTextForeground="#9E000000" BorderBrush="#FF007ACC" 
                              Text="{Binding To,FallbackValue=2}"   
                                           />
-                            <dxe:TextEdit NullText="0" Margin="4,0,0,0" HorizontalContentAlignment="Right" Width="95.083"
+                            <dxe:TextEdit ToolTip="{Binding ElementName=tooltiop}" NullText="0" Margin="4,0,0,0" HorizontalContentAlignment="Right" Width="95.083"
                              IsEnabled="{Binding ElementName=IsAutoSignup,Path=IsChecked}" NullTextForeground="#9E000000" BorderBrush="#FF007ACC" 
                              Text="{Binding From,FallbackValue=1}"  
                                           />
 
                         </StackPanel>
-                        <StackPanel Margin="0,8,0,-30" Height="81">
+                        <StackPanel Visibility="Collapsed" Margin="0,8,0,-30" Height="81">
                             <TextBlock TextWrapping="WrapWithOverflow"  TextAlignment="Right" Height="73.293" FontSize="14"><Run Text=" "/>
 
                                  <Run Foreground="Red" Text="*" Block.TextAlignment="Right" BaselineAlignment="Subscript" FontFamily="Segoe UI Semibold" FontWeight="Thin">
                                      
                                  </Run>
-                                <TextBlock TextWrapping="Wrap" Margin="0,-8,0,0" Height="59.63" Width="223.403">
+                                <TextBlock Name="tooltiop" TextWrapping="Wrap" Margin="0,-8,0,0" Height="59.63" Width="223.403">
                                    <Run  Foreground="#FF060606" Text=" عند تفعيل خيار التسجيل الآلي يجب  وضع فاصل زمني بين كل عملية تسجيل" BaselineAlignment="Subscript" FlowDirection="RightToLeft"/>
 
                                 </TextBlock>

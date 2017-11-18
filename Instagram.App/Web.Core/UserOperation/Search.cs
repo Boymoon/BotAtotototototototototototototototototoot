@@ -29,6 +29,7 @@ namespace Instagram.App
         /// </summary>
         public string FindByLocation()
         {
+            Operations.CurrentOT = OperationsTypes.DoSearchUsingLocation;
             string url = "";
             var web = KernalWeb.Driver;
             web.Navigate().GoToUrl("https://www.instagram.com/explore/");
@@ -55,6 +56,7 @@ namespace Instagram.App
                 url = attr;
                 break;
             }
+            Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
             return url;
         }
         /// <summary>
@@ -62,10 +64,12 @@ namespace Instagram.App
         /// </summary>
         public string FindByTag()
         {
+            Operations.CurrentOT = OperationsTypes.DoSearchUsingHastag;
             string url = "";
             var web = KernalWeb.Driver;
             KernalWeb.Driver.Navigate().GoToUrl($"https://www.instagram.com/explore/tags/{CurrentModel.Text.Replace("#", "")}");
             url = $"https://www.instagram.com/explore/tags/{CurrentModel.Text.Replace("#", "")}";
+            Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
             return url;
         }
         /// <summary>
@@ -74,6 +78,7 @@ namespace Instagram.App
         /// <param name="Post">قائمة لتخزين المنشورات</param>
         public void GetTopPosts(ObservableCollection<ModelPost> Post, string url_, CancellationTokenSource cts)
         {
+            Operations.CurrentOT = OperationsTypes.GetPosts;
             try
             {
                 if (!string.IsNullOrEmpty(url_))
@@ -117,6 +122,7 @@ namespace Instagram.App
                     if (CurrentModel.IsMaximumEnabled && Post.Count == CurrentModel.MaximumPosts)
                     {
                         cts.Cancel();
+                        Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                         return;
                     }
                     range__++;
@@ -124,6 +130,7 @@ namespace Instagram.App
                     {
                         if (range__ == 9)
                         {
+                            Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                             return;
                         }
                         Thread.Sleep(1000);
@@ -623,6 +630,7 @@ namespace Instagram.App
 
 
             }
+            Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
         }
         /// <summary>
         /// جلب احدث المنشورات
@@ -630,6 +638,7 @@ namespace Instagram.App
         /// <param name="Post">قائمة لتخزين المنشورات</param>
         public void GetMostRecentPosts(ObservableCollection<ModelPost> Post, string url_, CancellationTokenSource cts)
         {
+            Operations.CurrentOT = OperationsTypes.GetPosts;
             try
             {
                 if (!string.IsNullOrEmpty(url_))
@@ -675,6 +684,7 @@ namespace Instagram.App
                     if (CurrentModel.IsMaximumEnabled && Post.Count == CurrentModel.MaximumPosts)
                     {
                         cts.Cancel();
+                        Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                         return;
                     }
                     range__++;
@@ -729,6 +739,7 @@ namespace Instagram.App
                                                && double.Parse(publishedAT.Replace("SECONDS AGO", "").Replace("SECOND AGO", "")) <= CurrentModel.ToOfGetPosts))
                                             {
                                                 cts.Cancel();
+                                                Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                                                 return;
                                             }
 
@@ -744,6 +755,7 @@ namespace Instagram.App
                                                 && double.Parse(publishedAT.Replace("MINUTES AGO", "").Replace("MINUTE AGO", "")) <= CurrentModel.ToOfGetPosts))
                                             {
                                                 cts.Cancel();
+                                                Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                                                 return;
                                             }
 
@@ -758,6 +770,7 @@ namespace Instagram.App
                                                 && double.Parse(publishedAT.Replace("HOURS AGO", "").Replace("HOUR AGO", "")) <= CurrentModel.ToOfGetPosts))
                                             {
                                                 cts.Cancel();
+                                                Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                                                 return;
                                             }
                                         }
@@ -766,6 +779,7 @@ namespace Instagram.App
                                     else
                                     {
                                         cts.Cancel();
+                                        Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
                                         return;
                                     }
                                 }
@@ -1166,6 +1180,7 @@ namespace Instagram.App
 
 
             }
+            Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
         }
     }
 }

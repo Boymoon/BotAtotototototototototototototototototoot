@@ -9,7 +9,7 @@
     xmlns:dxnav="http://schemas.devexpress.com/winfx/2008/xaml/navigation"
 
         xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:UI="clr-namespace:Instagram.App.UI" mc:Ignorable="d" x:Class="Instagram.App.MainWindow"
-        Title="الواجهة الرئيسية" Height="800" Width="936.282" WindowStartupLocation="CenterScreen"  WindowState="Maximized" IsAeroMode="False">
+        Title="الواجهة الرئيسية" Height="800" Width="936.282" WindowStartupLocation="CenterScreen"   WindowState="Maximized" IsAeroMode="False">
     <dx:DXWindow.Resources>
         <local:LoginConverter x:Key="LoginConverter"/>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
@@ -22,13 +22,90 @@
 
 
 
-        <dx:DXTabControl Visibility="Visible">
+        <dx:DXTabControl Visibility="Visible"   HorizontalAlignment="Right" HorizontalContentAlignment="Right">
+
+            <dx:DXTabControl.ItemHeaderTemplate>
+                <DataTemplate >
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="10"/>
+                        </Grid.ColumnDefinitions>
+                    <Grid Margin="0,0,0,0" MinHeight="20" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                            <TextBlock  Margin="10,0,0,0" Foreground="#FF101438" Grid.Column="1" Text="{Binding }">
+
+                            </TextBlock>
+
+                        </Grid>
+                      
+                    </Grid>
+                </DataTemplate>
+                
+            </dx:DXTabControl.ItemHeaderTemplate>
             <dx:DXTabControl.View>
-                <dx:TabControlScrollView HeaderLocation="Top" HeaderOrientation="Horizontal" NewButtonShowMode="NoWhere" RemoveTabItemsOnHiding="False"/>
+                
+                <dx:TabControlScrollView HeaderLocation="Top"  HeaderOrientation="Horizontal"   NewButtonShowMode="NoWhere" HeaderAutoFill="False"/>
             </dx:DXTabControl.View>
-            <dx:DXTabItem Header="الحسابات">
+            <dx:DXTabItem Header="الحسابات"  Margin="0,0,0,0"  >
+                <dx:DXTabItem.Icon>
+                    <fa:ImageAwesome Icon="Users" Foreground="#FF202340"/>
+                </dx:DXTabItem.Icon>
+                <dx:DXTabItem.NormalBackgroundTemplate>
+                    <DataTemplate>
+                        <Border Background="Transparent" CornerRadius="1"></Border>
+                    </DataTemplate>
+                </dx:DXTabItem.NormalBackgroundTemplate>
+                <dx:DXTabItem.SelectedBackgroundTemplate>
+                    <DataTemplate>
+                        <Border Background="#C6F1F1F1" BorderBrush="#FF3399FF" BorderThickness="0,0,0,2"></Border>
+                    </DataTemplate>
+                </dx:DXTabItem.SelectedBackgroundTemplate>
+                <dx:DXTabItem.HoverBackgroundTemplate>
+                    <DataTemplate></DataTemplate>
+                </dx:DXTabItem.HoverBackgroundTemplate>
+
                 <dx:DXTabControl>
+                    <dx:DXTabControl.ItemHeaderTemplate>
+                        <DataTemplate >
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="10"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid Margin="0,0,0,0" MinHeight="20" >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock  Margin="10,0,0,0" Foreground="#FF101438" Grid.Column="1" Text="{Binding }">
+
+                                    </TextBlock>
+
+                                </Grid>
+
+                            </Grid>
+                        </DataTemplate>
+
+                    </dx:DXTabControl.ItemHeaderTemplate>
                     <dx:DXTabItem Header="اضافة حسابات" VisibleInHeaderMenu="True">
+                        <dx:DXTabItem.Icon>
+                            <fa:ImageAwesome Icon="UserPlus" Foreground="#FF202340"/>
+                        </dx:DXTabItem.Icon>
+                        <dx:DXTabItem.NormalBackgroundTemplate>
+                            <DataTemplate>
+                                <Border Background="Transparent" BorderThickness="0" CornerRadius="1"></Border>
+                            </DataTemplate>
+                        </dx:DXTabItem.NormalBackgroundTemplate>
+                        <dx:DXTabItem.SelectedBackgroundTemplate>
+                            <DataTemplate>
+                                <Border Background="#C6F1F1F1" BorderBrush="#FF3399FF" BorderThickness="0,0,0,2"></Border>
+                            </DataTemplate>
+                        </dx:DXTabItem.SelectedBackgroundTemplate>
+                        <dx:DXTabItem.HoverBackgroundTemplate>
+                            <DataTemplate></DataTemplate>
+                        </dx:DXTabItem.HoverBackgroundTemplate>
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
@@ -76,7 +153,37 @@
                                                     Binding="{Binding Password}"/>
                                 </dxg:GridControl.Columns>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView ShowGroupPanel="False" ShowIndicator="True" MultiSelectMode="Cell" ShowTotalSummary="True" AutoWidth="True" AllowCellMerge="True"  ShowSelectionRectangle="True" />
+                                    <dxg:TableView ShowGroupPanel="False" ShowIndicator="True" MultiSelectMode="Cell" ShowTotalSummary="True" AutoWidth="True" AllowCellMerge="True"  ShowSelectionRectangle="True" >
+                                        <dxg:TableView.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="حذف" Command="{Binding ModelMainWindow.DeleteSelected}" ToolTip="مسح كامل العناصر">
+                                                    <MenuItem.Icon>
+                                                        <fa:ImageAwesome Icon="Trash">
+                                                            <fa:ImageAwesome.Foreground>
+                                                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                    <GradientStop Color="#FF3399FF" Offset="0"/>
+                                                                    <GradientStop Color="#FF005C9B" Offset="1"/>
+                                                                </LinearGradientBrush>
+                                                            </fa:ImageAwesome.Foreground>
+                                                        </fa:ImageAwesome>
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                                <MenuItem Header="حذف الكل" Command="{Binding ModelMainWindow.DeleteAll}" ToolTip="مسح كامل العناصر">
+                                                    <MenuItem.Icon>
+                                                        <fa:ImageAwesome Icon="Trash">
+                                                            <fa:ImageAwesome.Foreground>
+                                                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                    <GradientStop Color="#FF3399FF" Offset="0"/>
+                                                                    <GradientStop Color="#FF005C9B" Offset="1"/>
+                                                                </LinearGradientBrush>
+                                                            </fa:ImageAwesome.Foreground>
+                                                        </fa:ImageAwesome>
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                            </ContextMenu>
+                                        </dxg:TableView.ContextMenu>
+                                    </dxg:TableView>
+
                                 </dxg:GridControl.View>
                             </dxg:GridControl>
                             <local:Logger  Grid.Row="1" Width="Auto" Height="Auto"/>
@@ -84,6 +191,22 @@
                         </Grid>
                     </dx:DXTabItem>
                     <dx:DXTabItem Header="تسجيل الدخول" >
+                        <dx:DXTabItem.Icon>
+                            <fa:ImageAwesome Icon="SignIn" Foreground="#FF202340"/>
+                        </dx:DXTabItem.Icon>
+                        <dx:DXTabItem.NormalBackgroundTemplate>
+                            <DataTemplate>
+                                <Border Background="Transparent" CornerRadius="1"></Border>
+                            </DataTemplate>
+                        </dx:DXTabItem.NormalBackgroundTemplate>
+                        <dx:DXTabItem.SelectedBackgroundTemplate>
+                            <DataTemplate>
+                                <Border Background="#C6F1F1F1" BorderBrush="#FF3399FF" BorderThickness="0,0,0,2"></Border>
+                            </DataTemplate>
+                        </dx:DXTabItem.SelectedBackgroundTemplate>
+                        <dx:DXTabItem.HoverBackgroundTemplate>
+                            <DataTemplate></DataTemplate>
+                        </dx:DXTabItem.HoverBackgroundTemplate>
 
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -110,6 +233,10 @@
                                                     />
                                         </dxlc:LayoutItem>
                                     </dxlc:LayoutGroup>
+                                    <dxlc:LayoutItem>
+
+                                        <Button Template="{DynamicResource BtnWhiteWithIcon}" Uid="Externallink " Content="تسجيل حساب جديد"/>
+                                    </dxlc:LayoutItem>
                                 </dxlc:LayoutGroup>
                                 <dxlc:LayoutItem Visibility="{Binding ModelMainWindow.IsLogedin, Converter={StaticResource BooleanToVisibilityConverter},FallbackValue=Visible}">
 
@@ -122,8 +249,27 @@
                                         <dxe:TextEdit NullText="https://www.instagram.com/Account/" Name="uid" Text="{Binding AccountOperations.Uid,UpdateSourceTrigger=PropertyChanged}"/>
                                     </dxlc:LayoutItem>
                                     <dxlc:LayoutItem LabelPosition="Top"  Name="FollowAll" LabelHorizontalAlignment="Right" Margin="0,3,0,0">
-                                        <dxe:CheckEdit Content="مُتابعة جميع متابعين الحساب المستهدف" IsChecked="{Binding AccountOperations.FollowAll,FallbackValue=false}"
-                                                       />
+                                        <!--<dxe:CheckEdit Content="مُتابعة جميع متابعين الحساب المستهدف" IsChecked="{Binding AccountOperations.FollowAll,FallbackValue=false}"-->
+
+                                        <!--/>-->
+                                        <GroupBox >
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <RadioButton Grid.Column="0"
+                                                             Margin="1,0,5,0"
+                                                             Content="متابعة"
+                                                             IsChecked="{Binding AccountOperations.FollowAll,FallbackValue=false}"/>
+                                                <RadioButton Grid.Column="1"
+                                                             Margin="1,0,5,0" 
+                                                             Content="الغاء المتابعة"
+                                                             IsChecked="{Binding AccountOperations.UnFollowAll,FallbackValue=false}"/>
+                                                <RadioButton Grid.Column="2" IsChecked="True" Content="لاشيء"/>
+                                            </Grid>
+                                        </GroupBox>
                                     </dxlc:LayoutItem>
                                     <dxlc:LayoutItem LabelPosition="Top"  Name="IsGetFollowup" LabelHorizontalAlignment="Right" Margin="0,3,0,0">
                                         <dxe:CheckEdit Content="جلب عدد المتابعين" IsChecked="{Binding AccountOperations.IsGetFollowup,FallbackValue=True,UpdateSourceTrigger=PropertyChanged}"
@@ -178,43 +324,26 @@
                                             <Button  Margin="75,0,75,0" 
                                                  Visibility="{Binding AccountOperations.IsRunning,
                                             UpdateSourceTrigger=PropertyChanged,
-                                            Converter={StaticResource BooleanToVisibilityConverter}}" 
+                                            Converter={StaticResource LoginConverter},ConverterParameter=Login}" 
                                                  Template="{DynamicResource CustomButton}"
                                                  Name="SearchUsingOptionsCommand"
                                                  Command="{Binding AccountOperations.SearchUsingOptionsCommand}"
                                                  CommandParameter="SearchUsingOptionsCommand__" 
                                                  Uid="Play" 
-                                                 Content="تنفيذ" />
-                                            <Button  Name="ABCd"
-                                                Margin="20,0,20,0"
-                                                     Visibility="Visible"
-                                                     Template="{DynamicResource BtnWhiteWithIcon}"
-                                                     Content="....جاري الاتصال"
-                                                     Uid="ban"
-                                                     >
-                                                <Button.Triggers>
-                                                    <EventTrigger RoutedEvent="MouseEnter">
-                                                        <BeginStoryboard>
-                                                            <Storyboard>
-                                                                <DoubleAnimation Storyboard.TargetProperty="Width" To="200" Duration="0:0:0:1" ></DoubleAnimation>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </EventTrigger>
-                                                    <EventTrigger RoutedEvent="MouseLeave">
-                                                        <BeginStoryboard>
-                                                            <Storyboard>
-                                                                <DoubleAnimation Storyboard.TargetProperty="Width" To="100" Duration="0:0:0:1" ></DoubleAnimation>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </EventTrigger>
-                                                </Button.Triggers>
-                                                <Button.BorderBrush>
-                                                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                                        <GradientStop Color="#FF3399FF" Offset="0"/>
-                                                        <GradientStop Color="#FF112E4B" Offset="1"/>
-                                                    </LinearGradientBrush>
-                                                </Button.BorderBrush>
-                                            
+                                                 Content="تنفيذ" 
+                                                          DataContext="{Binding ElementName=FollowWhohasFollowingFrom_To,Path=DataContext}"
+                                                     />
+                                            <Button 
+                                                     Margin="20,0,20,0"
+                                                     Visibility="{Binding AccountOperations.IsRunning,
+                                            UpdateSourceTrigger=PropertyChanged,Converter={StaticResource LoginConverter},ConverterParameter=other}"
+                                                     Template="{DynamicResource BtnWhite}"
+                                                     Content="{Binding AccountOperations.ContentbtnLoading,UpdateSourceTrigger=PropertyChanged}"
+                                                     Command="{Binding AccountOperations.Cancel}"
+                                                     CommandParameter="Cancel"
+                                                                                                          DataContext="{Binding ElementName=FollowWhohasFollowingFrom_To,Path=DataContext}"
+
+                                                >
 
 
                                             </Button>
@@ -451,9 +580,26 @@
                             </Grid>
                         </Grid>
                     </dx:DXTabItem>
+                 
                 </dx:DXTabControl>
             </dx:DXTabItem>
-            <dx:DXTabItem Header="التعليقات">
+            <dx:DXTabItem Header="التعليقات" >
+                <dx:DXTabItem.Icon>
+                    <fa:ImageAwesome Icon="Comments" Foreground="#FF202340"/>
+                </dx:DXTabItem.Icon>
+                <dx:DXTabItem.NormalBackgroundTemplate>
+                    <DataTemplate>
+                        <Border Background="Transparent" CornerRadius="1"></Border>
+                    </DataTemplate>
+                </dx:DXTabItem.NormalBackgroundTemplate>
+                <dx:DXTabItem.SelectedBackgroundTemplate>
+                    <DataTemplate>
+                        <Border Background="#C6F1F1F1" BorderBrush="#FF3399FF" BorderThickness="0,0,0,2"></Border>
+                    </DataTemplate>
+                </dx:DXTabItem.SelectedBackgroundTemplate>
+                <dx:DXTabItem.HoverBackgroundTemplate>
+                    <DataTemplate></DataTemplate></dx:DXTabItem.HoverBackgroundTemplate>
+
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition/>
@@ -465,7 +611,24 @@
                 </Grid>
             </dx:DXTabItem>
 
-            <dx:DXTabItem Header="البحث">
+            <dx:DXTabItem Header="البحث"  >
+                <dx:DXTabItem.Icon>
+                    <fa:ImageAwesome Icon="Search" Foreground="#FF202340"/>
+                </dx:DXTabItem.Icon>
+                <dx:DXTabItem.NormalBackgroundTemplate>
+                    <DataTemplate>
+                        <Border Background="Transparent" CornerRadius="1"></Border>
+                    </DataTemplate>
+                </dx:DXTabItem.NormalBackgroundTemplate>
+                <dx:DXTabItem.SelectedBackgroundTemplate>
+                    <DataTemplate>
+                        <Border Background="#C6F1F1F1" BorderBrush="#FF3399FF" BorderThickness="0,0,0,2"></Border>
+                    </DataTemplate>
+                </dx:DXTabItem.SelectedBackgroundTemplate>
+                <dx:DXTabItem.HoverBackgroundTemplate>
+                    <DataTemplate></DataTemplate>
+                </dx:DXTabItem.HoverBackgroundTemplate>
+
                 <Grid>
 
                     <local:SearchView/>

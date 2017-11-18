@@ -21,6 +21,13 @@ namespace Instagram.App
     /// </summary>
     public class LoginViewModel : BaseViewModel
     {
+        /// <summary>
+        /// حالة العملية
+        /// </summary>
+        public static bool CancelCurrentOperation { get; private set; }
+        /// <summary>
+        /// العناصر المحددة
+        /// </summary>
         public ObservableCollection<AccountOperations> SelectedItems { get; set; } = new ObservableCollection<AccountOperations>();
         /// <summary>
         /// الاشخاص الغير متابعون
@@ -77,6 +84,7 @@ namespace Instagram.App
             AccountOperations.LogoutCommand = new BaseCommand((Logout));
             AccountOperations.SearchUsingOptionsCommand = new BaseCommand(SearchUsingOptionsCommand);
             AccountOperations.Clean = new BaseCommand(Clear);
+            AccountOperations.Cancel = new BaseCommand(Cancel);
             AccountOperations.CleanSelected = new BaseCommand(ClearSelected);
             AccountOperations.Follow = new BaseCommand(FollowSelected);
             AccountOperations.UnFollow = new BaseCommand(UnFollowSelected);
@@ -84,6 +92,16 @@ namespace Instagram.App
             AccountOperations = AccountOperations_;
 
 
+        }
+        /// <summary>
+        /// الغاء العمليات الخاصة بواجهة الحسابات -جلب المتابعين وعملياتها 
+        /// <![CDATA[يتم الغاء نوعين  من العمليات فقط ,جلب  المتابعين,متابعة-الغاء متابعة -جلب عدد المتابعين ]]>
+        /// </summary>
+        private void Cancel()
+        {
+            /* الغاء العملية الحالية */
+            Instagram.App.Followers.Cancel = true;
+            AccountOperations.IsRunning = false;
         }
 
         /// <summary>
@@ -98,35 +116,46 @@ namespace Instagram.App
         /// </summary>
         private void SearchUsingOptionsCommand()
         {
+            if (AccountOperations_.IsRunning)
+            {
+                Cancel();
+                return;
+            }
+            /* اعدادات البحث السريع عن المتابعين */
+            #region Settings_BeforeBeginSearchForFollowers
+            Instagram.App.Followers.Cancel = false;
+            AccountOperations.ContentbtnLoading = "جاري الاتصال";
+            AccountOperations.IsRunning = true;
             LoggerViewModel.Log("Getting Started...", TypeOfLog.check);
+            #endregion
             //تعريف فئة جلب البيانات
             var InfoMember = new InfoMember(mmMainWindowViewmodel.Selected.Username);
             var GetFollowers_ = new Followers(mmMainWindowViewmodel.Selected.Username);
-            Task.Run(() => {
-            GetFollowers_.GetFollowers(AccountOperations, AccountOperations.Uid, CollectionsHelper.Followers, indexer,this);
-            });
+            //GetFollowers_.GetFollowers(AccountOperations, AccountOperations.Uid, CollectionsHelper.Followers, indexer, this);
+
             //جلب كل المتابعين و المُتابعون  على حسب  شروط المستخدم       
             bool t = true;
-            if (!t)
+            if (t)
             {
 
             Application.Current.Dispatcher.Invoke(() =>
             {
-
+                
                 Task b = Task.Run(() =>
                 {
                     MessageBoxResult msgResult = new MessageBoxResult();
-                    if (CatchUidBeforeGetFollowers != AccountOperations_.Uid || CollectionsHelper.Followers.Count == 0)
+                    if (CatchUidBeforeGetFollowers != AccountOperations_.Uid || CollectionsHelper.Followers.Count == 0 && AccountOperations_.IsRunning||AccountOperations_.IsRunning)
                     {
 
-                        while (msgResult != MessageBoxResult.OK)
+                        while (msgResult != MessageBoxResult.Cancel&&AccountOperations_.IsRunning)
                         {
                             if (CatchUidBeforeGetFollowers == null || CatchUidBeforeGetFollowers != AccountOperations_.Uid 
                             ||msgResult==MessageBoxResult.OK 
                             )
                             {
                                 CatchUidBeforeGetFollowers = AccountOperations_.Uid;
-                                InfoMember.GetFollower(AccountOperations, CollectionsHelper.Followers, indexer, AccountOperations.Uid, Follow_UnFollow, this);
+                                GetFollowers_.GetFollowers(AccountOperations, AccountOperations.Uid, CollectionsHelper.Followers, indexer, this);
+                                AccountOperations_.IsRunning = true;
                                 LoggerViewModel.Log(String.Format("Count of Followers {0}", CollectionsHelper.Followers.Count), TypeOfLog.check);
                                 LoggerViewModel.Log("Finished", TypeOfLog.check);
                              //   HelperCollections<AccountOperations>.Add(CollectionsHelper.Followers);
@@ -144,12 +173,15 @@ namespace Instagram.App
                     int RecheckForSpam = 0;
                     if (indexer.Count != 0)
                     {
-                        for (int i = 0; i < indexer.Count;)
+
+                        for (int i = 0; i < indexer.Count && AccountOperations_.IsRunning;)
                         {
                             Task task_Async = Task.Run(() =>
                                {
-                                   if (AccountOperations_.IsGetFollowup)
+                                   if (AccountOperations_.IsGetFollowup && AccountOperations_.IsRunning)
                                    {
+                                       AccountOperations.ContentbtnLoading = "جاري جلب عدد المتابعين";
+                                       AccountOperations.IsRunning = true;
                                        for (; indexer_ < CollectionsHelper.Followers.Count; indexer_++)
                                        {
                                            CollectionsHelper.Followers[indexer_].Followers = InfoMember.AsyncGetFollowers_(CollectionsHelper.Followers[indexer_].Uid, CollectionsHelper.Followers[indexer_].Username);
@@ -157,22 +189,323 @@ namespace Instagram.App
                                            {
                                                if (AccountOperations_.IsFollowWIthCondition)
                                                {
-                                                   //اسناد قيمة الدالة Follow
-                                                   CollectionsHelper.Followers[indexer[i]].IsFollower = InfoMember.Follow(CollectionsHelper.Followers[indexer[i]].Username, CollectionsHelper.Followers[indexer[i]].Uid, AccountOperations_, this);
+                                                   /*   UNDER TEST !@#$%^&*(^()*$*(%))^&*($&%*^_&*(%_$^%   */
+                                                 
+                                                   #region UnderTest
+                                                   /* متابعة */
+                                                   if (AccountOperations_.FollowAll)
+                                                   {
+                                                       if (CollectionsHelper.Followers[indexer[i]].IsFollower.Equals(TypeOfResponse.Follow))
+                                                       {
+
+                                                           CollectionsHelper.Followers[indexer[i]].IsFollower = InfoMember.Follow(CollectionsHelper.Followers[indexer[i]].Username, CollectionsHelper.Followers[indexer[i]].Uid, CollectionsHelper.Followers[indexer[i]], this);
+                                                           AccountOperations_.IsFollower = CollectionsHelper.Followers[indexer[i]].IsFollower;
+                                                           if (AccountOperations_.IsFollower == TypeOfResponse.Following)
+                                                           {
+                                                               Refresh();
+
+                                                           }
+                                                           else if (AccountOperations_.IsFollower == TypeOfResponse.Requested)
+                                                           {
+                                                               Refresh();
+
+                                                           }
+                                                           else if (AccountOperations_.IsFollower == TypeOfResponse.None)
+                                                           {
+
+                                                               while (RecheckForSpam == 0)
+                                                               {
+                                                                   MessageBoxResult boxResult = new MessageBoxResult();
+                                                                   if (RecheckForSpam == 0)
+                                                                   {
+                                                                       LoggerViewModel.Log("Ops..! your Account Has been Bloocked", TypeOfLog.exclamationcircle);
+                                                                       Application.Current.Dispatcher.Invoke(() =>
+                                                                       {
+                                                                           boxResult = DXMessageBox.Show("لقد تم حظر حسابك مؤقتاً,هل تريد الاستكمال بعد دقيقة؟", "تم حظر حسابك مؤقتاً", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                                                                       });
+                                                                       switch (boxResult)
+                                                                       {
+                                                                           case MessageBoxResult.None:
+                                                                               break;
+                                                                           case MessageBoxResult.OK:
+                                                                               {
+                                                                                   //تنويم البرنامج لمدة دقيقة لتفادي الحظر
+                                                                                   Thread.Sleep(1 * (60 * 1000));
+                                                                                   CollectionsHelper.Followers[indexer[i]].IsFollower = InfoMember.Follow(CollectionsHelper.Followers[indexer[i]].Username, CollectionsHelper.Followers[indexer[i]].Uid, CollectionsHelper.Followers[indexer[i]], this);
+                                                                                   switch (CollectionsHelper.Followers[indexer[i]].IsFollower)
+                                                                                   {
+                                                                                       case TypeOfResponse.Following:
+                                                                                           RecheckForSpam = 1;
+                                                                                           Refresh();
+
+                                                                                           break;
+                                                                                       case TypeOfResponse.Requested:
+                                                                                           Refresh();
+
+                                                                                           RecheckForSpam = 1;
+                                                                                           break;
+                                                                                   }
+                                                                                   break;
+                                                                               }
+                                                                           case MessageBoxResult.Cancel:
+                                                                               Refresh();
+
+                                                                               RecheckForSpam = 1;
+                                                                               break;
+                                                                           default:
+                                                                               break;
+                                                                       }
+
+                                                                   }
+                                                               }
+
+                                                           }
+                                                           //الفاصل الزمني بين كل عملية واخرى
+                                                           if (AccountOperations_.IsSleep)
+                                                           {
+                                                               switch (AccountOperations_.Unit_Sleep)
+                                                               {
+                                                                   case "ثواني":
+                                                                       {
+                                                                           Thread.Sleep(AccountOperations_.Sleep * 1000);
+                                                                           break;
+                                                                       }
+                                                                   case "دقائق":
+                                                                       {
+                                                                           Thread.Sleep(AccountOperations_.Sleep * (60 * 1000));
+                                                                           break;
+                                                                       }
+                                                                   case "ساعات":
+                                                                       {
+                                                                           Thread.Sleep(AccountOperations_.Sleep * (60 * 60 * 1000));
+                                                                           break;
+                                                                       }
+                                                               }
+                                                           }
+                                                       }
+                                                   }
+                                                   /* الغاء المتابعة */
+                                                   else if (AccountOperations_.UnFollowAll)
+                                                   {
+                                                       if (CollectionsHelper.Followers[indexer_] != CollectionsHelper.Followers[indexer[i]]
+                                                       && !CollectionsHelper.Followers[indexer_].IsFollower.Equals(TypeOfResponse.Follow))
+                                                       {
+
+                                                           CollectionsHelper.Followers[indexer_].IsFollower = InfoMember.Follow(CollectionsHelper.Followers[indexer_].Username, CollectionsHelper.Followers[indexer_].Uid, CollectionsHelper.Followers[indexer_], this);
+                                                           AccountOperations_.IsFollower = CollectionsHelper.Followers[indexer_].IsFollower;
+                                                           if (AccountOperations_.IsFollower == TypeOfResponse.Following)
+                                                           {
+                                                               Refresh();
+
+                                                           }
+                                                           else if (AccountOperations_.IsFollower == TypeOfResponse.Requested)
+                                                           {
+                                                               Refresh();
+
+                                                           }
+                                                           else if (AccountOperations_.IsFollower == TypeOfResponse.None)
+                                                           {
+
+                                                               while (RecheckForSpam == 0)
+                                                               {
+                                                                   MessageBoxResult boxResult = new MessageBoxResult();
+                                                                   if (RecheckForSpam == 0)
+                                                                   {
+                                                                       LoggerViewModel.Log("Ops..! your Account Has been Bloocked", TypeOfLog.exclamationcircle);
+                                                                       Application.Current.Dispatcher.Invoke(() =>
+                                                                       {
+                                                                           boxResult = DXMessageBox.Show("لقد تم حظر حسابك مؤقتاً,هل تريد الاستكمال بعد دقيقة؟", "تم حظر حسابك مؤقتاً", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                                                                       });
+                                                                       switch (boxResult)
+                                                                       {
+                                                                           case MessageBoxResult.None:
+                                                                               break;
+                                                                           case MessageBoxResult.OK:
+                                                                               {
+                                                                                   //تنويم البرنامج لمدة 5 دقائق لتفادي الحظر
+                                                                                   Thread.Sleep(1 * (60 * 1000));
+                                                                                   CollectionsHelper.Followers[indexer_].IsFollower = InfoMember.Follow(CollectionsHelper.Followers[indexer_].Username, CollectionsHelper.Followers[indexer_].Uid, CollectionsHelper.Followers[indexer_], this);
+                                                                                   switch (CollectionsHelper.Followers[indexer_].IsFollower)
+                                                                                   {
+                                                                                       case TypeOfResponse.Following:
+                                                                                           RecheckForSpam = 1;
+                                                                                           Refresh();
+
+                                                                                           break;
+                                                                                       case TypeOfResponse.Requested:
+                                                                                           Refresh();
+
+                                                                                           RecheckForSpam = 1;
+                                                                                           break;
+                                                                                   }
+                                                                                   break;
+                                                                               }
+                                                                           case MessageBoxResult.Cancel:
+                                                                               Refresh();
+
+                                                                               RecheckForSpam = 1;
+                                                                               break;
+                                                                           default:
+                                                                               break;
+                                                                       }
+
+                                                                   }
+                                                               }
+
+                                                           }
+                                                           //الفاصل الزمني بين كل عملية واخرى
+                                                           if (AccountOperations_.IsSleep)
+                                                           {
+                                                               switch (AccountOperations_.Unit_Sleep)
+                                                               {
+                                                                   case "ثواني":
+                                                                       {
+                                                                           Thread.Sleep(AccountOperations_.Sleep * 1000);
+                                                                           break;
+                                                                       }
+                                                                   case "دقائق":
+                                                                       {
+                                                                           Thread.Sleep(AccountOperations_.Sleep * (60 * 1000));
+                                                                           break;
+                                                                       }
+                                                                   case "ساعات":
+                                                                       {
+                                                                           Thread.Sleep(AccountOperations_.Sleep * (60 * 60 * 1000));
+                                                                           break;
+                                                                       }
+                                                               }
+                                                           }
+                                                       }
+
+                                                   }
+                                                   #endregion
+
+                                                   /*   ORIGINAL -IMPORTANT- !@#$%^&*(^()*$*(%))^&*($&%*^_&*(%_$^%   */
+                                                   //#region Original
+
+                                                   ////اسناد قيمة الدالة Follow
+                                                   //CollectionsHelper.Followers[indexer[i]].IsFollower = InfoMember.Follow(CollectionsHelper.Followers[indexer[i]].Username, CollectionsHelper.Followers[indexer[i]].Uid, AccountOperations_, this);
+                                                   //AccountOperations_.IsFollower = CollectionsHelper.Followers[indexer[i]].IsFollower;
+                                                   //if (AccountOperations_.IsFollower == TypeOfResponse.Following)
+                                                   //{
+                                                   //    //تنقيص من كمية المتابعين
+                                                   //    AccountOperations_.AmountOfFollowers--;
+                                                   //    //زيادة كمية المتابعون بمقدار 1 
+                                                   //    AccountOperations_.AmountOfFollowing++;
+                                                   //}
+                                                   //else if (AccountOperations_.IsFollower == TypeOfResponse.Requested)
+                                                   //{
+                                                   //    //تنقيص من كمية المتابعين
+                                                   //    AccountOperations_.AmountOfFollowers--;
+                                                   //    //زيادة كمية المتابعون بمقدار 1
+                                                   //    AccountOperations_.AmountOfRequested++;
+                                                   //}
+                                                   //else if (AccountOperations_.IsFollower == TypeOfResponse.None)
+                                                   //{
+
+                                                   //    while (RecheckForSpam == 0)
+                                                   //    {
+                                                   //        MessageBoxResult boxResult = new MessageBoxResult();
+                                                   //        if (RecheckForSpam == 0)
+                                                   //        {
+                                                   //            LoggerViewModel.Log("Ops..! your Account Has been Bloocked", TypeOfLog.exclamationcircle);
+                                                   //            Application.Current.Dispatcher.Invoke(() =>
+                                                   //            {
+                                                   //                boxResult = DXMessageBox.Show("لقد تم حظر حسابك مؤقتاً,هل تريد الاستكمال بعد دقيقة؟", "تم حظر حسابك مؤقتاً", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                                                   //            });
+                                                   //            switch (boxResult)
+                                                   //            {
+                                                   //                case MessageBoxResult.None:
+                                                   //                    break;
+                                                   //                case MessageBoxResult.OK:
+                                                   //                    {
+                                                   //                        //تنويم البرنامج لمدة 5 دقائق لتفادي الحظر
+                                                   //                        Thread.Sleep(1 * (60 * 1000));
+                                                   //                        CollectionsHelper.Followers[indexer[i]].IsFollower = InfoMember.Follow(CollectionsHelper.Followers[indexer[i]].Username, CollectionsHelper.Followers[indexer[i]].Uid, CollectionsHelper.Followers[indexer[i]], this);
+                                                   //                        switch (CollectionsHelper.Followers[indexer[i]].IsFollower)
+                                                   //                        {
+                                                   //                            case TypeOfResponse.Following:
+                                                   //                                RecheckForSpam = 1;
+                                                   //                                //تنقيص من كمية المتابعين
+                                                   //                                AccountOperations_.AmountOfFollowers--;
+                                                   //                                //زيادة كمية المتابعون بمقدار 1 
+                                                   //                                AccountOperations_.AmountOfFollowing++;
+                                                   //                                break;
+                                                   //                            case TypeOfResponse.Requested:
+                                                   //                                //تنقيص من كمية المتابعين
+                                                   //                                AccountOperations_.AmountOfFollowers--;
+                                                   //                                //زيادة كمية المتابعون بمقدار 1
+                                                   //                                AccountOperations_.AmountOfRequested++;
+                                                   //                                RecheckForSpam = 1;
+                                                   //                                break;
+                                                   //                        }
+                                                   //                        break;
+                                                   //                    }
+                                                   //                case MessageBoxResult.Cancel:
+                                                   //                    //تنقيص  من كمية المتابعين
+                                                   //                    AccountOperations_.AmountOfFollowers--;
+                                                   //                    //زيادة في كمية الذين تعذر متابعتهم
+                                                   //                    AccountOperations_.AmountOfNone++;
+                                                   //                    RecheckForSpam = 1;
+                                                   //                    break;
+                                                   //                default:
+                                                   //                    break;
+                                                   //            }
+
+                                                   //        }
+                                                   //    }
+
+                                                   //}
+                                                   //#endregion
+                                               }
+                                               ///الفاصل الزمني بين كل عملية واخرى
+                                               if (AccountOperations_.IsSleep)
+                                               {
+                                                   switch (AccountOperations_.Unit_Sleep)
+                                                   {
+                                                       case "ثواني":
+                                                           {
+                                                               Thread.Sleep(AccountOperations_.Sleep * 1000);
+                                                               break;
+                                                           }
+                                                       case "دقائق":
+                                                           {
+                                                               Thread.Sleep(AccountOperations_.Sleep * (60 * 1000));
+                                                               break;
+                                                           }
+                                                       case "ساعات":
+                                                           {
+                                                               Thread.Sleep(AccountOperations_.Sleep * (60 * 60 * 1000));
+                                                               break;
+                                                           }
+                                                   }
+                                               }
+                                           }
+                                       }
+                                   }
+                                   else
+                                   {
+                                       if (AccountOperations_.IsFollowWIthCondition && AccountOperations_.IsRunning)
+                                       {
+                                           /* متابعة */
+                                           if (AccountOperations_.FollowAll && AccountOperations_.IsRunning)
+                                           {
+                                               AccountOperations.ContentbtnLoading = $"{CollectionsHelper.Followers[indexer[i]].Username} جاري متابعة";
+                                               AccountOperations.IsRunning = true;
+                                               if (CollectionsHelper.Followers[indexer[i]].IsFollower.Equals(TypeOfResponse.Follow))
+                                               {
+
+                                                   CollectionsHelper.Followers[indexer[i]].IsFollower = InfoMember.Follow(CollectionsHelper.Followers[indexer[i]].Username, CollectionsHelper.Followers[indexer[i]].Uid, CollectionsHelper.Followers[indexer[i]], this);
                                                    AccountOperations_.IsFollower = CollectionsHelper.Followers[indexer[i]].IsFollower;
                                                    if (AccountOperations_.IsFollower == TypeOfResponse.Following)
                                                    {
-                                                       //تنقيص من كمية المتابعين
-                                                       AccountOperations_.AmountOfFollowers--;
-                                                       //زيادة كمية المتابعون بمقدار 1 
-                                                       AccountOperations_.AmountOfFollowing++;
+                                                       Refresh();
+
                                                    }
                                                    else if (AccountOperations_.IsFollower == TypeOfResponse.Requested)
                                                    {
-                                                       //تنقيص من كمية المتابعين
-                                                       AccountOperations_.AmountOfFollowers--;
-                                                       //زيادة كمية المتابعون بمقدار 1
-                                                       AccountOperations_.AmountOfRequested++;
+                                                       Refresh();
+
                                                    }
                                                    else if (AccountOperations_.IsFollower == TypeOfResponse.None)
                                                    {
@@ -200,26 +533,20 @@ namespace Instagram.App
                                                                            {
                                                                                case TypeOfResponse.Following:
                                                                                    RecheckForSpam = 1;
-                                                                                   //تنقيص من كمية المتابعين
-                                                                                   AccountOperations_.AmountOfFollowers--;
-                                                                                   //زيادة كمية المتابعون بمقدار 1 
-                                                                                   AccountOperations_.AmountOfFollowing++;
+                                                                                   Refresh();
+
                                                                                    break;
                                                                                case TypeOfResponse.Requested:
-                                                                                   //تنقيص من كمية المتابعين
-                                                                                   AccountOperations_.AmountOfFollowers--;
-                                                                                   //زيادة كمية المتابعون بمقدار 1
-                                                                                   AccountOperations_.AmountOfRequested++;
+                                                                                   Refresh();
+
                                                                                    RecheckForSpam = 1;
                                                                                    break;
                                                                            }
                                                                            break;
                                                                        }
                                                                    case MessageBoxResult.Cancel:
-                                                                       //تنقيص  من كمية المتابعين
-                                                                       AccountOperations_.AmountOfFollowers--;
-                                                                       //زيادة في كمية الذين تعذر متابعتهم
-                                                                       AccountOperations_.AmountOfNone++;
+                                                                       Refresh();
+
                                                                        RecheckForSpam = 1;
                                                                        break;
                                                                    default:
@@ -230,134 +557,127 @@ namespace Instagram.App
                                                        }
 
                                                    }
-                                               }
-                                               ///الفاصل الزمني بين كل عملية واخرى
-                                               if (AccountOperations_.IsSleep)
-                                               {
-                                                   switch (AccountOperations_.Unit_Sleep)
+                                                   //الفاصل الزمني بين كل عملية واخرى
+                                                   if (AccountOperations_.IsSleep)
                                                    {
-                                                       case "ثواني":
-                                                           {
-                                                               Thread.Sleep(AccountOperations_.Sleep * 1000);
-                                                               break;
-                                                           }
-                                                       case "دقائق":
-                                                           {
-                                                               Thread.Sleep(AccountOperations_.Sleep * (60 * 1000));
-                                                               break;
-                                                           }
-                                                       case "ساعات":
-                                                           {
-                                                               Thread.Sleep(AccountOperations_.Sleep * (60 * 60 * 1000));
-                                                               break;
-                                                           }
+                                                       switch (AccountOperations_.Unit_Sleep)
+                                                       {
+                                                           case "ثواني":
+                                                               {
+                                                                   Thread.Sleep(AccountOperations_.Sleep * 1000);
+                                                                   break;
+                                                               }
+                                                           case "دقائق":
+                                                               {
+                                                                   Thread.Sleep(AccountOperations_.Sleep * (60 * 1000));
+                                                                   break;
+                                                               }
+                                                           case "ساعات":
+                                                               {
+                                                                   Thread.Sleep(AccountOperations_.Sleep * (60 * 60 * 1000));
+                                                                   break;
+                                                               }
+                                                       }
                                                    }
                                                }
                                            }
-                                       }
-
-                                   }
-                                   else
-                                   {
-                                       if (AccountOperations_.IsFollowWIthCondition)
-                                       {
-                                           if (CollectionsHelper.Followers[indexer[i]].IsFollower.Equals(TypeOfResponse.Follow))
+                                           /* الغاء المتابعة */
+                                           else if (AccountOperations_.UnFollowAll && AccountOperations_.IsRunning)
                                            {
-
-                                               CollectionsHelper.Followers[indexer[i]].IsFollower = InfoMember.Follow(CollectionsHelper.Followers[indexer[i]].Username, CollectionsHelper.Followers[indexer[i]].Uid, CollectionsHelper.Followers[indexer[i]], this);
-                                               AccountOperations_.IsFollower =CollectionsHelper.Followers[indexer[i]].IsFollower;
-                                               if (AccountOperations_.IsFollower == TypeOfResponse.Following)
+                                               indexer_ = indexer[i];
+                                               AccountOperations.ContentbtnLoading = $"{CollectionsHelper.Followers[indexer[i]].Username} جاري الغاء متابعة";
+                                               AccountOperations.IsRunning = true;
+                                               if (CollectionsHelper.Followers[indexer_] == CollectionsHelper.Followers[indexer[i]] 
+                                               && !CollectionsHelper.Followers[indexer_].IsFollower.Equals(TypeOfResponse.Follow)
+                                               && AccountOperations_.IsRunning)
                                                {
-                                                   //تنقيص من كمية المتابعين
-                                                   AccountOperations_.AmountOfFollowers--;
-                                                   //زيادة كمية المتابعون بمقدار 1 
-                                                   AccountOperations_.AmountOfFollowing++;
-                                               }
-                                               else if (AccountOperations_.IsFollower == TypeOfResponse.Requested)
-                                               {
-                                                   //تنقيص من كمية المتابعين
-                                                   AccountOperations_.AmountOfFollowers--;
-                                                   //زيادة كمية المتابعون بمقدار 1
-                                                   AccountOperations_.AmountOfRequested++;
-                                               }
-                                               else if (AccountOperations_.IsFollower == TypeOfResponse.None)
-                                               {
-
-                                                   while (RecheckForSpam == 0)
+                                                   CollectionsHelper.Followers[indexer_].IsFollower = InfoMember.Follow(CollectionsHelper.Followers[indexer_].Username, CollectionsHelper.Followers[indexer_].Uid, CollectionsHelper.Followers[indexer_], this);
+                                                   AccountOperations_.IsFollower = CollectionsHelper.Followers[indexer_].IsFollower;
+                                                   if (AccountOperations_.IsFollower == TypeOfResponse.Following
+                                                   )
                                                    {
-                                                       MessageBoxResult boxResult = new MessageBoxResult();
-                                                       if (RecheckForSpam == 0)
-                                                       {
-                                                           LoggerViewModel.Log("Ops..! your Account Has been Bloocked", TypeOfLog.exclamationcircle);
-                                                           Application.Current.Dispatcher.Invoke(() =>
-                                                           {
-                                                               boxResult = DXMessageBox.Show("لقد تم حظر حسابك مؤقتاً,هل تريد الاستكمال بعد دقيقة؟", "تم حظر حسابك مؤقتاً", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
-                                                           });
-                                                           switch (boxResult)
-                                                           {
-                                                               case MessageBoxResult.None:
-                                                                   break;
-                                                               case MessageBoxResult.OK:
-                                                                   {
-                                                                       //تنويم البرنامج لمدة 5 دقائق لتفادي الحظر
-                                                                       Thread.Sleep(1 * (60 * 1000));
-                                                                       CollectionsHelper.Followers[indexer[i]].IsFollower = InfoMember.Follow(CollectionsHelper.Followers[indexer[i]].Username, CollectionsHelper.Followers[indexer[i]].Uid, CollectionsHelper.Followers[indexer[i]], this);
-                                                                       switch (CollectionsHelper.Followers[indexer[i]].IsFollower)
-                                                                       {
-                                                                           case TypeOfResponse.Following:
-                                                                               RecheckForSpam = 1;
-                                                                               //تنقيص من كمية المتابعين
-                                                                               AccountOperations_.AmountOfFollowers--;
-                                                                               //زيادة كمية المتابعون بمقدار 1 
-                                                                               AccountOperations_.AmountOfFollowing++;
-                                                                               break;
-                                                                           case TypeOfResponse.Requested:
-                                                                               //تنقيص من كمية المتابعين
-                                                                               AccountOperations_.AmountOfFollowers--;
-                                                                               //زيادة كمية المتابعون بمقدار 1
-                                                                               AccountOperations_.AmountOfRequested++;
-                                                                               RecheckForSpam = 1;
-                                                                               break;
-                                                                       }
-                                                                       break;
-                                                                   }
-                                                               case MessageBoxResult.Cancel:
-                                                                   //تنقيص  من كمية المتابعين
-                                                                   AccountOperations_.AmountOfFollowers--;
-                                                                   //زيادة في كمية الذين تعذر متابعتهم
-                                                                   AccountOperations_.AmountOfNone++;
-                                                                   RecheckForSpam = 1;
-                                                                   break;
-                                                               default:
-                                                                   break;
-                                                           }
+                                                       Refresh();
+                                                     
+                                                   }
+                                                   else if (AccountOperations_.IsFollower == TypeOfResponse.Requested)
+                                                   {
+                                                       Refresh();
 
+                                                   }
+                                                   else if (AccountOperations_.IsFollower == TypeOfResponse.None)
+                                                   {
+
+                                                       while (RecheckForSpam == 0)
+                                                       {
+                                                           MessageBoxResult boxResult = new MessageBoxResult();
+                                                           if (RecheckForSpam == 0)
+                                                           {
+                                                               LoggerViewModel.Log("Ops..! your Account Has been Bloocked", TypeOfLog.exclamationcircle);
+                                                               Application.Current.Dispatcher.Invoke(() =>
+                                                               {
+                                                                   boxResult = DXMessageBox.Show("لقد تم حظر حسابك مؤقتاً,هل تريد الاستكمال بعد دقيقة؟", "تم حظر حسابك مؤقتاً", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                                                               });
+                                                               switch (boxResult)
+                                                               {
+                                                                   case MessageBoxResult.None:
+                                                                       break;
+                                                                   case MessageBoxResult.OK:
+                                                                       {
+                                                                           //تنويم البرنامج لمدة 5 دقائق لتفادي الحظر
+                                                                           Thread.Sleep(1 * (60 * 1000));
+                                                                           CollectionsHelper.Followers[indexer_].IsFollower = InfoMember.Follow(CollectionsHelper.Followers[indexer_].Username, CollectionsHelper.Followers[indexer_].Uid, CollectionsHelper.Followers[indexer_], this);
+                                                                           switch (CollectionsHelper.Followers[indexer_].IsFollower)
+                                                                           {
+                                                                               case TypeOfResponse.Following:
+                                                                                   RecheckForSpam = 1;
+                                                                                   break;
+                                                                               case TypeOfResponse.Requested:                
+                                                                                   RecheckForSpam = 1;
+                                                                                   break;
+                                                                           }
+                                                                           Refresh();
+
+                                                                           break;
+
+                                                                       }
+                                                                   case MessageBoxResult.Cancel:
+                                                          
+                                                                       RecheckForSpam = 1;
+                                                                       Refresh();
+
+                                                                       break;
+                                                                   default:
+                                                                       break;
+                                                               }
+
+                                                           }
+                                                       }
+
+                                                   }
+                                                   //الفاصل الزمني بين كل عملية واخرى
+                                                   if (AccountOperations_.IsSleep && AccountOperations_.IsRunning)
+                                                   {
+                                                       switch (AccountOperations_.Unit_Sleep)
+                                                       {
+                                                           case "ثواني":
+                                                               {
+                                                                   Thread.Sleep(AccountOperations_.Sleep * 1000);
+                                                                   break;
+                                                               }
+                                                           case "دقائق":
+                                                               {
+                                                                   Thread.Sleep(AccountOperations_.Sleep * (60 * 1000));
+                                                                   break;
+                                                               }
+                                                           case "ساعات":
+                                                               {
+                                                                   Thread.Sleep(AccountOperations_.Sleep * (60 * 60 * 1000));
+                                                                   break;
+                                                               }
                                                        }
                                                    }
+                                               }
 
-                                               }
-                                               //الفاصل الزمني بين كل عملية واخرى
-                                               if (AccountOperations_.IsSleep)
-                                               {
-                                                   switch (AccountOperations_.Unit_Sleep)
-                                                   {
-                                                       case "ثواني":
-                                                           {
-                                                               Thread.Sleep(AccountOperations_.Sleep * 1000);
-                                                               break;
-                                                           }
-                                                       case "دقائق":
-                                                           {
-                                                               Thread.Sleep(AccountOperations_.Sleep * (60 * 1000));
-                                                               break;
-                                                           }
-                                                       case "ساعات":
-                                                           {
-                                                               Thread.Sleep(AccountOperations_.Sleep * (60 * 60 * 1000));
-                                                               break;
-                                                           }
-                                                   }
-                                               }
                                            }
                                        }
                                    }
@@ -368,37 +688,33 @@ namespace Instagram.App
                     }
                     else
                     {
-                        if (AccountOperations_.IsGetFollowup)
+                        if (AccountOperations_.IsGetFollowup && AccountOperations_.IsRunning)
                         {
 
-                            for (; indexer_ < CollectionsHelper.Followers.Count; indexer_++)
+                            for (; indexer_ < CollectionsHelper.Followers.Count && AccountOperations_.IsRunning; indexer_++)
                             {
                                 CollectionsHelper.Followers[indexer_].Followers = InfoMember.AsyncGetFollowers_(CollectionsHelper.Followers[indexer_].Uid, CollectionsHelper.Followers[indexer_].Username);
-                                if (CollectionsHelper.Followers[indexer[indexer_]].IsFollower.Equals(TypeOfResponse.Follow))
+                                if (CollectionsHelper.Followers[indexer[indexer_]].IsFollower.Equals(TypeOfResponse.Follow) && AccountOperations_.IsRunning)
                                 {
-                                    if (AccountOperations_.IsFollowWIthCondition)
+                                    if (AccountOperations_.IsFollowWIthCondition && AccountOperations_.IsRunning)
                                     {
                                         //اسناد قيمة الدالة Follow
                                         CollectionsHelper.Followers[indexer[indexer_]].IsFollower = InfoMember.Follow(CollectionsHelper.Followers[indexer[indexer_]].Username, CollectionsHelper.Followers[indexer[indexer_]].Uid, AccountOperations_, this);
                                         AccountOperations_.IsFollower = CollectionsHelper.Followers[indexer[indexer_]].IsFollower;
                                         if (AccountOperations_.IsFollower == TypeOfResponse.Following)
                                         {
-                                            //تنقيص من كمية المتابعين
-                                            AccountOperations_.AmountOfFollowers--;
-                                            //زيادة كمية المتابعون بمقدار 1 
-                                            AccountOperations_.AmountOfFollowing++;
+                                            Refresh();
+
                                         }
                                         else if (AccountOperations_.IsFollower == TypeOfResponse.Requested)
                                         {
-                                            //تنقيص من كمية المتابعين
-                                            AccountOperations_.AmountOfFollowers--;
-                                            //زيادة كمية المتابعون بمقدار 1
-                                            AccountOperations_.AmountOfRequested++;
+                                            Refresh();
+
                                         }
                                         else if (AccountOperations_.IsFollower == TypeOfResponse.None)
                                         {
 
-                                            while (RecheckForSpam == 0)
+                                            while (RecheckForSpam == 0&&AccountOperations_.IsRunning)
                                             {
                                                 MessageBoxResult boxResult = new MessageBoxResult();
                                                 if (RecheckForSpam == 0)
@@ -421,26 +737,19 @@ namespace Instagram.App
                                                                 {
                                                                     case TypeOfResponse.Following:
                                                                         RecheckForSpam = 1;
-                                                                        //تنقيص من كمية المتابعين
-                                                                        AccountOperations_.AmountOfFollowers--;
-                                                                        //زيادة كمية المتابعون بمقدار 1 
-                                                                        AccountOperations_.AmountOfFollowing++;
                                                                         break;
                                                                     case TypeOfResponse.Requested:
-                                                                        //تنقيص من كمية المتابعين
-                                                                        AccountOperations_.AmountOfFollowers--;
-                                                                        //زيادة كمية المتابعون بمقدار 1
-                                                                        AccountOperations_.AmountOfRequested++;
+                                                      
                                                                         RecheckForSpam = 1;
+
                                                                         break;
                                                                 }
+                                                                        Refresh();
                                                                 break;
                                                             }
                                                         case MessageBoxResult.Cancel:
-                                                            //تنقيص  من كمية المتابعين
-                                                            AccountOperations_.AmountOfFollowers--;
-                                                            //زيادة في كمية الذين تعذر متابعتهم
-                                                            AccountOperations_.AmountOfNone++;
+                                                            Refresh();
+
                                                             RecheckForSpam = 1;
                                                             break;
                                                         default:
@@ -452,7 +761,7 @@ namespace Instagram.App
                                         }
                                     }
                                     ///الفاصل الزمني بين كل عملية واخرى
-                                    if (AccountOperations_.IsSleep)
+                                    if (AccountOperations_.IsSleep && AccountOperations_.IsRunning)
                                     {
                                         switch (AccountOperations_.Unit_Sleep)
                                         {
@@ -481,16 +790,16 @@ namespace Instagram.App
                     if (AccountOperations_.IsGetFollowup)
                     {
                         Application.Current.Dispatcher.Invoke(() => LoggerViewModel.Log("Finished", TypeOfLog.check));
-                        indexer.Clear();
-
                     }
                     //حفظ الرابط للعملية الحالية
                     CatchUidBeforeGetFollowers = AccountOperations_.Uid;
+                    AccountOperations_.IsRunning = false;
+                    AccountOperations_.ContentbtnLoading = "جاري الاتصال";
+                    indexer.Clear();
                 });
-
             });
-            }
 
+            }
         }
 
         /// <summary>
@@ -517,23 +826,19 @@ namespace Instagram.App
                     switch (Before)
                     {
                         case TypeOfResponse.Follow:
-                            AccountOperations_.AmountOfFollowers--;
-                            AccountOperations_.AmountOfNone++;
+                            Refresh();
                             LoggerViewModel.Log(String.Format("you have recently followed => {0}", CollectionsHelper.Followers[CollectionsHelper.Followers.IndexOf(Login_)].Username), TypeOfLog.check);
                             break;
                         case TypeOfResponse.Following:
-                            AccountOperations_.AmountOfFollowers++;
-                            AccountOperations_.AmountOfFollowing--;
+                            Refresh();
                             LoggerViewModel.Log(String.Format("you have been canceled => {0}", CollectionsHelper.Followers[CollectionsHelper.Followers.IndexOf(Login_)].Username), TypeOfLog.check);
                             break;
                         case TypeOfResponse.Requested:
-                            AccountOperations_.AmountOfFollowers++;
-                            AccountOperations_.AmountOfRequested--;
+                            Refresh();
                             LoggerViewModel.Log(String.Format("you have to wait your request to follow => {0}", CollectionsHelper.Followers[CollectionsHelper.Followers.IndexOf(Login_)].Username), TypeOfLog.questioncircle);
                             break;
                         case TypeOfResponse.None:
-                            AccountOperations_.AmountOfFollowers++;
-                            AccountOperations_.AmountOfNone--;
+                            Refresh();
                             LoggerViewModel.Log("Ops..! your account has been Blocked ", TypeOfLog.exclamationcircle);
                             break;
 
@@ -553,26 +858,22 @@ namespace Instagram.App
                     switch (Before)
                     {
                         case TypeOfResponse.Follow:
-                            AccountOperations_.AmountOfFollowers++;
-                            AccountOperations_.AmountOfFollowing--;
+                            Refresh();
                             LoggerViewModel.Log(String.Format("you have recently followed {0}", CollectionsHelper.Followers[CollectionsHelper.Followers.IndexOf(Login_)].Username), TypeOfLog.check);
 
                             break;
                         case TypeOfResponse.Following:
-                            AccountOperations_.AmountOfNone++;
-                            AccountOperations_.AmountOfFollowing--;
+                            Refresh();
                             LoggerViewModel.Log(String.Format("you have been canceled {0}", CollectionsHelper.Followers[CollectionsHelper.Followers.IndexOf(Login_)].Username), TypeOfLog.check);
 
                             break;
                         case TypeOfResponse.Requested:
-                            AccountOperations_.AmountOfFollowing++;
-                            AccountOperations_.AmountOfRequested--;
+                            Refresh();
                             LoggerViewModel.Log(String.Format("you have to wait your request to follow {0}", CollectionsHelper.Followers[CollectionsHelper.Followers.IndexOf(Login_)].Username), TypeOfLog.questioncircle);
 
                             break;
                         case TypeOfResponse.None:
-                            AccountOperations_.AmountOfFollowing++;
-                            AccountOperations_.AmountOfNone--;
+                            Refresh();
                             LoggerViewModel.Log("Ops..! your account has been Blocked ", TypeOfLog.exclamationcircle);
 
                             break;
@@ -594,26 +895,22 @@ namespace Instagram.App
                         switch (Before)
                         {
                             case TypeOfResponse.Follow:
-                                AccountOperations_.AmountOfFollowers--;
-                                AccountOperations_.AmountOfRequested++;
+                                Refresh();
                                 LoggerViewModel.Log(String.Format("you have recently followed {0}", CollectionsHelper.Followers[CollectionsHelper.Followers.IndexOf(Login_)].Username), TypeOfLog.check);
 
                                 break;
                             case TypeOfResponse.Following:
-                                AccountOperations_.AmountOfFollowing--;
-                                AccountOperations_.AmountOfRequested++;
+                                Refresh();
                                 LoggerViewModel.Log(String.Format("you have been canceled {0}", CollectionsHelper.Followers[CollectionsHelper.Followers.IndexOf(Login_)].Username), TypeOfLog.check);
 
                                 break;
                             case TypeOfResponse.Requested:
-                                AccountOperations_.AmountOfNone++;
-                                AccountOperations_.AmountOfRequested--;
+                                Refresh();
                                 LoggerViewModel.Log(String.Format("you have to wait your request to follow {0}", CollectionsHelper.Followers[CollectionsHelper.Followers.IndexOf(Login_)].Username), TypeOfLog.questioncircle);
 
                                 break;
                             case TypeOfResponse.None:
-                                AccountOperations_.AmountOfRequested++;
-                                AccountOperations_.AmountOfNone--;
+                                Refresh();
                                 LoggerViewModel.Log("Ops..! your account has been Blocked ", TypeOfLog.exclamationcircle);
 
                                 break;
@@ -635,25 +932,22 @@ namespace Instagram.App
                         switch (Before)
                         {
                             case TypeOfResponse.Follow:
-                                AccountOperations_.AmountOfFollowers--;
-                                AccountOperations_.AmountOfNone++;
+                                Refresh();
                                 LoggerViewModel.Log(String.Format("you have recently followed {0}", CollectionsHelper.Followers[CollectionsHelper.Followers.IndexOf(Login_)].Username), TypeOfLog.check);
 
                                 break;
                             case TypeOfResponse.Following:
-                                AccountOperations_.AmountOfFollowers--;
-                                AccountOperations_.AmountOfNone++;
+                                Refresh();
                                 LoggerViewModel.Log(String.Format("you have been canceled {0}", CollectionsHelper.Followers[CollectionsHelper.Followers.IndexOf(Login_)].Username), TypeOfLog.check);
 
                                 break;
                             case TypeOfResponse.Requested:
-                                AccountOperations_.AmountOfNone++;
-                                AccountOperations_.AmountOfRequested--;
+                                Refresh();
                                 LoggerViewModel.Log(String.Format("you have to wait your request to follow {0}", CollectionsHelper.Followers[CollectionsHelper.Followers.IndexOf(Login_)].Username), TypeOfLog.questioncircle);
 
                                 break;
                             case TypeOfResponse.None:
-                                AccountOperations_.AmountOfNone++;
+                                Refresh();
                                 LoggerViewModel.Log("Ops..! your account has been Blocked ", TypeOfLog.exclamationcircle);
 
                                 break;
@@ -769,11 +1063,12 @@ namespace Instagram.App
                 {
                     return;
                 }
+
                 var listOfAccounts = new List<AccountOperations>(SelectedItems.Where(t => t.IsFollower == TypeOfResponse.Following|| t.IsFollower == TypeOfResponse.Requested).ToList());
                 for (int i = 0; i < listOfAccounts.Count; i++)
                 {
                     Login_ = listOfAccounts[i];
-                    Follow_UnFollow();
+                    Follow_UnFollowTask();
                     Task.Run(() => {
                         Refresh();
 
@@ -795,7 +1090,7 @@ namespace Instagram.App
             for (int i = 0; i < listOfAccounts.Count; i++)
             {
                 Login_ = listOfAccounts[i];
-                Follow_UnFollow();
+                    Follow_UnFollowTask();
                     Task.Run(() => {
                Refresh();
 

@@ -9,21 +9,24 @@ using System.Windows;
 using System.Windows.Forms;
 using DevExpress.Xpf.Core;
 using System.Threading;
+using System.Data;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Instagram.App
 {
     public class MainWindowViewModel : BaseViewModel
     {
+        private LoginDB loginDB = new LoginDB(new MainDB());
         /// <summary>
         /// قائمة للحسابات
         /// </summary>
-        public ObservableCollection<ModelMainWindow> Accounts_ { get;  set; }
+        public ObservableCollection<ModelMainWindow> Accounts_ { get; set; }
         private ModelMainWindow Selected_;
         /// <summary>
         /// تحديد اسم المستخدم  وكلمة المرور  من جدول الحسابات
         /// </summary>
         public ModelMainWindow Selected
-        { get { return Selected_; } set { Selected_ = value;OnPropertyChanged(); } }
+        { get { return Selected_; } set { Selected_ = value; OnPropertyChanged(); } }
 
         private ModelMainWindow ModelMainWindow_ = new ModelMainWindow();
 
@@ -38,38 +41,120 @@ namespace Instagram.App
         public MainWindowViewModel()
         {
             Accounts_ = new ObservableCollection<ModelMainWindow>();
-#region --Temp-Accounts
-            Accounts_.Add(new ModelMainWindow()
-            {
-                Password="123qwe11",
-                Username="kotlins2030@gmail.com"
-            }
-            );
-            Accounts_.Add(new ModelMainWindow()
-            {
-                Password = "qetr",
-                Username = "abc@gmail.com"
-            }
-         );
-            Accounts_.Add(new ModelMainWindow()
-            {
-                Password = "545",
-                Username = "dsa@gmail.com"
-            }
-         );
-            Accounts_.Add(new ModelMainWindow()
-            {
-                Password = "689",
-                Username = "wqr@gmail.com"
-            }
-         );
-            #endregion
+            fill();
             ModelMainWindow_.ShowSignup = new BaseCommand(() => new UI.Signup().ShowDialog());
             ModelMainWindow_.SigninCommand = new BaseCommand((Signin));
             ModelMainWindow_.AddaccountsCommand = new BaseCommand((AddAccounts));
             ModelMainWindow_.ImportaccountCommand = new BaseCommand((Import));
+            ModelMainWindow_.DeleteAll = new BaseCommand(DeleteAll);
+            ModelMainWindow_.DeleteSelected = new BaseCommand(DeleteSelected);
             ModelMainWindow = ModelMainWindow_;
+
             Selected = new ModelMainWindow();
+        }
+        /// <summary>
+        /// دالة لحذف عنصر محدد من قاعدة البيانات
+        /// </summary>
+        private void DeleteSelected()
+        {
+            try
+            {
+                var logindb = new LoginDB(new MainDB());
+                logindb.DeleteItem(Selected.Username, "account", "username");
+                Accounts_.Remove(Selected);
+
+            }
+            catch (Exception)
+            {
+
+
+            }
+        }
+        /// <summary>
+        /// دالة  لحذف جميع عناصر قاعدة البيانات في القسم الحالي 
+        /// </summary>
+        private void DeleteAll()
+        {
+
+            MessageBoxResult res = DXMessageBox.Show("هل انت متأكد من حذف جميع البيانات؟ في حال تم حذفها لن يتم استعادتها", "تحذير", MessageBoxButton.YesNo, MessageBoxImage.Hand);
+            switch (res)
+            {
+                case MessageBoxResult.None:
+                    return;
+                case MessageBoxResult.OK:
+                    {
+                        var logindb = new LoginDB(new MainDB());
+                        Accounts_.Clear();
+                        Task.Run(() =>
+                        {
+                            loginDB.Delete("account");
+                            logindb.AddTable<string>($"username TEXT," +
+                                              $"password TEXT," +
+                                              $"email TEXT"
+                                              , "account");
+
+                        });
+                    }
+                    break;
+                case MessageBoxResult.Cancel:
+                    return;
+                case MessageBoxResult.Yes:
+                    {
+                        var logindb = new LoginDB(new MainDB());
+                        Accounts_.Clear();
+                        Task.Run(() =>
+                        {
+                            loginDB.Delete("account");
+                            logindb.AddTable<string>($"username TEXT," +
+                                              $"password TEXT," +
+                                              $"email TEXT"
+                                              , "account");
+
+                        });
+                    }
+                    break;
+                case MessageBoxResult.No:
+                    return;
+                default:
+                    return;
+            }
+
+        }
+
+        /// <summary>
+        /// تعبئة جدول الحسابات بالبيانات
+        /// </summary>
+        private void fill()
+        {
+            Task.Run(() =>
+            {
+                var LoginDB = new LoginDB(new MainDB());
+                var data = new DataSet();
+                loginDB.Fill(data, "account");
+
+                foreach (DataRow item in data.Tables[0].Rows)
+                {
+                    try
+                    {
+                        System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            Accounts_.Add(new ModelMainWindow()
+                            {
+                                Password = item.Field<string>("password"),
+                                Username = item.Field<string>("username")
+                            });
+                        });
+                        LoggerViewModel.Log($"{Accounts_.Count},{Accounts_[Accounts_.Count - 1].Username},{Accounts_[Accounts_.Count - 1].Password}", TypeOfLog.exclamationcircle);
+                    }
+                    catch (Exception ex)
+                    {
+                        LoggerViewModel.Log($" Error :{ex.Message}", TypeOfLog.exclamationcircle);
+                    }
+                }
+
+
+
+            });
         }
 
         private void Signin()
@@ -83,20 +168,24 @@ namespace Instagram.App
             {
                 Task.Run(() =>
                 {
-                   
+
                     LoggerViewModel.Log("Getting Started To Login..", TypeOfLog.check);
-                    Task.Run(() => {
-              
-                            try {
-                                System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                                {
-                                    ModelMainWindow_.StateOfLogin = "...جاري تسجيل الدخول";
-                                });
-                            } catch(Exception ex) {
-                               
-                            }
-                 
-                    
+                    Task.Run(() =>
+                    {
+
+                        try
+                        {
+                            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                ModelMainWindow_.StateOfLogin = "...جاري تسجيل الدخول";
+                            });
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+
+
                     });
                     if (new Login(Selected).login())
                     {
@@ -108,10 +197,12 @@ namespace Instagram.App
                     {
                         ModelMainWindow_.IsLogedin = false;
                         LoggerViewModel.Log("your Username or password is wrong ", TypeOfLog.exclamationcircle);
-                        System.Windows.Application.Current.Dispatcher.Invoke(() => {
-                        ModelMainWindow_.StateOfLogin = "تسجيل الدخول";
+                        System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            ModelMainWindow_.StateOfLogin = "تسجيل الدخول";
                         });
-                        System.Windows.Application.Current.Dispatcher.Invoke(() => {
+                        System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                        {
                             DXMessageBox.Show("اسم المستخدم او كلمة المرور خاطئة", "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
                         });
                     }
@@ -167,7 +258,7 @@ namespace Instagram.App
 
                         for (int i = 0; i < Names.Count; i++)
                         {
-
+                            loginDB.InsertItem<string>($"(username,password,email) Values('{Names[i]}','{Passwords[i]}','{(Names[i].Contains("@") ? Names[i] : "-")}')", "account");
                             Accounts_.Add(new ModelMainWindow()
                             {
                                 Username = Names[i],
@@ -195,7 +286,7 @@ namespace Instagram.App
                 Username = ModelMainWindow_.Username,
                 Password = ModelMainWindow_.Password
             });
-     
+            loginDB.InsertItem<string>($"(username,password,email) Values('{ModelMainWindow_.Username}','{ModelMainWindow_.Password}','{(ModelMainWindow_.Username.Contains("@") ? ModelMainWindow_.Username : "-")}')", "account");
         }
     }
 }

@@ -9,7 +9,11 @@
               >
 
     <Grid>
-        <dxe:ListBoxEdit HorizontalContentAlignment="Left"  Name="Log"  SelectionMode="Single" ItemsSource="{Binding Source={x:Static local:LoggerViewModel.Logs}}"  AllowUpdateTwoWayBoundPropertiesOnSynchronization="False"  AllowUpdateTextBlockWhenPrinting="False">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition  Height="Auto"/>
+        </Grid.RowDefinitions>
+        <dxe:ListBoxEdit HorizontalContentAlignment="Left"   Name="Log"  SelectionMode="Single" ItemsSource="{Binding Source={x:Static local:LoggerViewModel.Logs}}"  AllowUpdateTwoWayBoundPropertiesOnSynchronization="False"  AllowUpdateTextBlockWhenPrinting="False">
             <!--MainTemplateOfItems-->
             <dxe:ListBoxEdit.ItemTemplate >
                 <DataTemplate >
@@ -25,7 +29,7 @@
                             <ColumnDefinition Width="Auto" MinWidth="174"/>
 
                         </Grid.ColumnDefinitions>
-
+                      
                         <!--icon-->
                         <TextBlock>
                             <Run>
@@ -34,27 +38,7 @@
                             <TextBlock Text="{Binding DateTime,UpdateSourceTrigger=PropertyChanged,FallbackValue=1/1/1 1:1:60}"></TextBlock>
                             <Run>]</Run>
                         </TextBlock>
-                        <!--<fa:FontAwesome Name="icon"   Icon="{Binding TypeOfLogConv}"  >
-
-                            <fa:FontAwesome.Style>
-                                <Style TargetType="fa:FontAwesome">
-                                    <Style.Triggers>
-                                        <DataTrigger  Binding="{Binding Path=TypeOfLogConv}"  Value="ExclamationCircle">
-                                            <Setter  Property="Foreground" Value="Red"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding Path=TypeOfLogConv}" Value="QuestionCircle">
-                                            <Setter  Property="Foreground" Value="Black"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding Path=TypeOfLogConv}"  Value="Check">
-                                            <Setter  Property="Foreground" Value="Green"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding Path=TypeOfLogConv}"  Value="Warning">
-                                            <Setter  Property="Foreground" Value="Orange"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </fa:FontAwesome.Style>
-                        </fa:FontAwesome>-->
+                
                         <!--Arrow-->
                         <TextBlock Grid.ColumnSpan="2" Grid.Column="1"><Run Text=" -> "></Run></TextBlock>
                         <dxlc:LayoutItem Grid.Column="2" Height="16">
@@ -90,5 +74,52 @@
                 <dxe:ListBoxEditStyleSettings/>
             </dxe:ListBoxEdit.StyleSettings>
         </dxe:ListBoxEdit>
+        <!--Footer-->
+
+        <!--<Border Margin="0,0,0,0" Background="#FFDA4339" MinHeight="20" MaxHeight="20" Grid.ColumnSpan="5" Grid.Row="1">
+            <Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition  Width="20"/>
+                </Grid.ColumnDefinitions>
+                <fa:ImageAwesome Margin="5,0,0,0" Icon="Spinner" Foreground="#FFD5D5D5" />
+                <TextBlock Margin="5,0,0,0" Grid.Column="1" Text="تسجيل الدخول" Foreground="#FFF1F1F1" />
+                <Button Content="Close" Margin="2" Name="Close" BorderThickness="0" Grid.Column="2" Background="{x:Null}">
+                    <Button.Template>
+                        <ControlTemplate>
+                            <Border Name="Border"   BorderBrush="White" Background="{Binding Background,RelativeSource={RelativeSource TemplatedParent}}" OpacityMask="{x:Null}">
+                                <Grid>
+                                    <fa:ImageAwesome Icon="Minus" Foreground="{Binding BorderBrush,ElementName=Border}"/>
+
+                                </Grid>
+                                <Border.Triggers>
+                                    --><!--Events--><!--
+                                    <EventTrigger RoutedEvent="MouseEnter" >
+
+                                        <BeginStoryboard >
+                                            <Storyboard >
+                                                <ColorAnimation Storyboard.TargetName="Border" Duration="0:0:1" Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" To="GhostWhite" />
+
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                     <EventTrigger RoutedEvent="MouseLeave" >
+
+                                        <BeginStoryboard>
+                                            <Storyboard >
+                                                <ColorAnimation Storyboard.TargetName="Border" Duration="0:0:1" Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" To="White" />
+
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Border.Triggers>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                   
+                </Button>
+            </Grid>
+        </Border>-->
     </Grid>
 </UserControl>
