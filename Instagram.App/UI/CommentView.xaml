@@ -24,12 +24,105 @@
         <dxlc:LayoutControl IsCollapsible="True" Orientation="Vertical" Grid.Column="1" Grid.RowSpan="2">
             
             <dxlc:LayoutGroup IsCollapsible="True" View="GroupBox" Orientation="Vertical" Header="خصائص">
-                <dxlc:LayoutItem Label="اسم الجدول" LabelPosition="Top">
-                        <dxe:ComboBoxEdit Name="nameoftable" ShowNullText="True" ItemsSource="{Binding Items_}" SelectedItem="{Binding Select,UpdateSourceTrigger=PropertyChanged}"  SelectedIndex="0" NullValue="جدول 1" Margin="0,0,0,10">
-                            <dxe:ComboBoxEdit.StyleSettings>
-                                <dxe:ComboBoxStyleSettings/>
-                            </dxe:ComboBoxEdit.StyleSettings>
-                        </dxe:ComboBoxEdit>
+                <dxlc:LayoutItem LabelPosition="Top" LabelHorizontalAlignment="Right">
+                    <dxlc:LayoutItem.Label>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition  />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="الجداول" Grid.Column="1"/>
+                            <Grid Margin="0,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="1" 
+                                                               HorizontalAlignment="Left"
+                                                               TextAlignment="Center"
+                                                               FontStretch="Medium" 
+                                                               FontWeight="SemiBold"
+                                                               Foreground="#22313F">
+                                                        <Run Text="("/>
+                                                        <Run Text="0"/>
+                                                        <Run Text=")"/>
+                                </TextBlock>
+
+                            </Grid>
+                        </Grid>
+                    </dxlc:LayoutItem.Label>
+                    <!--Tables-->
+                    <Expander  IsExpanded="True">
+                        <StackPanel>
+                            <dxe:ListBoxEdit 
+                                                MinHeight="20"
+                                                ItemsSource="{Binding Tables,UpdateSourceTrigger=PropertyChanged}"
+                                                SelectedItem="{Binding Select,UpdateSourceTrigger=PropertyChanged}"
+                                             HorizontalContentAlignment="Stretch"
+                                                >
+
+                                <dxe:ListBoxEdit.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid >
+                                            <Grid.ColumnDefinitions >
+                                                <ColumnDefinition Width="12"/>
+                                                <ColumnDefinition  Width="60"/>
+                                                <ColumnDefinition  />
+                                            </Grid.ColumnDefinitions>
+                                            <fa:ImageAwesome Icon="Table" 
+                                                                             Foreground="#FF38393D"
+                                                                             />
+
+                                            <TextBlock Grid.Column="1" Margin="7,0,0,0" Text="{Binding NameOfTheTable}"/>
+                                            <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Left" >
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition/>
+                                                        <ColumnDefinition Width="70"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock 
+                                                                    Margin="0,0,0,0"
+                                                                    TextAlignment="Center"  HorizontalAlignment="Center" FontFamily="Segoe UI Semibold" Foreground="#FF434343" >
+                                                                    <Run Text="["/>
+                                                                    <Run Text="{Binding CountOfItems}"/>
+                                                                    <Run Text="]"/>
+                                                    </TextBlock>
+
+                                                    <TextBlock  Grid.ColumnSpan="2" TextAlignment="Right" VerticalAlignment="Center"  HorizontalAlignment="Right"  Margin="80,0,0,0" Text="عدد العناصر"/>
+                                                </Grid>
+
+
+                                            </StackPanel>
+                                        </Grid>
+                                    </DataTemplate>
+                                </dxe:ListBoxEdit.ItemTemplate>
+
+
+                            </dxe:ListBoxEdit>
+
+                            <dxe:ButtonEdit 
+                                                                Text="{Binding DataContextOfModelTable.NameOfTheTable,UpdateSourceTrigger=PropertyChanged}"
+                                                                Grid.Row="1"
+                                                                AllowDefaultButton="False"  >
+                                <dxe:ButtonInfo GlyphKind="Apply" 
+                                                                                Command="{Binding DataContextOfModelTable.AddNewTable}"
+                                                                                CommandParameter="Add"
+                                                                                ToolTip="اضافة جدول جديد" />
+                                <dxe:ButtonInfo GlyphKind="Edit" 
+                                                                                Command="{Binding DataContextOfModelTable.EditCurrentTable}"
+                                                                                CommandParameter="Edi"
+                                                                                ToolTip="تعديل اسم الجدول الحالي"/>
+                                <dxe:ButtonInfo GlyphKind="Cancel"
+                                                                                Command="{Binding DataContextOfModelTable.DeleteCurrentTable}"
+                                                                                CommandParameter="Del"
+                                                                                ToolTip="حذف الجدول الحالي"/>
+                            </dxe:ButtonEdit>
+                        </StackPanel>
+
+
+
+
+                    </Expander>
                 </dxlc:LayoutItem>
                 <!--TargetAccount-Area-->
                 <dxlc:LayoutItem Label="عنوان الحساب" LabelPosition="Top">
@@ -140,7 +233,7 @@
             </dxg:GridControl.Columns>
 
         </dxg:GridControl>
-        <dxg:GridControl  ItemsSource="{Binding container.Selected}" 
+        <dxg:GridControl  ItemsSource="{Binding Posts,UpdateSourceTrigger=PropertyChanged}" 
               SelectedItems="{Binding SelectedItems,UpdateSourceTrigger=PropertyChanged}"     
                           Grid.Row="0"
                           SelectionMode="Row" 

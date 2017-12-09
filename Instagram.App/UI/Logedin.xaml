@@ -8,10 +8,16 @@
              xmlns:local="clr-namespace:Instagram.App.UI"
              xmlns:vm="clr-namespace:Instagram.App"
              xmlns:fa="http://schemas.fontawesome.io/icons/"
-             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" x:Class="Instagram.App.UI.Logedin"
+             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+    xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" x:Class="Instagram.App.UI.Logedin"
              mc:Ignorable="d" Height="112.047"  MinWidth="243">
 
-
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <vm:LoginConverter x:Key="LoginConverter"/>
+        <vm:SearchConverter x:Key="SearchConverter"/>
+    </UserControl.Resources>
 
     <dxlc:LayoutGroup Orientation="Vertical" View="GroupBox" Header="معلومات الحساب" >
         <dxlc:LayoutItem>
@@ -22,12 +28,164 @@
             <Button Command="{Binding AccountOperations.LogoutCommand}" CommandParameter="signout" Uid="Signout" Content="خروج" Template="{DynamicResource CustomButton}"/>
             </dxlc:LayoutItem>
             <dxlc:LayoutGroup View="Group">
-                <dxlc:LayoutItem Margin="0,20,0,0">
+            <dxlc:LayoutItem Margin="0,20,0,0">
+               
+                <dx:DropDownButton  
+                    Content="{Binding UserModel.CountOfPosts,UpdateSourceTrigger=PropertyChanged}"
+                    PopupDropAlignment="Bottom"
+                    ArrowAlignment="Right" 
+                    ButtonKind="Simple"
+                    
+                    >
+                    <dx:DropDownButton.DataContext>
+                        <vm:UserViewModel/>
+                    </dx:DropDownButton.DataContext>
+                    <Grid MaxHeight="500">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="22"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <dxe:ButtonEdit IsTextEditable="False">
+                            <dxe:ButtonInfo Command="{Binding UserModel.Refresh}" GlyphKind="Refresh" />
+                            <dxe:ButtonInfo GlyphKind="Plus"/>
+                        </dxe:ButtonEdit>
+                        <dxg:GridControl
+                          Grid.Row="1"
+                          SelectionMode="Row" 
+                          AutoGenerateColumns="KeepOld"
+                           MinHeight="100"
+                         ItemsSource="{Binding UserModel.Posts,UpdateSourceTrigger=PropertyChanged}"
+                            >
+                                <dxg:GridControl.View>
+                                <dxg:TableView  ShowGroupPanel="False" AutoWidth="True" AllowCellMerge="True" ShowTotalSummary="True" >
+                                    <dxg:TableView.ContextMenu>
+                                        <ContextMenu>
+                                          
+                                                <MenuItem Header="abc" ItemsSource="{Binding UserModel.Posts}"/>
+                                                <MenuItem Header="TTT" />
+                                                <MenuItem Header="aa"/>
+                                        </ContextMenu>
+                                    </dxg:TableView.ContextMenu>
+                                </dxg:TableView>
+                                </dxg:GridControl.View>
+
+                                <dxg:GridControl.Columns>
+
+                                    <dxg:GridColumn Header="الناشر"
+                                Binding="{Binding publisher}"
+                                VisibleIndex="0"
+                                >
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings TextWrapping="NoWrap"/>
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Header="عنوان الناشر" 
+                                Binding="{Binding UidOfpublisher}" 
+                                VisibleIndex="1"
+                                >
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings TextWrapping="NoWrap">
+
+                                            </dxe:TextEditSettings>
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Header="نُشر قبل" 
+                                Binding="{Binding publishedat}" 
+                                VisibleIndex="2"/>
+                                    <dxg:GridColumn Header="المحتوى المرئي" 
+                                Binding="{Binding ContextMedia}" 
+                                VisibleIndex="3"
+                                >
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings TextWrapping="NoWrap">
+
+                                            </dxe:TextEditSettings>
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn  Header="المحتوى النصي" 
+                                Binding="{Binding Context}" 
+                                VisibleIndex="4">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings TextWrapping="NoWrap">
+
+                                            </dxe:TextEditSettings>
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Header="احصائيات المنشور" Width="auto" VisibleIndex="5" >
+                                        <dxg:GridColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid Width="auto">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="15"/>
+                                                        <ColumnDefinition Width="auto" MinWidth="40"/>
+                                                        <ColumnDefinition Width="15"/>
+                                                        <ColumnDefinition Width="auto" MinWidth="40"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Border Grid.Column="1" MaxHeight="16" CornerRadius="5" Margin="2" Background="#FF2F373E" MinWidth="20" >
+                                                        <TextBlock Grid.Column="1" Margin="5,0,5,0" TextAlignment="Center" Foreground="#ecf0f1" Text="{Binding RowData.Row.Likes,UpdateSourceTrigger=PropertyChanged,FallbackValue=0}"></TextBlock>
+                                                    </Border>
+                                                    <fa:ImageAwesome Grid.Column="0" ToolTip="عدد الاعجابات" Icon="Heart" Margin="2,0,0,0" HorizontalAlignment="Center"  Stretch="Uniform"  Foreground="#FFEE093D"/>
+                                                    <Border Grid.Column="3" CornerRadius="3" Margin="2" Background="#FF2F373E" MinWidth="20" MaxHeight="16"   >
+                                                        <TextBlock Grid.Column="3" Foreground="#ecf0f1" Text="{Binding RowData.Row.Views,UpdateSourceTrigger=PropertyChanged,FallbackValue=0}" TextAlignment="Center"/>
+                                                    </Border>
+                                                    <fa:ImageAwesome Grid.Column="2" ToolTip="عدد المشاهدات" Icon="Eye" Margin="2,0,0,0" HorizontalAlignment="Center"  Stretch="Uniform" Foreground="#FF0077EE"/>
+                                                </Grid>
+
+                                            </DataTemplate>
+                                        </dxg:GridColumn.CellTemplate>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Header="النوع" VisibleIndex="6" Width="50">
+                                        <dxg:GridColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid Width="auto">
+                                                    <fa:ImageAwesome MaxWidth="20" ToolTip="فيديو" Visibility="{Binding RowData.Row.TypesOfMedia
+                                    ,Converter={StaticResource SearchConverter},
+                                    ConverterParameter=TypesOfMedia_vid}"
+                            Icon="VideoCamera">
+                                                        <fa:ImageAwesome.Foreground>
+                                                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                <GradientStop Color="#FFEE093D" Offset="0.03"/>
+                                                                <GradientStop Color="#FD7C182F" Offset="1"/>
+                                                                <GradientStop Color="#FF501E2A" Offset="0.997"/>
+                                                                <GradientStop Color="#00252526" Offset="1"/>
+                                                                <GradientStop Color="#FEDC0B3A"/>
+                                                            </LinearGradientBrush>
+                                                        </fa:ImageAwesome.Foreground>
+                                                    </fa:ImageAwesome>
+                                                    <fa:ImageAwesome MaxWidth="20" ToolTip="صورة" Icon="PictureOutline"
+                                     Visibility="{Binding RowData.Row.TypesOfMedia
+                                    ,Converter={StaticResource SearchConverter},
+                                    ConverterParameter=TypesOfMedia_imgs}">
+                                                        <fa:ImageAwesome.Foreground>
+                                                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                                <GradientStop Color="#FF007ACC" Offset="0.03"/>
+                                                                <GradientStop Color="#FD7C182F" Offset="1"/>
+                                                                <GradientStop Color="#FF501E2A" Offset="0.997"/>
+                                                                <GradientStop Color="#00252526" Offset="1"/>
+                                                                <GradientStop Color="#FF007ACC"/>
+                                                            </LinearGradientBrush>
+                                                        </fa:ImageAwesome.Foreground>
+                                                    </fa:ImageAwesome>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </dxg:GridColumn.CellTemplate>
+                                    </dxg:GridColumn >
+                                </dxg:GridControl.Columns>
+
+                            </dxg:GridControl>
+                         
+                    </Grid>
+                           
+
+                </dx:DropDownButton>
+            </dxlc:LayoutItem>
+            <dxlc:LayoutItem Margin="0,20,0,0">
                 <TextBlock TextAlignment="Right"><Run Text="{Binding AccountOperations.Following,UpdateSourceTrigger=PropertyChanged,FallbackValue=-}"/> <Run Text=":المُتابعون" FontSize="14" FontFamily="Segoe UI Semilight"/></TextBlock>
                 </dxlc:LayoutItem>
                 <dxlc:LayoutItem Margin="0,20,0,0">
                 <TextBlock TextAlignment="Right"><Run Text="{Binding AccountOperations.Follower,UpdateSourceTrigger=PropertyChanged,FallbackValue=-}"/> <Run Text=":المتابعين" FontSize="14" FontFamily="Segoe UI Semilight"/></TextBlock>
                 </dxlc:LayoutItem>
+           
             </dxlc:LayoutGroup>
         </dxlc:LayoutGroup>
    

@@ -67,7 +67,7 @@ namespace Instagram.App
         public SearchViewModel()
         {
             _search = new Search(DataContext_);
-            var ViewModelOfCurrentPost = new CurrentPostViewModel(DataContextOfCurrentPost_, container);
+            var ViewModelOfCurrentPost = new CurrentPostViewModel(DataContextOfCurrentPost_);
             _ViewModelOfCurrentPost = ViewModelOfCurrentPost;
             Posts = new ObservableCollection<ModelPost>();
             DataContext_.SearchCommand = new BaseCommand(Search);

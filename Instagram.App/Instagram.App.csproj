@@ -27,6 +27,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>7.1</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -79,13 +80,16 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="FontAwesome.WPF, Version=4.7.0.37774, Culture=neutral, PublicKeyToken=0758b07a11a4f466, processorArchitecture=MSIL">
       <HintPath>..\packages\FontAwesome.WPF.4.7.0.9\lib\net40\FontAwesome.WPF.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -135,25 +139,34 @@
     <Compile Include="Core\DataBase\LoginDB.cs" />
     <Compile Include="Core\DataBase\MainDB.cs" />
     <Compile Include="Core\DataBase\PostsDB.cs" />
+    <Compile Include="Core\DataBase\PrototypeOfDB.cs" />
     <Compile Include="Core\DataBase\SearchDB.cs" />
     <Compile Include="Core\Operations.cs" />
+    <Compile Include="Core\TypesSections.cs" />
     <Compile Include="Helper\CollectionsHelper.cs" />
     <Compile Include="Helper\ContainerCollection.cs" />
     <Compile Include="Helper\garbage.cs" />
     <Compile Include="Helper\HelperCollections.cs" />
     <Compile Include="Helper\HelperData.cs" />
+    <Compile Include="Helper\HelperSelector.cs" />
     <Compile Include="Models\AccountOperationsModel.cs" />
     <Compile Include="Models\CurrentPostModel.cs" />
+    <Compile Include="Models\LoadingModel.cs" />
     <Compile Include="Models\ModelComment.cs" />
     <Compile Include="Models\ModelLogger.cs" />
     <Compile Include="Models\ModelMainWindow.cs" />
     <Compile Include="Models\ModelMention.cs" />
     <Compile Include="Models\ModelPost.cs" />
     <Compile Include="Models\ModelSearch.cs" />
-    <Compile Include="Models\OperationsTypes.cs" />
+    <Compile Include="Models\ModelTable.cs" />
+    <Compile Include="Core\OperationsTypes.cs" />
+    <Compile Include="Models\UserModel.cs" />
     <Compile Include="Styles\CustomButton.cs" />
     <Compile Include="UI\CommentView.xaml.cs">
       <DependentUpon>CommentView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\LoadingView.xaml.cs">
+      <DependentUpon>LoadingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Logedin.xaml.cs">
       <DependentUpon>Logedin.xaml</DependentUpon>
@@ -178,7 +191,9 @@
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\MentionViewModel.cs" />
     <Compile Include="ViewModels\SearchViewModel.cs" />
+    <Compile Include="ViewModels\SectionViewModel.cs" />
     <Compile Include="ViewModels\SignupViewModel.cs" />
+    <Compile Include="ViewModels\UserViewModel.cs" />
     <Compile Include="Web.Core\KernalWeb.cs" />
     <Compile Include="Web.Core\Login\InfoMember.cs" />
     <Compile Include="Web.Core\Login\Signin.cs" />
@@ -186,6 +201,7 @@
     <Compile Include="Web.Core\UserOperation\Comment.cs" />
     <Compile Include="Web.Core\UserOperation\Followers.cs" />
     <Compile Include="Web.Core\UserOperation\Search.cs" />
+    <Compile Include="Web.Core\UserOperation\User.cs" />
     <Compile Include="WhatToDoNext.cs" />
     <Page Include="Properties\DesignTimeResources.xaml">
       <SubType>Designer</SubType>
@@ -197,6 +213,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\CommentView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\LoadingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -253,7 +273,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="App.config" />
-    <None Include="Design\projectGuides.guides" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -265,7 +284,9 @@
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Design\" />
+  </ItemGroup>
   <ItemGroup>
     <COMReference Include="Microsoft.Office.Core">
       <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>

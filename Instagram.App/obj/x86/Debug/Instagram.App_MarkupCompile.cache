@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 C:\Users\Root\Documents\Visual Studio 2015\Projects\Instagram.Application\Instagram.App\App.xaml
-5637034966
+101056164387
 2-454754985
-22696141652
-31-54833384
-Properties\DesignTimeResources.xaml;Styles\Button.xaml;UI\Logedin.xaml;UI\MainWindow.xaml;UI\Signup.xaml;
+62136024751
+40-235626206
+Properties\DesignTimeResources.xaml;Styles\Button.xaml;UI\CommentView.xaml;UI\LoadingView.xaml;UI\Logedin.xaml;UI\Logger.xaml;UI\MainWindow.xaml;UI\Mention.xaml;UI\SearchView.xaml;UI\Signup.xaml;
 
 False
 

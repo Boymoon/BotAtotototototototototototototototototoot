@@ -62,6 +62,7 @@ namespace Instagram.App
             }
             Container.Add(CurrentItem);
             Tables.Add(name);
+            SectionViewModel.modelTable = null;
         }
         /// <summary>
         /// اضافة عناصر الى الجدول المحدد
@@ -70,6 +71,8 @@ namespace Instagram.App
         /// <param name="CurrentItem"></param>
         public static void Insert(string name,T CurrentItem)
         {
+            try
+            {
             if (Tables.IndexOf(name) ==-1)
             {
                 AddTable(name, CurrentItem);
@@ -77,6 +80,13 @@ namespace Instagram.App
             else
             {
                 Container[Tables.IndexOf(name)] = CurrentItem;
+            }
+
+            }
+            catch (Exception ex )
+            {
+
+                LoggerViewModel.Log("Error At ContainerCollection Method Insert Line:80~81", TypeOfLog.exclamationcircle);
             }
         }
         /// <summary>

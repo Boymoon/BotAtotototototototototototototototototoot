@@ -148,7 +148,7 @@ namespace Instagram.App
             KernalWeb.Driver.Navigate().GoToUrl(Uid);
             try
             {
-            KernalWeb.Driver.Manage().Window.Size = new System.Drawing.Size(600, 1000);
+            KernalWeb.Driver.Manage().Window.Size = new System.Drawing.Size(1200, 1000);
 
             }
             catch (Exception) { }
@@ -387,6 +387,7 @@ namespace Instagram.App
 
         }
 
+        #region Removed 
         /// <summary>
         /// جلب متابعين حساب محدد
         /// </summary>
@@ -395,237 +396,239 @@ namespace Instagram.App
         /// <remarks>
         /// *حل مشكلة  ال xpath
         /// </remarks>
-        public void GetFollower(AccountOperations modelLogin_, ObservableCollectionCore<AccountOperations> observableCollectionCore, ObservableCollection<int> Indexer, string Uid, Action act_ = null,LoginViewModel SelectedItem_=null)
-        {
+        //public void GetFollower(AccountOperations modelLogin_, ObservableCollection<AccountOperations> observableCollectionCore, ObservableCollection<int> Indexer, string Uid, Action act_ = null,LoginViewModel SelectedItem_=null)
+        //{
 
-            if (Uid == null)
-            {
-                return;
-            }
-            try
-            {
-                //متغير للتحقق من ان القيمة ليست مكررة
-                bool isRepeated = false;
-                KernalWeb.Driver.Navigate().GoToUrl(Uid);
-                KernalWeb.Driver.Manage().Timeouts().ImplicitWait = new TimeSpan(0, 0, 1);
-                KernalWeb.Driver.Manage().Timeouts().PageLoad = new TimeSpan(0, 0, 1);
-                try
-                {
-                KernalWeb.Driver.Manage().Window.Size = new System.Drawing.Size(5, 400);
+        //    if (Uid == null)
+        //    {
+        //        return;
+        //    }
+        //    try
+        //    {
+        //        //متغير للتحقق من ان القيمة ليست مكررة
+        //        bool isRepeated = false;
+        //        KernalWeb.Driver.Navigate().GoToUrl(Uid);
+        //        KernalWeb.Driver.Manage().Timeouts().ImplicitWait = new TimeSpan(0, 0, 1);
+        //        KernalWeb.Driver.Manage().Timeouts().PageLoad = new TimeSpan(0, 0, 1);
+        //        try
+        //        {
+        //        KernalWeb.Driver.Manage().Window.Size = new System.Drawing.Size(5, 400);
 
-                }catch(Exception SizeEx)
-                {
-                    LoggerViewModel.Log($"[Line:311,Class:InfoMember,Method:GetFollowers] More Info -> {SizeEx.Message}",TypeOfLog.exclamationcircle);
-                    KernalWeb.Driver.Manage().Window.Size = new System.Drawing.Size(40, 200);
+        //        }catch(Exception SizeEx)
+        //        {
+        //            LoggerViewModel.Log($"[Line:311,Class:InfoMember,Method:GetFollowers] More Info -> {SizeEx.Message}",TypeOfLog.exclamationcircle);
+        //            KernalWeb.Driver.Manage().Window.Size = new System.Drawing.Size(40, 200);
 
-                }
-                int Followers = 0;
-                foreach (IWebElement itemm in KernalWeb.Driver.FindElements(By.TagName("a")))
-                {
-                    if (itemm.Text != null && itemm.Text.Contains("followers"))
-                    {
+        //        }
+        //        int Followers = 0;
+        //        foreach (IWebElement itemm in KernalWeb.Driver.FindElements(By.TagName("a")))
+        //        {
+        //            if (itemm.Text != null && itemm.Text.Contains("followers"))
+        //            {
 
-                        KernalWeb.Driver.ExecuteScript("window.scrollBy(0,240);");
-                        if (Followers == 0)
-                        {
-                            if (observableCollectionCore.Count != 0)
-                            {
-                                Followers = observableCollectionCore.Count + int.Parse(itemm.FindElement(By.TagName("span")).GetAttribute("title").Replace(",", "").Replace("followers", ""));
-                            }
-                            else
-                            {
-                                Followers = int.Parse(itemm.FindElement(By.TagName("span")).GetAttribute("title").Replace(",", "").Replace("followers", ""));
-                            }
-                        }
-                        itemm.Click();
-                        int counter = 1;
-                        Task.Run(() => {
-                        while (!Cancel)
-                        {
+        //                KernalWeb.Driver.ExecuteScript("window.scrollBy(0,240);");
+        //                if (Followers == 0)
+        //                {
+        //                    if (observableCollectionCore.Count != 0)
+        //                    {
+        //                        Followers = observableCollectionCore.Count + int.Parse(itemm.FindElement(By.TagName("span")).GetAttribute("title").Replace(",", "").Replace("followers", ""));
+        //                    }
+        //                    else
+        //                    {
+        //                        Followers = int.Parse(itemm.FindElement(By.TagName("span")).GetAttribute("title").Replace(",", "").Replace("followers", ""));
+        //                    }
+        //                }
+        //                itemm.Click();
+        //                int counter = 1;
+        //                Task.Run(() => {
+        //                while (!Cancel)
+        //                {
 
-                                try
-                                {
-                                    Thread.Sleep(100);
-                            KernalWeb.Driver.ExecuteScript("window.scrollBy(0,500);");
-                                }
-                                catch (Exception)
-                                {
+        //                        try
+        //                        {
+        //                            Thread.Sleep(100);
+        //                    KernalWeb.Driver.ExecuteScript("window.scrollBy(0,500);");
+        //                        }
+        //                        catch (Exception)
+        //                        {
 
-                                }
-                        }
-                        });
-                              while (true)
-                  {
-                           
-                            Thread.Sleep(2000);
-                            foreach (var itemtest in KernalWeb.Driver.FindElements(By.TagName("li")))
-                            {
-                                bool IsDivIncludeDiv = false;
-                                try
-                                {
-                                    var Follower_name = "";
-                                    try
-                                    {
-                                         Follower_name = KernalWeb.Driver.FindElement(By.XPath(String.Format("//*[@id='react-root']/section/main/ul/li[{0}]/div/div[1]/div/div[1]/a", counter))).GetAttribute("title");
-                                        LoggerViewModel.Log(Follower_name, TypeOfLog.exclamationcircle);
-                                        IsDivIncludeDiv = false;
+        //                        }
+        //                }
+        //                });
+        //                      while (true)
+        //          {
 
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        LoggerViewModel.Log(ex.Message,TypeOfLog.exclamationcircle);
-                                         Follower_name = KernalWeb.Driver.FindElement(By.XPath(String.Format("//*[@id='react-root']/section/main/ul/div/li[{0}]/div/div[1]/div/div[1]/a", counter))).GetAttribute("title");
-                                        LoggerViewModel.Log(Follower_name, TypeOfLog.exclamationcircle);
-                                        IsDivIncludeDiv = true;
-                                    }
+        //                    Thread.Sleep(2000);
+        //                    foreach (var itemtest in KernalWeb.Driver.FindElements(By.TagName("li")))
+        //                    {
+        //                        bool IsDivIncludeDiv = false;
+        //                        try
+        //                        {
+        //                            var Follower_name = "";
+        //                            try
+        //                            {
+        //                                 Follower_name = KernalWeb.Driver.FindElement(By.XPath(String.Format("//*[@id='react-root']/section/main/ul/li[{0}]/div/div[1]/div/div[1]/a", counter))).GetAttribute("title");
+        //                                LoggerViewModel.Log(Follower_name, TypeOfLog.exclamationcircle);
+        //                                IsDivIncludeDiv = false;
 
-                                    if (!Follower_name.Contains(_username.Substring(0, _username.IndexOf(_username.Contains("@") ? '@' : _username.Substring(0, _username.Length)[1]))))
-                                    {
-                                        if (Followers != 0 && observableCollectionCore.Count == Followers || Followers != 0 && counter == Followers)
-                                        {
-                                            break;
-                                        }
-                                        if (Cancel)
-                                        {
-                                            break;
-                                        }
-                                        Application.Current.Dispatcher.Invoke(() =>
-                                        {
-                                            try
-                                            {
-                                                if (!IsDivIncludeDiv)
-                                                {
-                                                LoggerViewModel.Log($"Count ==> {KernalWeb.Driver.FindElements(By.TagName("li")).Count}", TypeOfLog.Warning);
-                                                CollectionsHelper.Followers.Add(new AccountOperations()
-                                                {
-                                                    Uid = KernalWeb.Driver.FindElement(By.XPath(String.Format("//*[@id='react-root']/section/main/ul/li[{0}]/div/div[1]/a", counter))).GetAttribute("href"),
-                                                    Username = KernalWeb.Driver.FindElement(By.XPath(String.Format("//*[@id='react-root']/section/main/ul/li[{0}]/div/div[1]/div/div[1]/a", counter))).GetAttribute("title"),
-                                                    IsFollower = (KernalWeb.Driver.FindElement(By.XPath(String.Format("//*[@id='react-root']/section/main/ul/li[{0}]/div/div[2]/span/button", counter))).Text == "Follow") ? TypeOfResponse.Follow :
-                                                                                            (KernalWeb.Driver.FindElement(By.XPath(String.Format("//*[@id='react-root']/section/main/ul/li[{0}]/div/div[2]/span/button", counter))).Text == "Following") ? TypeOfResponse.Following : TypeOfResponse.Requested
-                                                                                            ,
-                                                    UnFollow_FollowCommand = new BaseCommand(act_)
-                                                                                            ,
-                                                    FollowAll = modelLogin_.FollowAll
-                                                                                            ,
-                                                    FollowWhohasFollowingFrom_To = modelLogin_.FollowWhohasFollowingFrom_To
-                                                                                            ,
-                                                    IsFollowWIthCondition = modelLogin_.IsFollowWIthCondition
-                                                                                            ,
-                                                    From = modelLogin_.From
-                                                                                            ,
-                                                    To = modelLogin_.To
-                                                });
+        //                            }
+        //                            catch (Exception ex)
+        //                            {
+        //                                LoggerViewModel.Log(ex.Message,TypeOfLog.exclamationcircle);
+        //                                 Follower_name = KernalWeb.Driver.FindElement(By.XPath(String.Format("//*[@id='react-root']/section/main/ul/div/li[{0}]/div/div[1]/div/div[1]/a", counter))).GetAttribute("title");
+        //                                LoggerViewModel.Log(Follower_name, TypeOfLog.exclamationcircle);
+        //                                IsDivIncludeDiv = true;
+        //                            }
 
-                                                }
-                                                else
-                                                {
-                                                    LoggerViewModel.Log($"Count ==> {KernalWeb.Driver.FindElements(By.TagName("li")).Count}", TypeOfLog.Warning);
-                                                    Task.Run(() => {
+        //                            if (!Follower_name.Contains(_username.Substring(0, _username.IndexOf(_username.Contains("@") ? '@' : _username.Substring(0, _username.Length)[1]))))
+        //                            {
+        //                                if (Followers != 0 && observableCollectionCore.Count == Followers || Followers != 0 && counter == Followers)
+        //                                {
+        //                                    break;
+        //                                }
+        //                                if (Cancel)
+        //                                {
+        //                                    break;
+        //                                }
+        //                                Application.Current.Dispatcher.Invoke(() =>
+        //                                {
+        //                                    try
+        //                                    {
+        //                                        if (!IsDivIncludeDiv)
+        //                                        {
+        //                                        LoggerViewModel.Log($"Count ==> {KernalWeb.Driver.FindElements(By.TagName("li")).Count}", TypeOfLog.Warning);
+        //                                        CollectionsHelper.Followers.Add(new AccountOperations()
+        //                                        {
+        //                                            Uid = KernalWeb.Driver.FindElement(By.XPath(String.Format("//*[@id='react-root']/section/main/ul/li[{0}]/div/div[1]/a", counter))).GetAttribute("href"),
+        //                                            Username = KernalWeb.Driver.FindElement(By.XPath(String.Format("//*[@id='react-root']/section/main/ul/li[{0}]/div/div[1]/div/div[1]/a", counter))).GetAttribute("title"),
+        //                                            IsFollower = (KernalWeb.Driver.FindElement(By.XPath(String.Format("//*[@id='react-root']/section/main/ul/li[{0}]/div/div[2]/span/button", counter))).Text == "Follow") ? TypeOfResponse.Follow :
+        //                                                                                    (KernalWeb.Driver.FindElement(By.XPath(String.Format("//*[@id='react-root']/section/main/ul/li[{0}]/div/div[2]/span/button", counter))).Text == "Following") ? TypeOfResponse.Following : TypeOfResponse.Requested
+        //                                                                                    ,
+        //                                            UnFollow_FollowCommand = new BaseCommand(act_)
+        //                                                                                    ,
+        //                                            FollowAll = modelLogin_.FollowAll
+        //                                                                                    ,
+        //                                            FollowWhohasFollowingFrom_To = modelLogin_.FollowWhohasFollowingFrom_To
+        //                                                                                    ,
+        //                                            IsFollowWIthCondition = modelLogin_.IsFollowWIthCondition
+        //                                                                                    ,
+        //                                            From = modelLogin_.From
+        //                                                                                    ,
+        //                                            To = modelLogin_.To
+        //                                        });
 
-                                                    for (int i = 0; i < Followers; i++)
-                                                    {
-                                                        LoggerViewModel.Log($"Count Of I ==> {i}", TypeOfLog.Warning);
-                                                        LoggerViewModel.Log($"Current Account ({KernalWeb.Driver.FindElements(By.TagName("li"))[i].GetAttribute("title")})", TypeOfLog.check);
-                                                            Thread.Sleep(100);
-                                                    }
-                                                    });
-                                                    CollectionsHelper.Followers.Add(new AccountOperations()
-                                                    {
-                                                        Uid = KernalWeb.Driver.FindElement(By.XPath(String.Format("//*[@id='react-root']/section/main/ul/div/li[{0}]/div/div[1]/a", counter))).GetAttribute("href"),
-                                                        Username = KernalWeb.Driver.FindElement(By.XPath(String.Format("//*[@id='react-root']/section/main/ul/div/li[{0}]/div/div[1]/div/div[1]/a", counter))).GetAttribute("title"),
-                                                        IsFollower = (KernalWeb.Driver.FindElement(By.XPath(String.Format("//*[@id='react-root']/section/main/ul/div/li[{0}]/div/div[2]/span/button", counter))).Text == "Follow") ? TypeOfResponse.Follow :
-                                                                                         (KernalWeb.Driver.FindElement(By.XPath(String.Format("//*[@id='react-root']/section/main/ul/div/li[{0}]/div/div[2]/span/button", counter))).Text == "Following") ? TypeOfResponse.Following : TypeOfResponse.Requested
-                                                                                         ,
-                                                        UnFollow_FollowCommand = new BaseCommand(act_)
-                                                                                         ,
-                                                        FollowAll = modelLogin_.FollowAll
-                                                                                         ,
-                                                        FollowWhohasFollowingFrom_To = modelLogin_.FollowWhohasFollowingFrom_To
-                                                                                         ,
-                                                        IsFollowWIthCondition = modelLogin_.IsFollowWIthCondition
-                                                                                         ,
-                                                        From = modelLogin_.From
-                                                                                         ,
-                                                        To = modelLogin_.To
-                                                    });
-                                                }
-                                                //التركيز على اخر عنصر دخل المجموعة
-                                                SelectedItem_.Login = observableCollectionCore[observableCollectionCore.Count - 1];
-                                                LoggerViewModel.Log(string.Format("Follower Has been added ==> {0}", observableCollectionCore[observableCollectionCore.Count - 1].Username), TypeOfLog.questioncircle);
-                                                LoggerViewModel.Log($"State: Counter({counter}) Followers({Followers}) Followers has already been added({CollectionsHelper.Followers.Count})", TypeOfLog.questioncircle);
+        //                                        }
+        //                                        else
+        //                                        {
+        //                                            LoggerViewModel.Log($"Count ==> {KernalWeb.Driver.FindElements(By.TagName("li")).Count}", TypeOfLog.Warning);
+        //                                            Task.Run(() => {
 
-                                                if (observableCollectionCore[observableCollectionCore.Count - 1].IsFollower == TypeOfResponse.Follow)
-                                                {
-                                                    Indexer.Add(observableCollectionCore.Count - 1);
-                                                    modelLogin_.AmountOfFollowers++;
-                                                }
-                                                else if (observableCollectionCore[observableCollectionCore.Count - 1].IsFollower == TypeOfResponse.Following)
-                                                {
-                                                    modelLogin_.AmountOfFollowing++;
-                                                }
-                                                else if (observableCollectionCore[observableCollectionCore.Count - 1].IsFollower == TypeOfResponse.Requested)
-                                                {
-                                                    modelLogin_.AmountOfRequested++;
-                                                }
-                                                modelLogin_.Amount = observableCollectionCore.Count;
-                                            }
-                                            catch(Exception ex)
-                                            {
-                                                LoggerViewModel.Log($"Error [Line:402,Class:InfoMember,Method:GetFollowers More Info -> {ex.Message}]", TypeOfLog.Warning);
-                                            }
-                                        
-                                        });
+        //                                            for (int i = 0; i < Followers; i++)
+        //                                            {
+        //                                                LoggerViewModel.Log($"Count Of I ==> {i}", TypeOfLog.Warning);
+        //                                                LoggerViewModel.Log($"Current Account ({KernalWeb.Driver.FindElements(By.TagName("li"))[i].GetAttribute("title")})", TypeOfLog.check);
+        //                                                    Thread.Sleep(100);
+        //                                            }
+        //                                            });
+        //                                            CollectionsHelper.Followers.Add(new AccountOperations()
+        //                                            {
+        //                                                Uid = KernalWeb.Driver.FindElement(By.XPath(String.Format("//*[@id='react-root']/section/main/ul/div/li[{0}]/div/div[1]/a", counter))).GetAttribute("href"),
+        //                                                Username = KernalWeb.Driver.FindElement(By.XPath(String.Format("//*[@id='react-root']/section/main/ul/div/li[{0}]/div/div[1]/div/div[1]/a", counter))).GetAttribute("title"),
+        //                                                IsFollower = (KernalWeb.Driver.FindElement(By.XPath(String.Format("//*[@id='react-root']/section/main/ul/div/li[{0}]/div/div[2]/span/button", counter))).Text == "Follow") ? TypeOfResponse.Follow :
+        //                                                                                 (KernalWeb.Driver.FindElement(By.XPath(String.Format("//*[@id='react-root']/section/main/ul/div/li[{0}]/div/div[2]/span/button", counter))).Text == "Following") ? TypeOfResponse.Following : TypeOfResponse.Requested
+        //                                                                                 ,
+        //                                                UnFollow_FollowCommand = new BaseCommand(act_)
+        //                                                                                 ,
+        //                                                FollowAll = modelLogin_.FollowAll
+        //                                                                                 ,
+        //                                                FollowWhohasFollowingFrom_To = modelLogin_.FollowWhohasFollowingFrom_To
+        //                                                                                 ,
+        //                                                IsFollowWIthCondition = modelLogin_.IsFollowWIthCondition
+        //                                                                                 ,
+        //                                                From = modelLogin_.From
+        //                                                                                 ,
+        //                                                To = modelLogin_.To
+        //                                            });
+        //                                        }
+        //                                        //التركيز على اخر عنصر دخل المجموعة
+        //                                        SelectedItem_.Login = observableCollectionCore[observableCollectionCore.Count - 1];
+        //                                        LoggerViewModel.Log(string.Format("Follower Has been added ==> {0}", observableCollectionCore[observableCollectionCore.Count - 1].Username), TypeOfLog.questioncircle);
+        //                                        LoggerViewModel.Log($"State: Counter({counter}) Followers({Followers}) Followers has already been added({CollectionsHelper.Followers.Count})", TypeOfLog.questioncircle);
 
-                                        counter++;
-                                    }
-                                    else if (!isRepeated&&Follower_name.Contains(_username.Substring(0, _username.IndexOf(_username.Contains("@") ? '@' : _username.Substring(0, _username.Length)[1]))))
-                                    {
-                                       
-                                            counter++;
-                                            Followers += -1;
-                                            isRepeated = true;
-                                        LoggerViewModel.Log($"State: Counter({counter}) Followers({Followers}) Followers has already been added({CollectionsHelper.Followers.Count})",TypeOfLog.questioncircle);
+        //                                        if (observableCollectionCore[observableCollectionCore.Count - 1].IsFollower == TypeOfResponse.Follow)
+        //                                        {
+        //                                            Indexer.Add(observableCollectionCore.Count - 1);
+        //                                            modelLogin_.AmountOfFollowers++;
+        //                                        }
+        //                                        else if (observableCollectionCore[observableCollectionCore.Count - 1].IsFollower == TypeOfResponse.Following)
+        //                                        {
+        //                                            modelLogin_.AmountOfFollowing++;
+        //                                        }
+        //                                        else if (observableCollectionCore[observableCollectionCore.Count - 1].IsFollower == TypeOfResponse.Requested)
+        //                                        {
+        //                                            modelLogin_.AmountOfRequested++;
+        //                                        }
+        //                                        modelLogin_.Amount = observableCollectionCore.Count;
+        //                                    }
+        //                                    catch(Exception ex)
+        //                                    {
+        //                                        LoggerViewModel.Log($"Error [Line:402,Class:InfoMember,Method:GetFollowers More Info -> {ex.Message}]", TypeOfLog.Warning);
+        //                                    }
 
+        //                                });
 
+        //                                counter++;
+        //                            }
+        //                            else if (!isRepeated&&Follower_name.Contains(_username.Substring(0, _username.IndexOf(_username.Contains("@") ? '@' : _username.Substring(0, _username.Length)[1]))))
+        //                            {
 
-                                    }
-                                }
-                                catch (Exception)
-                                {
-                                    break;
-                                }
-                            }
-                            try
-                            {
-                                if (observableCollectionCore.Count == Followers || isRepeated && observableCollectionCore.Count == Followers - 1 || counter == Followers)
-                                {
-                                    LoggerViewModel.Log($"State: Counter({counter}) Followers({Followers}) Followers has already been added({CollectionsHelper.Followers.Count})", TypeOfLog.questioncircle);
-
-                                    break;
-                                }
-                            }
-                            catch (Exception)
-                            {
+        //                                    counter++;
+        //                                    Followers += -1;
+        //                                    isRepeated = true;
+        //                                LoggerViewModel.Log($"State: Counter({counter}) Followers({Followers}) Followers has already been added({CollectionsHelper.Followers.Count})",TypeOfLog.questioncircle);
 
 
-                            }
-                            if (Cancel)
-                            {
-                                break;
-                            }
 
-                        }
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                LoggerViewModel.Log($"State:-", TypeOfLog.questioncircle);
+        //                            }
+        //                        }
+        //                        catch (Exception)
+        //                        {
+        //                            break;
+        //                        }
+        //                    }
+        //                    try
+        //                    {
+        //                        if (observableCollectionCore.Count == Followers || isRepeated && observableCollectionCore.Count == Followers - 1 || counter == Followers)
+        //                        {
+        //                            LoggerViewModel.Log($"State: Counter({counter}) Followers({Followers}) Followers has already been added({CollectionsHelper.Followers.Count})", TypeOfLog.questioncircle);
 
-                return;
-            }
+        //                            break;
+        //                        }
+        //                    }
+        //                    catch (Exception)
+        //                    {
 
-        }
+
+        //                    }
+        //                    if (Cancel)
+        //                    {
+        //                        break;
+        //                    }
+
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
+        //        LoggerViewModel.Log($"State:-", TypeOfLog.questioncircle);
+
+        //        return;
+        //    }
+
+        //}
+
+        #endregion
 
         public string GetFollowing()
         {

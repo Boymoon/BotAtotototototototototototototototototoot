@@ -8,148 +8,113 @@ using System.Threading.Tasks;
 
 namespace Instagram.App
 {
-   public class PostsDB
+
+    public class PostsDB : PrototypeOfDB, IDataBase
     {
-        private MainDB DB_;
         /// <summary>
-        /// متغير للتعامل  مع قاعدة البيانات الام
+        /// اضافة عنصر جديد 
         /// </summary>
-        public MainDB DB
-        {
-            get { return DB_; }
-            set { DB_ = value; }
-        }
-        public PostsDB(MainDB dB)
-        {
-            DB_ = dB;
-        }
-        /// <summary>
-        /// اضافة جدول
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="_item"></param>
-        /// <param name="name"></param>
-        public void AddTable<T>(T _item, string name)
-        {
-            /* تحقق من وجود الجدول */
-            if (DB.Check(name))
-            {
-                return;
-            }
-            try
-            {
-                var con = DB.Connect();
-                con.Open();
-                string que = $"create table {name} ({_item})";
-                SQLiteCommand smd = new SQLiteCommand(que, con);
-                smd.ExecuteNonQuery();
-                con.Close();
-            }
-            catch (Exception ex)
-            {
-                LoggerViewModel.Log($"Error at LoginDB Line 40~50 Method add table {ex.Message}", TypeOfLog.exclamationcircle);
-            }
-        }
-        /// <summary>
-        /// البحث عن جدول
-        /// </summary>
-        /// <param name="TableName"></param>
-        /// <returns></returns>
-        public bool Check(string TableName)
-        {
-            return DB.Check(TableName);
-        }
-        /// <summary>
-        /// البحث عن عنصر في جدول
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="_item"></param>
-        /// <param name="TableName"></param>
-        /// <returns></returns>
-        public bool CheckForItem<T>(T _item, string TableName)
-        {
-            return DB_.CheckForItem<T>(_item, TableName);
-        }
-        /// <summary>
-        /// <see cref="DB.Connect()"/>
-        /// </summary>
-        /// <returns></returns>
-        public SQLiteConnection Connect()
-        {
-            throw new NotImplementedException();
-        }
-        /// <summary>
-        /// حذف  جدول  محدد 
-        /// </summary>
-        /// <param name="TableName"></param>
-        public void Delete(string TableName)
-        {
-            DB_.Delete(TableName);
-        }
-        /// <summary>
-        /// حذف صف  محدد من جدول محدد
-        /// </summary>
-        /// <typeparam name="index"></typeparam>
-        /// <param name="_item"></param>
-        /// <param name="Tablename"></param>
-        public void DeleteItem<index>(index _item, string Tablename, string columnname)
-        {
-            DB.DeleteItem<index>(_item, Tablename, columnname);
-        }
-        /// <summary>
-        /// تحديث الجدول المراد تحديثه
-        /// </summary>
-        /// <typeparam name="T">نوع الجدول</typeparam>
-        /// <param name="_item">الجدول</param>
         /// <param name="name">اسم الجدول</param>
-        public void UpdateTable<T>(T _item, string name)
+        /// <param name="args">ContextMedia,UidOfpost,Context,publisher,publishedat,UidOfpublisher,Likes,Views,name<Required></param>
+        /// <returns></returns>
+        public bool InsertItem(string name,string[] args)
         {
-            var con = DB.Connect();
-            string que = $"update {name} Set {_item};";
-            SQLiteCommand sQLiteCommand = new SQLiteCommand(que, con);
-            con.Open();
+            if (args[8] == null || args[8] == "0")
+            {
+                args[8] = GetID(name,TypesSections.CommentsAndPostsSection).ToString();
+                //
+            }
+            string con = $"insert into SectionPM (ContextMedia,UidOfpost,Context,publisher,publishedat,UidOfpublisher,Likes,Views,ID) " +
+                $"Values('{args[0]}','{args[1]}','{args[2]}','{args[3]}','{args[4]}','{args[5]}','{args[6]}','{args[7]}','{args[8]}');";
+            SQLiteCommand sQLiteCommand = new SQLiteCommand(con, Connection.OpenAndReturn());
             try
             {
                 sQLiteCommand.ExecuteNonQuery();
-                con.Close();
+                Connection.Close();
+                return true;
             }
             catch (Exception ex)
             {
-                LoggerViewModel.Log($"Error at LoginDB Line 90~99 method updatetable {ex.Message}", TypeOfLog.exclamationcircle);
+                LoggerViewModel.Log($"Error:{ex.InnerException} at InsertItem in PostDB Line 40~45", TypeOfLog.exclamationcircle);
+                Connection.Close();
+                return false;
             }
         }
         /// <summary>
-        /// اضافة عناصر جديدة
+        /// حذف عنصر معين من جدول محدد
         /// </summary>
-        /// <typeparam name="T">نوع البيانات المدخلة</typeparam>
-        /// <param name="_item">تعليمات الادخال</param>
-        /// <param name="name">اسم الجدول</param>
-        public void InsertItem<T>(T _item, string name)
+        /// <param name="name">اسم الجدول المراد حذف العنصر منه</param>
+        /// <param name="args">برامترز خاصة بالعنصر المراد حذفه</param>
+        /// <param name="args">ContextMedia,UidOfpost,Context,publisher,publishedat,UidOfpublisher,Likes,Views,name,ID<Required></param>
+        /// <returns></returns>
+        public bool DeleteItem(string name, string[] args)
         {
-            var con = DB.Connect();
-            string que = $"insert into {name} {_item}";
-            SQLiteCommand smd = new SQLiteCommand(que, con);
+            args[8] = GetID(name,TypesSections.CommentsAndPostsSection).ToString();
+
+            string con = $"delete from SectionPM Where ContextMedia='{args[0]}'" +
+                $" And UidOfpost                                   ='{args[1]}'" +
+                $" And Context                                     ='{args[2]}'" +
+                $" And publisher                                   ='{args[3]}'" +
+                $" And publishedat                                 ='{args[4]}'" +
+                $" And UidOfpublisher                              ='{args[5]}'" +
+                $" And Likes                                       ='{args[6]}'" +
+                $" And Views                                       ='{args[7]}'" +
+                $" And ID                                          ='{args[8]}'";
+            var deleteCommand = new SQLiteCommand(con, Connection.OpenAndReturn());
             try
             {
-                con.Open();
-                smd.ExecuteNonQuery();
-                con.Close();
-
+                deleteCommand.ExecuteNonQuery();
+                Connection.Close();
+                return true;
             }
-            catch (Exception ex)
+            catch (Exception ex_PostDelete)
             {
-                LoggerViewModel.Log($"Error at LoginDB Line 120~150 method insert... {ex.Message}", TypeOfLog.exclamationcircle);
-
+                LoggerViewModel.Log($"Error:{ex_PostDelete.InnerException} At PostDB ,in:DeleteItem,Line:49~70,Exception name ->ex_PostDelete", TypeOfLog.exclamationcircle);
+                Connection.Close();
+                return false;
             }
         }
         /// <summary>
-        /// يعمل على تعبئة البيانات وارسالها للجدول المخصص
+        /// جلب البيانات الجدول المحدد
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="query"></param>
-        public void Fill(DataSet data, string Tablename)
+        /// <param name="name">اسم الجدول المراد جلب البيانات منه</param>
+        /// <returns></returns>
+        public DataTable Fill(string name)
         {
-            DB.Fill(data, Tablename);
+            Int64 id = GetID(name,TypesSections.CommentsAndPostsSection);
+            var dt = new DataTable();
+            string con = $"select * from SectionPM where ID={id};";
+            try
+            {
+                var adapter = new SQLiteDataAdapter(con, Connection.OpenAndReturn());
+                adapter.Fill(dt);
+                Connection.Close();
+                return dt;
+            }
+            catch (Exception ex_Fill)
+            {
+                LoggerViewModel.Log($"Error:{ex_Fill.InnerException} Method Fill Class PostsDB",TypeOfLog.exclamationcircle);
+                return null;
+            }
+        }
+        public int GetCount(Int64 id)
+        {
+            int idd = 0;
+            var dt = new DataTable();
+            string con = $"select Count(*) from SectionPM where ID={id};";
+            try
+            {
+                var adapter = new SQLiteDataAdapter(con, Connection.OpenAndReturn());
+                adapter.Fill(dt);
+                idd = int.Parse(dt.Rows.Cast<DataRow>().FirstOrDefault().Field<Int64>("Count(*)").ToString());
+                Connection.Close();
+                return idd;
+            }
+            catch (Exception ex_Fill)
+            {
+                LoggerViewModel.Log($"Error:{ex_Fill.InnerException} Method GetCount Class PostsDB", TypeOfLog.exclamationcircle);
+                return 0;
+            }
         }
     }
 }

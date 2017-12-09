@@ -16,7 +16,7 @@ namespace Instagram.App
 {
     public class MainWindowViewModel : BaseViewModel
     {
-        private LoginDB loginDB = new LoginDB(new MainDB());
+        private LoginDB loginDB = new LoginDB();
         /// <summary>
         /// قائمة للحسابات
         /// </summary>
@@ -59,8 +59,11 @@ namespace Instagram.App
         {
             try
             {
-                var logindb = new LoginDB(new MainDB());
-                logindb.DeleteItem(Selected.Username, "account", "username");
+                Task.Run(() => 
+                {
+                var logindb = new LoginDB();
+                    logindb.DeleteItem("", new string[] { Selected.Username, Selected.Password, Selected.Username });
+                });
                 Accounts_.Remove(Selected);
 
             }
@@ -83,15 +86,11 @@ namespace Instagram.App
                     return;
                 case MessageBoxResult.OK:
                     {
-                        var logindb = new LoginDB(new MainDB());
+                        var logindb = new LoginDB();
                         Accounts_.Clear();
                         Task.Run(() =>
                         {
-                            loginDB.Delete("account");
-                            logindb.AddTable<string>($"username TEXT," +
-                                              $"password TEXT," +
-                                              $"email TEXT"
-                                              , "account");
+                            loginDB.ResetTable("account");
 
                         });
                     }
@@ -100,15 +99,11 @@ namespace Instagram.App
                     return;
                 case MessageBoxResult.Yes:
                     {
-                        var logindb = new LoginDB(new MainDB());
+                        var logindb = new LoginDB();
                         Accounts_.Clear();
                         Task.Run(() =>
                         {
-                            loginDB.Delete("account");
-                            logindb.AddTable<string>($"username TEXT," +
-                                              $"password TEXT," +
-                                              $"email TEXT"
-                                              , "account");
+                            loginDB.ResetTable("account");
 
                         });
                     }
@@ -128,11 +123,11 @@ namespace Instagram.App
         {
             Task.Run(() =>
             {
-                var LoginDB = new LoginDB(new MainDB());
-                var data = new DataSet();
-                loginDB.Fill(data, "account");
+                var LoginDB = new LoginDB();
+                var data = new DataTable();
+                data=loginDB.Fill("account");
 
-                foreach (DataRow item in data.Tables[0].Rows)
+                foreach (DataRow item in data.Rows)
                 {
                     try
                     {
@@ -159,6 +154,7 @@ namespace Instagram.App
 
         private void Signin()
         {
+         
             if (ModelMainWindow_.StateOfLogin.Contains("جاري"))
             {
                 return;
@@ -258,7 +254,7 @@ namespace Instagram.App
 
                         for (int i = 0; i < Names.Count; i++)
                         {
-                            loginDB.InsertItem<string>($"(username,password,email) Values('{Names[i]}','{Passwords[i]}','{(Names[i].Contains("@") ? Names[i] : "-")}')", "account");
+                            loginDB.InsertItem("account",new string[]{Names[i],Passwords[i],(Names[i].Contains("@") ? Names[i] : "-")});
                             Accounts_.Add(new ModelMainWindow()
                             {
                                 Username = Names[i],
@@ -286,7 +282,7 @@ namespace Instagram.App
                 Username = ModelMainWindow_.Username,
                 Password = ModelMainWindow_.Password
             });
-            loginDB.InsertItem<string>($"(username,password,email) Values('{ModelMainWindow_.Username}','{ModelMainWindow_.Password}','{(ModelMainWindow_.Username.Contains("@") ? ModelMainWindow_.Username : "-")}')", "account");
+            loginDB.InsertItem("account",new string[] { $"{ModelMainWindow_.Username}",$"{ModelMainWindow_.Password}",$"{(ModelMainWindow_.Username.Contains("@") ? ModelMainWindow_.Username : "-")}" });
         }
     }
 }

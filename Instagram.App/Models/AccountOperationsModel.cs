@@ -241,7 +241,24 @@ namespace Instagram.App
             get { return ContentbtnLoading_; }
             set { ContentbtnLoading_ = value;OnPropertyChanged(); }
         }
-
+        private bool GetFollowers_=false;
+        /// <summary>
+        /// جلب المتابعون
+        /// </summary>
+        public bool GetFollowers
+        {
+            get { return GetFollowers_; }
+            set { GetFollowers_ = value;OnPropertyChanged(); }
+        }
+        private bool GetFollowings_=true;
+        /// <summary>
+        /// جلب المتابعين
+        /// </summary>
+        public bool GetFollowings
+        {
+            get { return GetFollowings_; }
+            set { GetFollowings_ = value; OnPropertyChanged(); }
+        }
         private string Following_;
         /// <summary>
         /// ارسال وإستقبال عدد الاشخاص اللذين يتابعهم صاحب الحساب 

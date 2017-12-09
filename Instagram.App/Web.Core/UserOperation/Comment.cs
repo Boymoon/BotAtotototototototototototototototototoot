@@ -2,11 +2,14 @@
 using DevExpress.Xpf.Core;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -31,7 +34,7 @@ namespace Instagram.App
         {
             mModelComment = modelComment_;
         }
-        public void SendComment_UnderTest(ObservableCollection<ModelPost> PostsContainer_) => sendComment((Posts_) =>
+        public void SendComment_UnderTest(ObservableCollection<ModelPost> PostsContainer_,string TableName) => sendComment((Posts_) =>
                                               {
                                                   Operations.CurrentOT = OperationsTypes.GetPosts;
                                                   var containerOfPosts = new ObservableCollection<ModelPost>();
@@ -442,7 +445,7 @@ namespace Instagram.App
                                                                   UidOfpublisher=UidofPublisher,
                                                                   UidOfpost=Uidofpost
                                                               });
-                                                              ContainerCollection<ObservableCollection<ModelPost>>.Insert($"Table {ContainerCollection<ObservableCollection<ModelPost>>.Tables.Count}", containerOfPosts);
+                                                              HelperSelector.Insert(containerOfPosts,TableName);
                                                              
                                                           });
                                                       }
@@ -467,8 +470,9 @@ namespace Instagram.App
         {
             Operations.CurrentOT = OperationsTypes.DoComment;
             #region Settings
-            KernalWeb.Driver.Manage().Timeouts().ImplicitWait = new TimeSpan(0, 0, 2);
-            KernalWeb.Driver.Manage().Timeouts().PageLoad = new TimeSpan(0, 0, 2);
+            KernalWeb.Driver.Manage().Window.Size = new System.Drawing.Size(4000, 4000);
+            KernalWeb.Driver.Manage().Timeouts().ImplicitWait = new TimeSpan(0, 0, 20);
+            KernalWeb.Driver.Manage().Timeouts().PageLoad = new TimeSpan(0, 0, 20);
             #endregion
 
             if (string.IsNullOrEmpty(mModelComment.Target))
@@ -476,170 +480,193 @@ namespace Instagram.App
                 return;
             }
             KernalWeb.CreateTemporaryDriver(mModelComment.Target);
-            var sendComments = Task.Factory.StartNew(() =>
-
+            using (KernalWeb.TemporaryDriver)
             {
-                var Posts = new List<string>();
-                while (!StateOfTask)
+                var sendComments = Task.Factory.StartNew(() =>
+
                 {
-                    /* جلب المنشورات */
-                    Task.Run(() =>
+                    var Posts = new List<string>();
+                    while (!StateOfTask)
                     {
-                        GetPost(Posts);
-                    });
-                    /* الانتظار  حتى يتم تعبئة  قائمة المنشورات */
-                    while (!(Posts.Count >= 1))
-                    {
-
-                    }
-                    #region Old
-                    ///* التحقق  من زر المزيد  من المنشورات  */
-                    //foreach (var button in Temp.FindElements(By.TagName("a")))
-                    //{
-                    //    try
-                    //    {
-                    //        while (button.GetAttribute("href").Contains("?max_id"))
-                    //        {
-                    //            button.Click();
-                    //        }
-
-                    //    }
-                    //    catch (Exception ex)
-                    //    {
-                    //        LoggerViewModel.Log($"{ex.Message} |Line:48|Method:SendComment|Class:Web.Core->UserOperation->Comment ", TypeOfLog.exclamationcircle);
-                    //    }
-                    //}
-
-                    #endregion
-                    /* اعادة ارسال التعليق */
-                    bool isReapet = false;
-                    /* عداد الاخطاء  الخاصة  بإرسال التعليقات */
-                    int CounterOfErrors = 0;
-                    /* في حالة عدم  وجود منشن */
-                    if (string.IsNullOrEmpty(mModelComment.Tag))
-                    {
-                        /* متغير لحساب التعليقات المرسلة */
-                        int AntiBanned = 0;
-                        for (int i = 0; i < Posts.Count; i++)
+                        /* جلب المنشورات */
+                        Task.Run(() =>
                         {
-                            LoggerViewModel.Log($"{Posts.Count} I={i}", TypeOfLog.Warning);
-                            int spell = new Random().Next(0, mModelComment.Text.Length);
-                            Thread.Sleep(3 * 1000);
-                            KernalWeb.Driver.Navigate().GoToUrl(Posts[i]);
-                            Thread.Sleep(2 * 1000);
-                            KernalWeb.Driver.ExecuteScript("window.scrollBy(0,2000);");
-                            KernalWeb.Driver.FindElement(By.XPath("//*[@id='react-root']/section/main/div/div/article/div[2]/section[3]/form/textarea")).Click();
-                            /* تقطيع التعليق جزئين وارسالهم بأوقات مختلفة */
-                            for (int ii = 0; ii < 2; ii++)
-                            {
-                                Thread.Sleep(500);
-                                KernalWeb.Driver.FindElement(By.XPath("//*[@id='react-root']/section/main/div/div/article/div[2]/section[3]/form/textarea")).
-                                        SendKeys(mModelComment.Text.Substring((ii == 1) ? 0 : spell, ((ii == 1) ? spell : mModelComment.Text.Length - spell)));
-                            }
-                            try
-                            {
-                                KernalWeb.Driver.FindElement(By.XPath("//*[@id='react-root']/section/main/div/div/article/div[2]/section[3]/form/textarea")).SendKeys(Keys.Enter);
-                                AntiBanned++;
-                                if (AntiBanned == 3)
-                                {
-                                    Thread.Sleep(30 * 1000);
-                                    AntiBanned = 0;
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                LoggerViewModel.Log($"{ex.Message} |Line:118|Method:SendComment|Class:Web.Core->UserOperation->Comment ", TypeOfLog.exclamationcircle);
-                            }
-                            try
-                            {
-                                int beforeChecking = CounterOfErrors;
-                                Thread.Sleep(5000);
-                                /* التحقق  من وجود اخطاء */
-                                while (KernalWeb.Driver.FindElement(By.ClassName("_162ov")).Displayed && KernalWeb.Driver.FindElement(By.ClassName("_162ov")).Text.Contains("Couldn't post comment."))
-                                {
-                                    CounterOfErrors++;
-                                    mModelComment.UnableToSend++;
-                                    /* في حال  حدوث الخطأ مرة اخرى */
-                                    if (isReapet)
-                                    {
-                                        isReapet = false;
-                                        /*   
-                                       وعليه فانه سيتم ايقاف ارسال التعليقات لمدة  دقيقتان ' المؤقت  ' يبدو ان حسابك قد  تعرض للحظر 
-                                         */
-                                        Application.Current.Dispatcher.Invoke(() =>
-                                        {
-                                            try
-                                            {
-                                                //DXMessageBox.Show($".يبدو ان حسابك قد تعرض للحظر المؤقت  وعليه فانه سيتم تعليق ارسال التعليقات  حتى دقيقة");
-                                                /* تحقق  من حالة قسم  ارسال التعليقات */
-                                                bool IsCompleted = false;
-                                                Task.Run(() =>
-                                                {
-                                                    while (!IsCompleted)
-                                                    {
-                                                        if (StateOfTask)
-                                                        {
-                                                            Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
-                                                            return;
-                                                        }
-                                                    }
-
-                                                });
-
-                                                IsCompleted = true;
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                LoggerViewModel.Log($"{ex.Message} |Line:173|Method:SendComment|Class:Web.Core->UserOperation->Comment ", TypeOfLog.exclamationcircle);
-
-                                            }
-                                        });
-                                        Thread.Sleep((2 * 30) * (1000));
-                                        LoggerViewModel.Log("unfortunately your account has been blocked", TypeOfLog.Warning);
-
-                                    }
-                                    else { break; }
-                                }
-                                if (!(CounterOfErrors > beforeChecking))
-                                {
-                                    mModelComment.SentSuccess++;
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                LoggerViewModel.Log($"{ex.Message} |Line:160|Method:SendComment|Class:Web.Core->UserOperation->Comment ", TypeOfLog.exclamationcircle);
-                                bool try_ = KernalWeb.Driver.FindElement(By.ClassName("_162ov")).Displayed;
-                            }
-                            if (!isReapet && CounterOfErrors >= 1)
-                            {
-                                /* اعادة ضبط اعدادات الانتقال  بين المنشورات */
-                                i--;
-                                /* الغاء التوقف  عند منشور معين  حال  حدوث خطأ */
-                                isReapet = true;
-                                /* تصفير عداد الاخطاء */
-                                CounterOfErrors = 0;
-                            }
+                            GetPost(Posts);
+                        });
+                        /* الانتظار  حتى يتم تعبئة  قائمة المنشورات */
+                        while (!(Posts.Count >= 1))
+                        {
 
                         }
+                        #region Old
+                        ///* التحقق  من زر المزيد  من المنشورات  */
+                        //foreach (var button in Temp.FindElements(By.TagName("a")))
+                        //{
+                        //    try
+                        //    {
+                        //        while (button.GetAttribute("href").Contains("?max_id"))
+                        //        {
+                        //            button.Click();
+                        //        }
+
+                        //    }
+                        //    catch (Exception ex)
+                        //    {
+                        //        LoggerViewModel.Log($"{ex.Message} |Line:48|Method:SendComment|Class:Web.Core->UserOperation->Comment ", TypeOfLog.exclamationcircle);
+                        //    }
+                        //}
+
+                        #endregion
+                        /* اعادة ارسال التعليق */
+                        bool isReapet = false;
+                        /* عداد الاخطاء  الخاصة  بإرسال التعليقات */
+                        int CounterOfErrors = 0;
+                        /* في حالة عدم  وجود منشن */
+                        if (string.IsNullOrEmpty(mModelComment.Tag))
+                        {
+                            Actions DoActionsOnBrowser = new Actions(KernalWeb.Driver);
+                            /* متغير لحساب التعليقات المرسلة */
+                            int AntiBanned = 0;
+                            for (int i = 0; i < Posts.Count; i++)
+                            {
+                                LoggerViewModel.Log($"{Posts.Count} I={i}", TypeOfLog.Warning);
+                                int spell = new Random().Next(0, mModelComment.Text.Length);
+                                Thread.Sleep(3 * 1000);
+                                KernalWeb.Driver.Navigate().GoToUrl(Posts[i]);
+                                Thread.Sleep(2 * 1000);
+                                KernalWeb.Driver.ExecuteScript("window.scrollBy(0,2000);");
+                                KernalWeb.Driver.FindElement(By.XPath("//*[@id='react-root']/section/main/div/div/article/div[2]/section[3]/form/textarea")).Click();
+                                /* تقطيع التعليق جزئين وارسالهم بأوقات مختلفة */
+                                for (int ii = 0; ii < 2; ii++)
+                                {
+                                    Thread.Sleep(500);
+
+                                    /* Needs to be fix  */
+
+                                    //KernalWeb.Driver.FindElement(By.XPath("//*[@id='react-root']/section/main/div/div/article/div[2]/section[3]/form/textarea")).
+                                    //        SendKeys(mModelComment.Text.Substring((ii == 1) ? 0 : spell, ((ii == 1) ? spell : mModelComment.Text.Length - spell)));
+                                    Screenshot sc = KernalWeb.Driver.GetScreenshot();
+                                    sc.SaveAsFile($"img_of_postsAndCommentsSection{ii}.png", ScreenshotImageFormat.Png);
+                                    DoActionsOnBrowser.SendKeys(KernalWeb.Driver.FindElement(By.XPath("//*[@id='react-root']/section/main/div/div/article/div[2]/section[3]/form/textarea")),
+                                        mModelComment.Text.Substring((ii == 1) ? 0 : spell, ((ii == 1) ? spell : mModelComment.Text.Length - spell))).Perform();
+
+
+                                }
+                                try
+                                {
+
+                                    /* Needs to be fix  */
+
+                                    //KernalWeb.Driver.FindElement(By.XPath("//*[@id='react-root']/section/main/div/div/article/div[2]/section[3]/form/textarea")).SendKeys(Keys.Enter);
+                                    DoActionsOnBrowser.SendKeys(KernalWeb.Driver.FindElement(By.XPath("//*[@id='react-root']/section/main/div/div/article/div[2]/section[3]/form/textarea")), Keys.Enter).Perform();
+                                    Thread.Sleep(100);
+                                    Screenshot sc = KernalWeb.Driver.GetScreenshot();
+                                    sc.SaveAsFile($"img_of_postsAndCommentsSection_After_Submit_what_the_user_wrote.png", ScreenshotImageFormat.Png);
+
+                                    AntiBanned++;
+                                    if (AntiBanned == 3)
+                                    {
+                                        Thread.Sleep(30 * 1000);
+                                        AntiBanned = 0;
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    LoggerViewModel.Log($"{ex.Message} |Line:118|Method:SendComment|Class:Web.Core->UserOperation->Comment ", TypeOfLog.exclamationcircle);
+                                }
+                                try
+                                {
+                                    int beforeChecking = CounterOfErrors;
+                                    Thread.Sleep(5000);
+                                    /* التحقق  من وجود اخطاء */
+                                    while (KernalWeb.Driver.FindElement(By.ClassName("_162ov")).Displayed && KernalWeb.Driver.FindElement(By.ClassName("_162ov")).Text.Contains("Couldn't post comment."))
+                                    {
+                                        CounterOfErrors++;
+                                        mModelComment.UnableToSend++;
+                                        /* في حال  حدوث الخطأ مرة اخرى */
+                                        if (isReapet)
+                                        {
+                                            isReapet = false;
+                                            /*   
+                                           وعليه فانه سيتم ايقاف ارسال التعليقات لمدة  دقيقتان ' المؤقت  ' يبدو ان حسابك قد  تعرض للحظر 
+                                             */
+                                            Application.Current.Dispatcher.Invoke(() =>
+                                            {
+                                                try
+                                                {
+                                                    //DXMessageBox.Show($".يبدو ان حسابك قد تعرض للحظر المؤقت  وعليه فانه سيتم تعليق ارسال التعليقات  حتى دقيقة");
+                                                    /* تحقق  من حالة قسم  ارسال التعليقات */
+                                                    bool IsCompleted = false;
+                                                    Task.Run(() =>
+                                                    {
+                                                        while (!IsCompleted)
+                                                        {
+                                                            if (StateOfTask)
+                                                            {
+                                                                Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
+                                                                return;
+                                                            }
+                                                        }
+
+                                                    });
+
+                                                    IsCompleted = true;
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                    LoggerViewModel.Log($"{ex.Message} |Line:173|Method:SendComment|Class:Web.Core->UserOperation->Comment ", TypeOfLog.exclamationcircle);
+
+                                                }
+                                            });
+                                            Thread.Sleep((2 * 30) * (1000));
+                                            LoggerViewModel.Log("unfortunately your account has been blocked", TypeOfLog.Warning);
+
+                                        }
+                                        else { break; }
+                                    }
+                                    if (!(CounterOfErrors > beforeChecking))
+                                    {
+                                        mModelComment.SentSuccess++;
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    LoggerViewModel.Log($"{ex.Message} |Line:160|Method:SendComment|Class:Web.Core->UserOperation->Comment ", TypeOfLog.exclamationcircle);
+                                    bool try_ = KernalWeb.Driver.FindElement(By.ClassName("_162ov")).Displayed;
+                                }
+                                if (!isReapet && CounterOfErrors >= 1)
+                                {
+                                    /* اعادة ضبط اعدادات الانتقال  بين المنشورات */
+                                    i--;
+                                    /* الغاء التوقف  عند منشور معين  حال  حدوث خطأ */
+                                    isReapet = true;
+                                    /* تصفير عداد الاخطاء */
+                                    CounterOfErrors = 0;
+                                }
+
+                            }
+                        }
+                        LoggerViewModel.Log($"{Posts.Count}", TypeOfLog.Warning);
+
+                        StateOfTask = true;
                     }
-                    LoggerViewModel.Log($"{Posts.Count}", TypeOfLog.Warning);
 
-                    StateOfTask = true;
-                }
-
-            });
-            while (!StateOfTask)
-            {
-                while (StateOfTask)
+                });
+                while (!StateOfTask)
                 {
-                    Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
-                    LoggerViewModel.Log("Finished", TypeOfLog.check);
-                    break;
+                    while (StateOfTask)
+                    {
+                        Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
+                        LoggerViewModel.Log("Finished", TypeOfLog.check);
+                        break;
+                    }
+
                 }
 
+                Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
             }
 
-            Operations.CurrentOT = OperationsTypes.CancelCurrentOperation;
+         
         }
         /// <summary>
         ///  دالة لإرسال التعليقات
@@ -1111,6 +1138,26 @@ namespace Instagram.App
             }
             LoggerViewModel.Log("Finished..!", TypeOfLog.check);
 
+        }
+
+        public void SendComment_UNDERTEST()
+        {
+            var req = (HttpWebRequest)WebRequest.Create("https://www.instagram.com/web/comments/1664931684115611920/add/");
+            byte[] data = Encoding.UTF8.GetBytes("comment_text=hhhhhd");
+            req.CookieContainer = KernalWeb.GetCookie();
+            req.Referer = "https://www.instagram.com/p/BcVJwRTFDgA/?taken-by=dana14230002";
+            req.Headers["X-Instagram-AJAX"] = "1";
+            req.Headers["X-Requested-With"] = "XMLHttpRequest";
+            req.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0";
+            req.Method = "POST";
+            req.ContentLength = data.Length;
+            Stream stream = req.GetRequestStream();
+            stream.Write(data, 0, data.Length);
+            stream.Close();
+            string json = new StreamReader(req.GetResponse().GetResponseStream()).ReadToEnd();
+            var respone = (HttpWebResponse)req.GetResponse();
+            LoggerViewModel.Log(json, TypeOfLog.Warning);
+            respone.Close();
         }
     }
 }

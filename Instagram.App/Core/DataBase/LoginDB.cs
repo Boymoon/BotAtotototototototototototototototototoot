@@ -14,148 +14,80 @@ namespace Instagram.App
     /// <summary>
     /// كلاس للتعامل مع قاعدة البيانات الخاصة بتسجيل الدخول
     /// </summary>
-    public class LoginDB : IDataBase
+    public class LoginDB : PrototypeOfDB, IDataBase
     {
-        private MainDB DB_;
         /// <summary>
-        /// متغير للتعامل  مع قاعدة البيانات الام
+        /// حذف عنصر محدد من جدول الحسابات المضافة
         /// </summary>
-        public MainDB DB
+        /// <param name="name">الجدول المراد الحذف منه</param>
+        /// <param name="args">username,password,email</param>
+        /// <returns></returns>
+        public bool DeleteItem(string name,string[] args)
         {
-            get { return DB_; }
-            set { DB_ = value; }
-        }
-        public LoginDB(MainDB dB)
-        {
-            DB_ = dB;
+            name = "account";
+            string con = $"delete from {name} where username='{args[0]}' And password='{args[1]}' And email='{args[2]}';";
+            var sqlcommand = new SQLiteCommand(con, Connection);
+            try
+            {
+                Connection.Open();
+                sqlcommand.ExecuteNonQuery();
+                Connection.Close();
+                return true;
+            }
+            catch (Exception ex_deleteItem)
+            {
+
+                LoggerViewModel.Log($"Error:{ex_deleteItem.InnerException} Method DeleteItem Class LoginDB", TypeOfLog.exclamationcircle);
+                Connection.Close();
+                return false;
+            }
         }
         /// <summary>
-        /// اضافة جدول
+        /// 
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="_item"></param>
         /// <param name="name"></param>
-        public void AddTable<T>(T _item, string name)
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public bool InsertItem(string name, string[] args)
         {
-            /* تحقق من وجود الجدول */
-            if (DB.Check(name))
-            {
-                return;
-            }
+            name = "account";
             try
             {
-                var con=DB.Connect();
-                con.Open();
-                string que = $"create table {name} ({_item})";
-                SQLiteCommand smd = new SQLiteCommand(que,con);
-                smd.ExecuteNonQuery();
-                con.Close();
+                string con = $"insert into {name} (username,password,email) Values('{args[0]}','{args[1]}','{args[2]}');";
+                var sqliteCommand = new SQLiteCommand(con, Connection.OpenAndReturn());
+                sqliteCommand.ExecuteNonQuery();
+                Connection.Close();
+                return true;
             }
-            catch (Exception ex)
+            catch (Exception ex_InsertItem)
             {
-                LoggerViewModel.Log($"Error at LoginDB Line 40~50 Method add table {ex.Message}", TypeOfLog.exclamationcircle);
+                LoggerViewModel.Log($"Error:{ex_InsertItem.InnerException} Method InsertItem Class LoginDB", TypeOfLog.exclamationcircle);
+                Connection.Close();
+                return false;
             }
         }
         /// <summary>
-        /// البحث عن جدول
+        /// جلب البيانات الجدول المحدد
         /// </summary>
-        /// <param name="TableName"></param>
+        /// <param name="name">اسم الجدول المراد جلب البيانات منه</param>
         /// <returns></returns>
-        public bool Check(string TableName)
+        public DataTable Fill(string name)
         {
-            return DB.Check(TableName);
-        }
-        /// <summary>
-        /// البحث عن عنصر في جدول
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="_item"></param>
-        /// <param name="TableName"></param>
-        /// <returns></returns>
-        public bool CheckForItem<T>(T _item, string TableName)
-        {
-            return DB_.CheckForItem<T>(_item, TableName);
-        }
-        /// <summary>
-        /// <see cref="DB.Connect()"/>
-        /// </summary>
-        /// <returns></returns>
-        public SQLiteConnection Connect()
-        {
-            throw new NotImplementedException();
-        }
-        /// <summary>
-        /// حذف  جدول  محدد 
-        /// </summary>
-        /// <param name="TableName"></param>
-        public void Delete(string TableName)
-        {
-            DB_.Delete(TableName);
-        }
-        /// <summary>
-        /// حذف صف  محدد من جدول محدد
-        /// </summary>
-        /// <typeparam name="index"></typeparam>
-        /// <param name="_item"></param>
-        /// <param name="Tablename"></param>
-        public void DeleteItem<index>(index _item, string Tablename, string columnname)
-        {
-            DB.DeleteItem<index>(_item, Tablename, columnname);
-        }
-        /// <summary>
-        /// تحديث الجدول المراد تحديثه
-        /// </summary>
-        /// <typeparam name="T">نوع الجدول</typeparam>
-        /// <param name="_item">الجدول</param>
-        /// <param name="name">اسم الجدول</param>
-        public void UpdateTable<T>(T _item, string name)
-        {
-            var con = DB.Connect();
-            string que = $"update {name} Set {_item};";
-            SQLiteCommand sQLiteCommand = new SQLiteCommand(que, con);
-            con.Open();
+            var dt = new DataTable();
+            string con = $"select * from account;";
+            Connection.Open();
             try
             {
-                sQLiteCommand.ExecuteNonQuery();
-                con.Close();
+                var adapter = new SQLiteDataAdapter(con, Connection);
+                adapter.Fill(dt);
+                Connection.Close();
+                return dt;
             }
-            catch (Exception ex)
+            catch (Exception ex_Fill)
             {
-             LoggerViewModel.Log($"Error at LoginDB Line 90~99 method updatetable {ex.Message}", TypeOfLog.exclamationcircle);
+                LoggerViewModel.Log($"Error:{ex_Fill.InnerException} Method Fill Class LoginDB", TypeOfLog.exclamationcircle);
+                return null;
             }
-        }
-        /// <summary>
-        /// اضافة عناصر جديدة
-        /// </summary>
-        /// <typeparam name="T">نوع البيانات المدخلة</typeparam>
-        /// <param name="_item">تعليمات الادخال</param>
-        /// <param name="name">اسم الجدول</param>
-        public void InsertItem<T>(T _item, string name)
-        {
-            var con = DB.Connect();
-            string que = $"insert into {name} {_item}";
-            SQLiteCommand smd = new SQLiteCommand(que, con);
-            try
-            {
-                con.Open();
-                smd.ExecuteNonQuery();
-                con.Close();
-
-            }
-            catch (Exception ex)
-            {
-                LoggerViewModel.Log($"Error at LoginDB Line 120~150 method insert... {ex.Message}", TypeOfLog.exclamationcircle);
-
-            }
-        }
-        /// <summary>
-        /// يعمل على تعبئة البيانات وارسالها للجدول المخصص
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="query"></param>
-        public void Fill(DataSet data, string Tablename)
-        {
-            DB.Fill(data, Tablename);
         }
     }
 }

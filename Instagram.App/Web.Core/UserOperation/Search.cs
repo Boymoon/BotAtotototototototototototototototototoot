@@ -10,6 +10,8 @@ using System.Windows;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support;
 using OpenQA.Selenium.Interactions;
+using System.IO;
+using System.Drawing;
 
 namespace Instagram.App
 {
@@ -670,7 +672,7 @@ namespace Instagram.App
                     KernalWeb.Driver.ExecuteScript("scrollBy(0,380);");
                 }
 
-
+     
                 var Views = "-";
                 var Likes = "-";
                 var context = "null";

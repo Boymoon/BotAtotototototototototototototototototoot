@@ -35,7 +35,30 @@ namespace Instagram.App
             FollowWhohasFollowingFrom_To.DataContext = ddb;
          
         }
+        private void PostsAndCommentsSectionEVN(object sender, MouseEventArgs e)
+        {
+            Task.Run(() => {
+            HelperSelector.CurrentSection = TypesSections.CommentsAndPostsSection;
+            HelperSelector.Init();
+            });
+        }
 
+        private void SearchSectionEVN(object sender, MouseEventArgs e)
+        {
+            Task.Run(() => {
 
+            HelperSelector.CurrentSection = TypesSections.SearchSection;
+            HelperSelector.Init();
+            });
+        }
+
+        private void MainSectionEVN(object sender, MouseEventArgs e)
+        {
+            Task.Run(() => {
+            HelperSelector.CurrentSection = TypesSections.FollowersSection;
+            HelperSelector.Init();
+
+            }); 
+        }
     }
 }

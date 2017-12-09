@@ -14,16 +14,9 @@ namespace Instagram.App
         /// المنشور الحالي
         /// </summary>
         private CurrentPostModel CurrentPost_ { get; set; }
-        /// <summary>
-        /// المنشورات
-        /// </summary>
-        private ContainerCollection<ObservableCollection<ModelPost>> Container { get; set; }
-
-
-        public CurrentPostViewModel(CurrentPostModel currentPostModel, ContainerCollection<ObservableCollection<ModelPost>> containerCollection)
+        public CurrentPostViewModel(CurrentPostModel currentPostModel)
         {
             CurrentPost_ = currentPostModel;
-            Container = containerCollection;
         }
 
 
@@ -31,7 +24,7 @@ namespace Instagram.App
         /// <summary>
         /// حفظ
         /// </summary>
-        public void Save(ModelPost post,ObservableCollection<ModelPost>Posts=null)
+        public void Save(ModelPost post, ObservableCollection<ModelPost> Posts = null)
         {
             if (post == null && Posts==null)
             {
@@ -49,7 +42,7 @@ namespace Instagram.App
                         if (CurrentPost_.IsSectionAccounts)
                         {
                             bool Match_ = false;
-
+                            
                             for (int ii = 0; ii < CollectionsHelper.Followers.Count; ii++)
                             {
                                 if (CollectionsHelper.Followers[ii].Username == post.publisher
@@ -89,7 +82,7 @@ namespace Instagram.App
                             {
                                 //CollectionsHelper.Posts.Add(post);
                                 currentpostContainer.Add(post);
-                                ContainerCollection<ObservableCollection<ModelPost>>.Insert(CurrentPost_.Tablename, currentpostContainer);
+                                HelperSelector.Insert(currentpostContainer, CurrentPost_.Tablename);
                                 if (CurrentPost_.Tablename == "-")
                                 {
                                     CurrentPost_.Tablename = $" {new Random().Next(1, 99999).ToString()} جدول";
@@ -137,14 +130,14 @@ namespace Instagram.App
                     if (!Match)
                     {
                         currentpostContainer.Add(post);
-                        if (ContainerCollection<ObservableCollection<ModelPost>>.Tables.IndexOf(CurrentPost_.Tablename) != -1)
+                        if (HelperSelector.check(CurrentPost_.Tablename) != -1)
                         {
 
-                            ContainerCollection<ObservableCollection<ModelPost>>.Insert(CurrentPost_.Tablename, currentpostContainer);
+                            HelperSelector.Insert(currentpostContainer,CurrentPost_.Tablename);
                         }
                         else
                         {
-                            ContainerCollection<ObservableCollection<ModelPost>>.AddTable(CurrentPost_.Tablename, currentpostContainer);
+                            HelperSelector.Insert(currentpostContainer, CurrentPost_.Tablename);
                         }
                     }
                 }

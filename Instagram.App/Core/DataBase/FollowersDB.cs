@@ -8,148 +8,124 @@ using System.Threading.Tasks;
 
 namespace Instagram.App
 {
-   public class FollowersDB
+    public class FollowersDB : PrototypeOfDB, IDataBase
     {
-        private MainDB DB_;
         /// <summary>
-        /// متغير للتعامل  مع قاعدة البيانات الام
+        /// حذف عنصر محدد من جدول
         /// </summary>
-        public MainDB DB
-        {
-            get { return DB_; }
-            set { DB_ = value; }
-        }
-        public FollowersDB(MainDB dB)
-        {
-            DB_ = dB;
-        }
-        /// <summary>
-        /// اضافة جدول
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="_item"></param>
-        /// <param name="name"></param>
-        public void AddTable<T>(T _item, string name)
-        {
-            /* تحقق من وجود الجدول */
-            if (DB.Check(name))
-            {
-                return;
-            }
-            try
-            {
-                var con = DB.Connect();
-                con.Open();
-                string que = $"create table {name} ({_item})";
-                SQLiteCommand smd = new SQLiteCommand(que, con);
-                smd.ExecuteNonQuery();
-                con.Close();
-            }
-            catch (Exception ex)
-            {
-                LoggerViewModel.Log($"Error at LoginDB Line 40~50 Method add table {ex.Message}", TypeOfLog.exclamationcircle);
-            }
-        }
-        /// <summary>
-        /// البحث عن جدول
-        /// </summary>
-        /// <param name="TableName"></param>
+        /// <param name="name">اسم الجدول المراد الحذف منه</param>
+        /// <param name="args">SectionF(username TEXT ,Uid TEXT,Followers TEXT,IsFollower TEXT,ID INTEGER64)</param>
         /// <returns></returns>
-        public bool Check(string TableName)
-        {
-            return DB.Check(TableName);
-        }
-        /// <summary>
-        /// البحث عن عنصر في جدول
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="_item"></param>
-        /// <param name="TableName"></param>
-        /// <returns></returns>
-        public bool CheckForItem<T>(T _item, string TableName)
-        {
-            return DB_.CheckForItem<T>(_item, TableName);
-        }
-        /// <summary>
-        /// <see cref="DB.Connect()"/>
-        /// </summary>
-        /// <returns></returns>
-        public SQLiteConnection Connect()
+        public bool DeleteItem(string name, string[] args)
         {
             throw new NotImplementedException();
         }
         /// <summary>
-        /// حذف  جدول  محدد 
+        /// اضافة عنصر جديد للجدول المحدد
         /// </summary>
-        /// <param name="TableName"></param>
-        public void Delete(string TableName)
-        {
-            DB_.Delete(TableName);
-        }
-        /// <summary>
-        /// حذف صف  محدد من جدول محدد
-        /// </summary>
-        /// <typeparam name="index"></typeparam>
-        /// <param name="_item"></param>
-        /// <param name="Tablename"></param>
-        public void DeleteItem<index>(index _item, string Tablename, string columnname)
-        {
-            DB.DeleteItem<index>(_item, Tablename, columnname);
-        }
-        /// <summary>
-        /// تحديث الجدول المراد تحديثه
-        /// </summary>
-        /// <typeparam name="T">نوع الجدول</typeparam>
-        /// <param name="_item">الجدول</param>
         /// <param name="name">اسم الجدول</param>
-        public void UpdateTable<T>(T _item, string name)
+        /// <param name="args">
+        /// برامترز خاصة بالعنصر المراد اضافته
+        /// username,Uid,Followers,IsFollower,ID
+        /// </param>
+        /// <returns></returns>
+        public bool InsertItem(string name, string[] args)
         {
-            var con = DB.Connect();
-            string que = $"update {name} Set {_item};";
-            SQLiteCommand sQLiteCommand = new SQLiteCommand(que, con);
-            con.Open();
+            args[4] = GetID(name,TypesSections.FollowersSection).ToString();
+            string con = $"insert into SectionF (username,Uid,Followers,IsFollower,ID) Values('{args[0]}','{args[1]}','{args[2]}','{args[3]}',{Int64.Parse(args[4])});";
+            var sqlcommand = new SQLiteCommand(con, Connection.OpenAndReturn());
             try
             {
-                sQLiteCommand.ExecuteNonQuery();
-                con.Close();
+                sqlcommand.ExecuteNonQuery();
+                Connection.Close();
+                return true;
             }
-            catch (Exception ex)
+            catch (Exception ex_InsertItem)
             {
-                LoggerViewModel.Log($"Error at LoginDB Line 90~99 method updatetable {ex.Message}", TypeOfLog.exclamationcircle);
+                Connection.Close();
+                LoggerViewModel.Log($"Error:{ex_InsertItem.InnerException} Method InsertItem Class FollowersDB", TypeOfLog.exclamationcircle);
+                return false;
             }
+
         }
         /// <summary>
-        /// اضافة عناصر جديدة
+        /// اضافة عنصر جديد للجدول المحدد
         /// </summary>
-        /// <typeparam name="T">نوع البيانات المدخلة</typeparam>
-        /// <param name="_item">تعليمات الادخال</param>
         /// <param name="name">اسم الجدول</param>
-        public void InsertItem<T>(T _item, string name)
+        /// <param name="args">
+        /// برامترز خاصة بالعنصر المراد اضافته
+        /// username,Uid,Followers,IsFollower,ID
+        /// </param>
+        /// <returns></returns>
+        public bool InsertRange(string name, List<string[]> args)
         {
-            var con = DB.Connect();
-            string que = $"insert into {name} {_item}";
-            SQLiteCommand smd = new SQLiteCommand(que, con);
+            string con = $"insert into SectionF (username,Uid,Followers,IsFollower,ID) Values('{args[0]}','{args[1]}','{args[2]}','{args[3]}',{Int64.Parse(args[0][4])});";
+            var sqlcommand = new SQLiteCommand();
+            sqlcommand.Connection = Connection.OpenAndReturn();
+            for (int i = 0; i < args.Count; i++)
+            {
+              args[i][4] = GetID(name, TypesSections.FollowersSection).ToString();
+                con = $"insert into SectionF (username,Uid,Followers,IsFollower,ID) Values('{args[i][0]}','{args[i][1]}','{args[i][2]}','{args[i][3]}',{Int64.Parse(args[i][4])});";
+                sqlcommand.CommandText = con;
+                sqlcommand.ExecuteNonQuery();
+                LoggerViewModel.Log($"I {i}", TypeOfLog.Warning);
+            }
             try
             {
-                con.Open();
-                smd.ExecuteNonQuery();
-                con.Close();
-
+                Connection.Close();
+                return true;
             }
-            catch (Exception ex)
+            catch (Exception ex_InsertItem)
             {
-                LoggerViewModel.Log($"Error at FollowersDB Line 140~141 method insert... {ex.Message}", TypeOfLog.exclamationcircle);
-
+                Connection.Close();
+                LoggerViewModel.Log($"Error:{ex_InsertItem.InnerException} Method InsertItem Class FollowersDB", TypeOfLog.exclamationcircle);
+                return false;
             }
+
         }
         /// <summary>
-        /// يعمل على تعبئة البيانات وارسالها للجدول المخصص
+        /// جلب البيانات الجدول المحدد
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="query"></param>
-        public void Fill(DataSet data, string Tablename)
+        /// <param name="name">اسم الجدول المراد جلب البيانات منه</param>
+        /// <returns></returns>
+        public DataTable Fill(string name)
         {
-            DB.Fill(data, Tablename);
+            Int64 id = GetID(name,TypesSections.FollowersSection);
+            var dt = new DataTable();
+            string con = $"select * from SectionF Where ID={id};";
+            Connection.Open();
+            try
+            {
+                var adapter = new SQLiteDataAdapter(con, Connection);
+                adapter.Fill(dt);
+                Connection.Close();
+                return dt;
+            }
+            catch (Exception ex_Fill)
+            {
+                LoggerViewModel.Log($"Error:{ex_Fill.InnerException} Method Fill Class LoginDB", TypeOfLog.exclamationcircle);
+                return null;
+            }
+
+        }
+        public int GetCount(Int64 id)
+        {
+            int idd = 0;
+            var dt = new DataTable();
+            string con = $"select Count(*) from SectionF where ID={id};";
+            try
+            {
+                var adapter = new SQLiteDataAdapter(con, Connection.OpenAndReturn());
+                adapter.Fill(dt);
+                idd = int.Parse(dt.Rows.Cast<DataRow>().FirstOrDefault().Field<Int64>("Count(*)").ToString());
+                Connection.Close();
+                return idd;
+            }
+            catch (Exception ex_Fill)
+            {
+                LoggerViewModel.Log($"Error:{ex_Fill.InnerException} Method GetCount Class FollowersDB", TypeOfLog.exclamationcircle);
+                return 0;
+            }
         }
     }
 }

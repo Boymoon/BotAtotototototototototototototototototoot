@@ -21,19 +21,11 @@ namespace Instagram.App
         private void OnAppStartup_UpdateThemeName(object sender, StartupEventArgs e)
         {
             DevExpress.Xpf.Core.ApplicationThemeHelper.UpdateApplicationThemeName();
+                HelperSelector.Init();
             Task.Run(() =>
             {
-                var LoginDB = new LoginDB(new MainDB());
-                if (!LoginDB.Check("account"))
-                {
-                    LoginDB.AddTable<string>($"username TEXT," +
-                                             $"password TEXT," +
-                                             $"email TEXT"
-                                             , "account");
-                }
-                ContainerCollection<ObservableCollection<ModelPost>>.Init();
-                CollectionsHelper.Init();
                 KernalWeb.Setup();
+                CollectionsHelper.Init();
                 garbage.Init();
                 for (int i = 0; i < KernalWeb._PID.Count; i++)
                 {

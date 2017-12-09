@@ -24,7 +24,7 @@ namespace Instagram.App
         /// <summary>
         /// السجلات
         /// </summary>
-        public static ObservableCollectionCore<ModelLogger> Logs { get; set; } = new ObservableCollectionCore<ModelLogger>();
+        public static ObservableCollection<ModelLogger> Logs { get; set; } = new ObservableCollection<ModelLogger>();
         /// <summary>
         /// اضافة سجل جديد
         /// </summary>

@@ -7,20 +7,22 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Text.RegularExpressions;
 using DevExpress.Xpf.Core;
+using System.Data;
 
 namespace Instagram.App
 {
     public class CommentViewModel:BaseViewModel
     {
-        public ObservableCollection<ModelPost> Posts { get; } = new ObservableCollection<ModelPost>();
-        public ObservableCollection<ObservableCollection<AccountOperations>> TablesComment { get { return HelperCollections<AccountOperations>.CollectionOfTables; }}
-        public ContainerCollection<ObservableCollection<ModelPost>> container { get; } = new ContainerCollection<ObservableCollection<ModelPost>>();
-        public ObservableCollection<string> Items_ { get
+        public ObservableCollection<ModelPost> Posts { get; set; } = new ObservableCollection<ModelPost>();
+        public ObservableCollection<ModelTable> Tables
+        {
+            get
             {
-                return ContainerCollection<ObservableCollection<ModelPost>>.Tables;
-            } }
-        private string select_;
-        public string Select
+                return new ObservableCollection<ModelTable>(HelperSelector.regestirTables.Where(item => item.typessections == TypesSections.CommentsAndPostsSection));
+            }
+        }
+        private ModelTable select_;
+        public ModelTable Select
         {
             get
             {
@@ -28,11 +30,28 @@ namespace Instagram.App
             }
             set
             {
+                var LastSelected = select_;
+                if (value==null)
+                {
+                    value = LastSelected;
+                }
                 select_ = value;
-                container.Selected = ContainerCollection<ObservableCollection<ModelPost>>.Container[ContainerCollection<ObservableCollection<ModelPost>>.Tables.IndexOf(value)];
+                if (value!=null)
+                {
+                DataContextOfModelTable.NameOfTheTable = value.NameOfTheTable;
 
+                }
+                if (value !=null && HelperSelector.check(value.NameOfTheTable)!=-1)
+                {
+                    Posts = new ObservableCollection<ModelPost>(HelperSelector.ParentOfPostsTable[HelperSelector.regestirTables.IndexOf(HelperSelector.regestirTables.Where(item => item.NameOfTheTable== value.NameOfTheTable).FirstOrDefault())]);
+                    OnPropertyChanged("Posts");
+                }
             }
         }
+        /// <summary>
+        /// كونتكست للجداول
+        /// </summary>
+        public ModelTable DataContextOfModelTable { get; set; }
         private ObservableCollection<ModelPost> SelectedItems_=new ObservableCollection<ModelPost>();
         /// <summary>
         /// المنشورات المحددة
@@ -57,9 +76,14 @@ namespace Instagram.App
         private Comment Comment_;
         public CommentViewModel(ModelComment mComment)
         {
+            DataContextOfModelTable = new ModelTable();
+            //HelperSelector.Init();
             //ارسال تعليق
             mComment.Command_Comment = new BaseCommand(SendAComment);
             Comment_op = mComment;
+            DataContextOfModelTable.DeleteCurrentTable = new BaseCommand(DeleteCurrentTable);
+            DataContextOfModelTable.AddNewTable = new BaseCommand(AddNewTable);
+            DataContextOfModelTable.EditCurrentTable = new BaseCommand(EditTable);
             //اظهار صفحة اختيار المنشنز
             mComment.CommandAddTags = new BaseCommand(() => {
                 LoggerViewModel.Log(SelectedItems.Count.ToString(), TypeOfLog.questioncircle);
@@ -69,22 +93,47 @@ namespace Instagram.App
                 win.ShowDialog();
             });
             Comment = Comment_op;
-            for (int i = 0; i < 5; i++)
-            {
-                Posts.Add(new ModelPost()
+            Task.Run(() => {
+                while (((PrototypeOfDB)new PostsDB()).Fill("Tables").Rows.Cast<DataRow>().Where(type_ => type_.Field<string>("section") == TypesSections.CommentsAndPostsSection.ToString()).ToList().Count > 0 && Tables.Count <= 0)
                 {
-                    Context = "context",
-                    ContextMedia = "www.mdmd.com/mp4",
-                    Likes = "0",
-                    publishedat = "2:10 pm",
-                    publisher = "Person",
-                    UidOfpost = "www.post.com",
-                    UidOfpublisher = "www.person.com",
-                    Views = "100"
-                });
+                    OnPropertyChanged("Tables");
+                }
+            });
+        }
+        /// <summary>
+        /// تعديل اسم الجدول الحالي
+        /// </summary>
+        private void EditTable()
+        {
+            try
+            {
+                HelperSelector.EditTable(select_.NameOfTheTable, DataContextOfModelTable.NameOfTheTable);
+                OnPropertyChanged("Tables");
             }
-               ContainerCollection<ObservableCollection<ModelPost>>.Insert($"Table {ContainerCollection<ObservableCollection<ModelPost>>.Tables.Count}", Posts);         
+            catch (Exception)
+            {
 
+            }
+         
+        }
+
+        /// <summary>
+        /// اضافة جدول جديد
+        /// </summary>
+        private void AddNewTable()
+        {
+            DataContextOfModelTable.typessections = TypesSections.CommentsAndPostsSection;
+            HelperSelector.AddTable(new ObservableCollection<ModelPost>(), DataContextOfModelTable.NameOfTheTable);
+            OnPropertyChanged("Tables");
+        }
+        /// <summary>
+        /// حذف الجدول الحالي
+        /// </summary>
+        private void DeleteCurrentTable()
+        {
+            HelperSelector.DeleteTable(select_, select_.NameOfTheTable, TypesSections.CommentsAndPostsSection);
+            OnPropertyChanged("Tables");
+            OnPropertyChanged("Posts");
         }
         private void SendAComment()
         {
@@ -97,7 +146,8 @@ namespace Instagram.App
                 {
                     Task.Run(() =>
                     {
-                        Comment_.SendComment(Comment_op.TargetPost);
+                        Comment_.SendComment_UNDERTEST();
+                        //Comment_.SendComment(Comment_op.TargetPost);
                     });
                 });
             }
@@ -107,7 +157,8 @@ namespace Instagram.App
                 {
                     Task.Run(() =>
                     {
-                        Comment_.SendComment_UnderTest(Posts);
+                        Comment_.SendComment_UNDERTEST();
+                        //Comment_.SendComment_UnderTest(Posts,select_.NameOfTheTable);
                         LoggerViewModel.Log("Finished", TypeOfLog.exclamationcircle);
 
                     });

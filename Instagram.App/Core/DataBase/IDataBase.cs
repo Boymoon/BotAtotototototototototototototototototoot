@@ -15,55 +15,25 @@ namespace Instagram.App
     interface IDataBase
     {
         /// <summary>
-        /// الاتصال بقاعدة البيانات
+        /// اضافة عنصر جديد 
         /// </summary>
-        SQLiteConnection Connect();
-        /// <summary>
-        /// اضافة الجدول
-        /// </summary>
-        /// <returns>اضافة جدول جديد</returns>
-        void AddTable<T>(T _item,string name);
-        /// <summary>
-        /// تعديل الجدول
-        /// </summary>
-        /// <returns></returns>
-        void UpdateTable<T>(T _item, string name);
-        /// <summary>
-        /// اضافة عناصر جديدة
-        /// </summary>
-        /// <typeparam name="T">نوع البيانات المدخلة</typeparam>
-        /// <param name="_item">تعليمات الادخال</param>
         /// <param name="name">اسم الجدول</param>
-        void InsertItem<T>(T _item, string name);
-        /// <summary>
-        /// حذف جدول محدد
-        /// </summary>
-        void Delete(string TableName);
-        /// <summary>
-        /// حذف عنصر محدد
-        /// </summary>
-        /// <typeparam name="index"></typeparam>
-        /// <param name="_item"></param>
-        /// <param name="Tablename">اسم الجدول المراد حذف العنصر منه</param>
-        void DeleteItem<index>(index _item, string Tablename,string columnname);
-        /// <summary>
-        /// البحث عن جدول
-        /// </summary>
-        /// <param name="TableName">اسم الجدول المراد البحث عنه</param>
-        /// <returns>القيمة المنطقية للبحث</returns>
-        bool Check(string TableName);
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="TableName">الجدول المراد البحث فيه</param>
-        /// <param name="_item">العنصر المراد البحث عنه</param>
+        /// <param name="args">ContextMedia,UidOfpost,Context,publisher,publishedat,UidOfpublisher,Likes,Views,name<Required></param>
         /// <returns></returns>
-        bool CheckForItem<T>(T _item,string TableName);
+        bool InsertItem(string name, string[] args);
         /// <summary>
-        /// تعبئة جدول محدد
+        /// حذف عنصر معين من جدول محدد
         /// </summary>
-        /// <typeparam name="T">نوع الجدول المراد تعبئته</typeparam>
-        /// <param name="collection">الجدول المراد تعبئته</param>
-        void Fill(DataSet data,string Tablename);
+        /// <param name="name">اسم الجدول المراد حذف العنصر منه</param>
+        /// <param name="args">برامترز خاصة بالعنصر المراد حذفه</param>
+        /// <param name="args">ContextMedia,UidOfpost,Context,publisher,publishedat,UidOfpublisher,Likes,Views,name<Required></param>
+        /// <returns></returns>
+        bool DeleteItem(string name, string[] args);
+        /// <summary>
+        /// جلب البيانات الجدول المحدد
+        /// </summary>
+        /// <param name="name">اسم الجدول المراد جلب البيانات منه</param>
+        /// <returns></returns>
+        DataTable Fill(string name);
     }
 }

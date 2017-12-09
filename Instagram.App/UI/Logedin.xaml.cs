@@ -24,5 +24,7 @@ namespace Instagram.App.UI
         {
             InitializeComponent();
         }
+
+      
     }
 }

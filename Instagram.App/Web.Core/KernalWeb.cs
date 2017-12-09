@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support;
+using System.Net;
 
 namespace Instagram.App
 {
@@ -38,8 +39,7 @@ namespace Instagram.App
         /// <summary>
         /// المتصفح المؤقت 
         /// </summary>
-        public static ChromeDriver TemporaryDriver { get { return _TemporaryDriver;} } 
-        
+        public static ChromeDriver TemporaryDriver { get { return _TemporaryDriver;} }
         /// <summary>
         /// عنوان الحساب المستهدف في المتصفح المؤقت
         /// </summary>
@@ -58,7 +58,7 @@ namespace Instagram.App
             var driver_serv = ChromeDriverService.CreateDefaultService();
             driver_serv.HideCommandPromptWindow = true;
             var driverOptions = new ChromeOptions();
-            //    driverOptions.AddArgument("---headless");
+            driverOptions.AddArgument("headless");
             driverOptions.AddArgument(args);
             Driver = new ChromeDriver(driver_serv, driverOptions);
             _PID.Add((long)driver_serv.ProcessId);
@@ -96,6 +96,28 @@ namespace Instagram.App
             }
             CurrentDriver.Manage().Cookies.AddCookie(Driver.Manage().Cookies.AllCookies[1]);
         }
-
+        /* exctract Cookies From Webbrowser that we logged in with */
+        public static CookieContainer GetCookie()
+        {
+            if (Driver.Manage().Cookies.AllCookies.Count == 0)
+            {
+                return null;
+            }
+            var container = new CookieContainer();
+            foreach (var Cookie_ in Driver.Manage().Cookies.AllCookies)
+            {
+                container.Add(new System.Net.Cookie()
+                {
+                    Domain = Cookie_.Domain,
+                    HttpOnly = Cookie_.IsHttpOnly,
+                    Value = Cookie_.Value,
+                    Name = Cookie_.Name,
+                    Path = Cookie_.Path,
+                    Secure = Cookie_.Secure,
+                    Expires = Cookie_.Expiry.GetValueOrDefault()
+                });
+            }
+            return container;
+        }
     }
 }

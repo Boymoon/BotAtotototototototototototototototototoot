@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Instagram.App
 {
@@ -17,14 +18,14 @@ namespace Instagram.App
         /// <summary>
         /// قاعدة البيانات الحالية المراد التعامل معها
         /// </summary>
-        private static FollowersDB FollowersDB_;
+        private static FollowersDB FollowersDB_=new FollowersDB();
         /// <summary>
         /// قاعدة البيانات الحالية المراد التعامل معها
         /// </summary>
         private static SearchDB SearchDB_;
-        public static string NameOfSelectedTableOfPosts_;
-        public static string NameOfSelectedTableOfComments_;
-        public static string NameOfSelectedTableOfFollowers_;
+        private static string NameOfSelectedTableOfPosts_;
+        private static string NameOfSelectedTableOfComments_;
+        private static string NameOfSelectedTableOfFollowers_;
         /// <summary>
         /// الجدول المختار  من قسم المنشورات
         /// </summary>
@@ -32,10 +33,7 @@ namespace Instagram.App
         {
             get
             {
-                if (!PostsDB_.Check(NameOfSelectedTableOfPosts_))
-                {
-                    return NameOfSelectedTableOfPosts_ = "p14";
-                }
+               
                 return NameOfSelectedTableOfPosts_;
             }
             set { NameOfSelectedTableOfPosts_ = value; }
@@ -51,10 +49,7 @@ namespace Instagram.App
         {
             get
             {
-                if (!PostsDB_.Check(NameOfSelectedTableOfPosts_))
-                {
-                    return NameOfSelectedTableOfPosts_ = "p14";
-                }
+               
                 return NameOfSelectedTableOfComments_;
             }
             set { NameOfSelectedTableOfComments_ = value; }
@@ -66,62 +61,48 @@ namespace Instagram.App
         {
             get
             {
-             
+
                 return NameOfSelectedTableOfFollowers_;
             }
-            set {
-                if (!FollowersDB_.Check(NameOfSelectedTableOfFollowers_))
-                {
-                    value = "f14";
-                }
-                NameOfSelectedTableOfFollowers_ = value; }
+            set
+            {
+                
+                NameOfSelectedTableOfFollowers_ = value;
+            }
         }
-
-        private static ObservableCollectionCore<AccountOperations> Followers_;
+        private static ObservableCollection<AccountOperations> Followers_;
         private static ObservableCollection<ModelPost> Posts_;
         private static ObservableCollection<ModelComment> Comments_;
         /// <summary>
         /// جدول المتابعين للحساب المستهدف
         /// </summary>
-        public static ObservableCollectionCore<AccountOperations> Followers
+        public static ObservableCollection<AccountOperations> Followers
         {
-            get
-            {
-                if (Followers_ == null || Followers_.Count == 0)
-                {
-                    return Followers_;
-                }
-               var t=Task.Run(() =>
-                {
-                    if (NameOfSelectedTableOfFollowers_ == "f14")
-                    {
-                        FollowersDB_.AddTable<string>($"Username TEXT," +
-                            $"Uid TEXT," +
-                            $"Following TEXT," +
-                            $"Followers TEXT," +
-                            $"IsFollower TEXT",
-                            "f14");
-                        FollowersDB_.InsertItem<string>($"(Username,Uid,Following,Followers,IsFollower) " +
-                           $"Values('{Followers_[Followers_.Count - 1].Username}'," +
-                           $"'{Followers_[Followers_.Count - 1].Uid}'," +
-                           $"'{Followers_[Followers_.Count - 1].Following}'," +
-                           $"'{Followers_[Followers_.Count - 1].Followers}'," +
-                           $"'{Followers_[Followers_.Count - 1].IsFollower}')",
-                           NameOfSelectedTableOfFollowers_);
-                    }
-                    else
-                    {
-                        FollowersDB_.InsertItem<string>("$(Username,Uid,Following,Followers,IsFollower) " +
-                            $"Values('{Followers_[Followers_.Count - 1].Username}'," +
-                            $"'{Followers_[Followers_.Count - 1].Uid}'," +
-                            $"'{Followers_[Followers_.Count - 1].Following}'," +
-                            $"'{Followers_[Followers_.Count - 1].IsFollower}')",
-                            NameOfSelectedTableOfFollowers_);
-                    }
-                });
-                return Followers_;
-            }
-            private set { Followers_ = value; }
+            //get
+            //{
+
+            //    if (Followers_ == null || Followers_.Count == 0)
+            //    {
+            //        return Followers_;
+            //    }
+            //    HelperSelector.Insert(Followers_);
+            //    return Followers_;
+            //}
+            //private set {
+            //    try
+            //    {
+
+            //    Followers_ = HelperSelector.ParentOfFollowersTable[HelperSelector.Tables.IndexOf(HelperSelector.selectedTable)];
+            //    }
+            //    catch (Exception)
+            //    {
+
+            //    }
+            //}
+
+
+            get { return Followers_; }
+            set { Followers_ = value; }
         }
         /// <summary>
         /// جدول المتابعين للحساب المستهدف
@@ -130,47 +111,7 @@ namespace Instagram.App
         {
             get
             {
-                if (Posts_ == null || Posts_.Count == 0)
-                {
-                    return Posts_;
-                }
-                Task.Run(() =>
-                {
 
-                    if (NameOfSelectedTableOfPosts_ == "p14")
-                    {
-                        PostsDB_.AddTable<string>($"ContextMedia TEXT," +
-                            $"UidOfpost TEXT," +
-                            $"Context TEXT," +
-                            $"publisher TEXT ," +
-                            $"publishedat TEXT ," +
-                            $"UidOfpublisher TEXT ," +
-                            $"Likes TEXT ," +
-                            $"Views TEXT ",
-                            "p14");
-                    }
-                    else
-                    {
-                        PostsDB_.InsertItem<string>($"(ContextMedia" +
-                            $",Uidofpost" +
-                            $",Context" +
-                            $",publisher" +
-                            $",publishedat" +
-                            $",UidOfpublisher," +
-                            $"Likes," +
-                            $"Views) " +
-                            $"Values" +
-                            $"('{Posts_[Posts_.Count - 1].ContextMedia}'" +
-                            $"'{Posts_[Posts_.Count - 1].UidOfpost}'" +
-                            $"'{Posts_[Posts_.Count - 1].Context}'" +
-                            $"'{Posts_[Posts_.Count - 1].publisher}'" +
-                            $"'{Posts_[Posts_.Count - 1].publishedat}'" +
-                            $"'{Posts_[Posts_.Count - 1].UidOfpublisher}'" +
-                            $"'{Posts_[Posts_.Count - 1].Likes}'" +
-                            $"'{Posts_[Posts_.Count - 1].Views}'" +
-                            $")", NameOfSelectedTableOfPosts_);
-                    }
-                });
                 return Posts_;
 
             }
@@ -183,16 +124,15 @@ namespace Instagram.App
 
         public static void Init()
         {
-            PostsDB_ = new PostsDB(new MainDB());
-            FollowersDB_ = new FollowersDB(new MainDB());
+
             Posts = new ObservableCollection<ModelPost>();
-            Followers = new ObservableCollectionCore<AccountOperations>();
+            Followers = new ObservableCollection<AccountOperations>();
             Comments = new ObservableCollection<ModelComment>();
         }
         /// <summary>
         /// تحقق من العناصر المكررة 
         /// </summary>
-        private static void CheckRepeated<T, U, M>(T _Collection = null, U _collection1 = null, M _collection2 = null)
+        private static void CheckRepeated<T, U, M>(ObservableCollection<AccountOperations> _CollectionOfUsers, T _Collection = null, U _collection1 = null, M _collection2 = null)
             where T : AccountOperations
             where U : ModelPost
             where M : ModelComment
@@ -201,11 +141,14 @@ namespace Instagram.App
             {
                 if (_Collection != null)
                 {
-                    var _check = (from _del in Followers
+                    var _check = (from _del in _CollectionOfUsers
                                   where (_del.Uid == _Collection.Uid)
                                   select _del).ToList();
                     //LoggerViewModel.Log($"Count of _checkCollection:{_check.ToList().Count}", TypeOfLog.questioncircle);
-                    bool _delete = _check.Count > 1 ? Followers.Remove(_Collection) : _check.Remove(_Collection);
+                    Application.Current.Dispatcher.Invoke(() => {
+
+                    bool _delete = _check.Count > 1 ? _CollectionOfUsers.Remove(_Collection) : _check.Remove(_Collection);
+                    });
                 }
                 else if (_collection1 != null)
                 {
@@ -226,9 +169,85 @@ namespace Instagram.App
         /// <summary>
         /// تحقق من العناصر المكررة 
         /// </summary>
-        public static void CheckRepeated(AccountOperations _c1 = null, ModelPost _c2 = null, ModelComment _c3 = null)
+        public static void CheckRepeated(ObservableCollection<AccountOperations> _CollectionOfUsers, AccountOperations _c1 = null, ModelPost _c2 = null, ModelComment _c3 = null)
         {
-            CheckRepeated<AccountOperations, ModelPost, ModelComment>(_c1, _c2, _c3);
+            CheckRepeated<AccountOperations, ModelPost, ModelComment>(_CollectionOfUsers,_c1, _c2, _c3);
         }
+        /// <summary>
+        /// اضافة بيانات الى قاعدة البيانات
+        /// </summary>
+        /// <param name="m1">قسم1</param>
+        /// <param name="m2">قسم2</param>
+        /// <param name="m3">قسم3</param>
+        /// <param name="name">اسم الجدول المراد الاضافة فيه</param>
+        public static void Push(string name, AccountOperations m1 = null, ModelPost m2 = null, ModelComment m3 = null,List<AccountOperations> _Range=null)
+        {
+            /* m -> model */
+            if (m1 == null && m2 == null && m3 == null)
+            {
+                LoggerViewModel.Log($"Something went wrong in CollectionsHelper Method Push Line 279~284", TypeOfLog.Warning);
+                return;
+            }
+         
+                if (m1 != null)
+                {
+                        try
+                        {
+                    var addrange_ = (from range in _Range
+                                     let ran = new string[] { range.Username, range.Uid, range.Followers.ToString(), range.IsFollower.ToString(),"0" }
+                                     select ran).ToList();
+                            if (HelperSelector.regestirTables.IndexOf(HelperSelector.regestirTables.Where(item => item.NameOfTheTable == name).First()) == -1)
+                            {
+                                LoggerViewModel.Log($"Table Doesn't exist:{name}", TypeOfLog.exclamationcircle);
+                        //FollowersDB_.InsertItem(name, new string[] { $"{m1.Username}", $"{m1.Uid}", $"{m1.Followers}", $"{m1.IsFollower}", "0" });
+                        FollowersDB_.InsertItem(name, new string[] { $"{m1.Username}", $"{m1.Uid}", $"{m1.Followers}", $"{m1.IsFollower}", "0" });
+
+                    }
+                    else
+                    {
+
+
+                        //FollowersDB_.InsertItem(name, new string[] { $"{m1.Username}", $"{m1.Uid}", $"{m1.Followers}", $"{m1.IsFollower}", "0" });
+                        FollowersDB_.InsertRange(name, addrange_);
+
+
+                    }
+                }
+                        catch (Exception)
+                        {
+                        }
+             
+
+                    }
+                
+                    else if (m2 != null)
+                    {
+                        Task.Run(() =>
+                        {
+                            try
+                            {
+                                if (HelperSelector.regestirTables.IndexOf(HelperSelector.regestirTables.Where(item => item.NameOfTheTable == name).First()) == -1)
+                                {
+                                    LoggerViewModel.Log($"Table Doesn't exist:{name}", TypeOfLog.exclamationcircle);
+                                    PostsDB_.InsertItem(name, new string[] { m2.ContextMedia, m2.UidOfpost, m2.Context, m2.publisher, m2.publishedat, m2.UidOfpublisher, m2.Likes, m2.Views, $"0" });
+
+                                }
+                                else
+                                {
+                                    PostsDB_.InsertItem(name, new string[] { m2.ContextMedia, m2.UidOfpost, m2.Context, m2.publisher, m2.publishedat, m2.UidOfpublisher, m2.Likes, m2.Views, $"0" });
+                                }
+                            }
+                            catch (Exception)
+                            {
+                            }
+
+                          
+                        });
+                    }
+
+         
+        }
+     
+   
     }
 }

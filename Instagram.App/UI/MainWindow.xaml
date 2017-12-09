@@ -13,7 +13,6 @@
     <dx:DXWindow.Resources>
         <local:LoginConverter x:Key="LoginConverter"/>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-
     </dx:DXWindow.Resources>
 
 
@@ -38,7 +37,7 @@
                             <TextBlock  Margin="10,0,0,0" Foreground="#FF101438" Grid.Column="1" Text="{Binding }">
 
                             </TextBlock>
-
+                            
                         </Grid>
                       
                     </Grid>
@@ -49,7 +48,7 @@
                 
                 <dx:TabControlScrollView HeaderLocation="Top"  HeaderOrientation="Horizontal"   NewButtonShowMode="NoWhere" HeaderAutoFill="False"/>
             </dx:DXTabControl.View>
-            <dx:DXTabItem Header="الحسابات"  Margin="0,0,0,0"  >
+            <dx:DXTabItem Header="الحسابات" MouseEnter="MainSectionEVN"   Margin="0,0,0,0"  >
                 <dx:DXTabItem.Icon>
                     <fa:ImageAwesome Icon="Users" Foreground="#FF202340"/>
                 </dx:DXTabItem.Icon>
@@ -59,8 +58,8 @@
                     </DataTemplate>
                 </dx:DXTabItem.NormalBackgroundTemplate>
                 <dx:DXTabItem.SelectedBackgroundTemplate>
-                    <DataTemplate>
-                        <Border Background="#C6F1F1F1" BorderBrush="#FF3399FF" BorderThickness="0,0,0,2"></Border>
+                    <DataTemplate >
+                        <Border  Background="#C6F1F1F1" BorderBrush="#FF3399FF" BorderThickness="0,0,0,2"></Border>
                     </DataTemplate>
                 </dx:DXTabItem.SelectedBackgroundTemplate>
                 <dx:DXTabItem.HoverBackgroundTemplate>
@@ -116,8 +115,12 @@
                                 <ColumnDefinition Width="259"/>
                             </Grid.ColumnDefinitions>
                             <!--صفحة إضافة الحسابات-->
-                            <dxlc:LayoutControl MinHeight="260"  Grid.Column="1" Orientation="Vertical" Margin="0,0,-1,0" Grid.RowSpan="2">
-                                <dxlc:LayoutGroup Orientation="Vertical" Header="اضافة حساب" View="GroupBox">
+                            <dxlc:LayoutControl MinHeight="260"   Grid.Column="1" Orientation="Vertical" Margin="0,0,-1,0" Grid.RowSpan="2">
+                                <dxlc:LayoutItem>
+                                    <Grid>
+                                        <dxlc:LayoutGroup Orientation="Vertical"
+                                                          Header="اضافة حساب"
+                                                          View="GroupBox">
                                     <dxlc:LayoutItem LabelPosition="Top" Label="اسم المستخدم">
                                         <dxe:TextEdit Text="{Binding ElementName=x,Path=DataContext.ModelMainWindow.Username,UpdateSourceTrigger=PropertyChanged}"/>
 
@@ -142,6 +145,9 @@
                                         </dxlc:LayoutItem>
                                     </dxlc:LayoutGroup>
                                 </dxlc:LayoutGroup>
+                                       
+                                    </Grid>
+                                </dxlc:LayoutItem>
 
                             </dxlc:LayoutControl>
 
@@ -211,9 +217,9 @@
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
-                                <ColumnDefinition Width="280"/>
+                                <ColumnDefinition Width="300"/>
                             </Grid.ColumnDefinitions>
-                            <dxlc:LayoutControl MinHeight="260"  Grid.Column="1" Grid.ColumnSpan="1" Grid.Row="0" Grid.RowSpan="2" Orientation="Vertical" Width="270">
+                            <dxlc:LayoutControl MinHeight="260"  Grid.Column="1" Grid.ColumnSpan="1" Grid.Row="0" Grid.RowSpan="2" Orientation="Vertical"  Width="300">
                                 <dxlc:LayoutGroup Visibility="{Binding ModelMainWindow.IsLogedin,UpdateSourceTrigger=PropertyChanged,Converter={StaticResource LoginConverter},ConverterParameter=Login,FallbackValue=Collapsed}" Orientation="Vertical" Header="تسجيل الدخول" View="GroupBox">
                                     <dxlc:LayoutItem LabelPosition="Top" Label="اسم المستخدم">
                                         <dxe:TextEdit Text="{Binding Selected.Username,UpdateSourceTrigger=PropertyChanged}"/>
@@ -239,12 +245,124 @@
                                     </dxlc:LayoutItem>
                                 </dxlc:LayoutGroup>
                                 <dxlc:LayoutItem Visibility="{Binding ModelMainWindow.IsLogedin, Converter={StaticResource BooleanToVisibilityConverter},FallbackValue=Visible}">
-
-                                    <UI:Logedin x:Name="Logedin"/>
+                                    <Grid>
+                                        <UI:Logedin x:Name="Logedin" 
+                                                    Opacity="{Binding LoadingOfLogout.opacity,UpdateSourceTrigger=PropertyChanged}"
+                                                    />
+                                        <UI:LoadingView
+                                            Height="70"
+                                            DataContext="{Binding ElementName=FollowAll,Path=DataContext}" 
+                                            Visibility="{Binding LoadingOfLogout.IsRunning,
+                                            UpdateSourceTrigger=PropertyChanged,
+                                            Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                    </Grid>
 
                                 </dxlc:LayoutItem>
 
                                 <dxlc:LayoutGroup Orientation="Vertical"  View="GroupBox" Visibility="{Binding ModelMainWindow.IsLogedin, Converter={StaticResource BooleanToVisibilityConverter},FallbackValue=Visible}" Header="الإعدادات">
+                                    <dxlc:LayoutItem LabelPosition="Top" LabelHorizontalAlignment="Right">
+                                        <dxlc:LayoutItem.Label>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="70"/>
+                                                    <ColumnDefinition  />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="الجداول" Grid.Column="1"/>
+                                                <Grid Margin="0,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" >
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition/>
+                                                        <ColumnDefinition/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Grid.Column="1" 
+                                                              DataContext="{Binding ElementName=FollowAll,Path=DataContext}"
+                                                               HorizontalAlignment="Left"
+                                                               TextAlignment="Center"
+                                                               FontStretch="Medium" 
+                                                               FontWeight="SemiBold"
+                                                               Foreground="#22313F">
+                                                        <Run Text="("/>
+                                                        <Run Text="0"/>
+                                                        <Run Text=")"/>
+                                                    </TextBlock>
+
+                                                </Grid>
+                                            </Grid>
+                                        </dxlc:LayoutItem.Label>
+                                        <!--Tables-->
+                                        <Expander  IsExpanded="True">
+                                            <StackPanel>
+                                                <dxe:ListBoxEdit 
+                                                MinHeight="20"
+                                                 DataContext="{Binding ElementName=FollowAll,Path=DataContext}"
+                                                ItemsSource="{Binding Tables,UpdateSourceTrigger=PropertyChanged}"
+                                                SelectedItem="{Binding SelectedTable_,UpdateSourceTrigger=PropertyChanged}"
+                                             HorizontalContentAlignment="Stretch"
+                                                >
+
+                                                    <dxe:ListBoxEdit.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Grid >
+                                                                <Grid.ColumnDefinitions >
+                                                                    <ColumnDefinition Width="12"/>
+                                                                    <ColumnDefinition  Width="60"/>
+                                                                    <ColumnDefinition  />
+                                                                </Grid.ColumnDefinitions>
+                                                                <fa:ImageAwesome Icon="Table" 
+                                                                             Foreground="#FF38393D"
+                                                                             />
+
+                                                                <TextBlock Grid.Column="1" Margin="7,0,0,0" Text="{Binding NameOfTheTable,UpdateSourceTrigger=PropertyChanged}"/>
+                                                                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Left" >
+                                                                    <Grid>
+                                                                        <Grid.ColumnDefinitions>
+                                                                            <ColumnDefinition/>
+                                                                            <ColumnDefinition Width="70"/>
+                                                                        </Grid.ColumnDefinitions>
+                                                                        <TextBlock 
+                                                                    Margin="0,0,0,0"
+                                                                    TextAlignment="Center"  HorizontalAlignment="Center" FontFamily="Segoe UI Semibold" Foreground="#FF434343" >
+                                                                    <Run Text="["/>
+                                                                    <Run Text="{Binding CountOfItems,UpdateSourceTrigger=PropertyChanged}"/>
+                                                                    <Run Text="]"/>
+                                                                        </TextBlock>
+
+                                                                        <TextBlock  Grid.ColumnSpan="2" TextAlignment="Right" VerticalAlignment="Center"  HorizontalAlignment="Right"  Margin="80,0,0,0" Text="عدد العناصر"/>
+                                                                    </Grid>
+                                                               
+                                                                        
+                                                                </StackPanel>
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </dxe:ListBoxEdit.ItemTemplate>
+
+
+                                                </dxe:ListBoxEdit>
+
+                                                <dxe:ButtonEdit 
+                                                                DataContext="{Binding ElementName=FollowAll,Path=DataContext}"
+                                                                Text="{Binding DataContextOfModelTable.NameOfTheTable,UpdateSourceTrigger=PropertyChanged}"
+                                                                Grid.Row="1"
+                                                                AllowDefaultButton="False"  >
+                                                    <dxe:ButtonInfo GlyphKind="Apply" 
+                                                                                Command="{Binding DataContextOfModelTable.AddNewTable}"
+                                                                                CommandParameter="Add"
+                                                                                ToolTip="اضافة جدول جديد" />
+                                                    <dxe:ButtonInfo GlyphKind="Edit" 
+                                                                                Command="{Binding DataContextOfModelTable.EditCurrentTable}"
+                                                                                CommandParameter="Edi"
+                                                                                ToolTip="تعديل اسم الجدول الحالي"/>
+                                                    <dxe:ButtonInfo GlyphKind="Cancel"
+                                                                                Command="{Binding DataContextOfModelTable.DeleteCurrentTable}"
+                                                                                CommandParameter="Del"
+                                                                                ToolTip="حذف الجدول الحالي"/>
+                                                </dxe:ButtonEdit>
+                                            </StackPanel>
+                                               
+                                         
+                                            
+                                       
+                                        </Expander>
+                                    </dxlc:LayoutItem>
                                     <dxlc:LayoutItem LabelPosition="Top" LabelHorizontalAlignment="Right" Label="عنوان الحساب المستهدف">
                                         <dxe:TextEdit NullText="https://www.instagram.com/Account/" Name="uid" Text="{Binding AccountOperations.Uid,UpdateSourceTrigger=PropertyChanged}"/>
                                     </dxlc:LayoutItem>
@@ -254,21 +372,59 @@
                                         <!--/>-->
                                         <GroupBox >
                                             <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <RadioButton Grid.Column="0"
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition/>
+                                                    <RowDefinition/>
+                                                </Grid.RowDefinitions>
+                                                <GroupBox HorizontalContentAlignment="Center" 
+                                                          Margin="0,5,0,5"
+                                                          HorizontalAlignment="Center" 
+                                                          Grid.ColumnSpan="3"
+                                                          Header="القسم"
+                                                          Grid.Row="0">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition/>
+                                                            <ColumnDefinition/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <CheckBox
+                                                            Grid.Column="0"
+                                                            Content="المتابعين"
+                                                            Margin="0,0,10,0"
+                                                            IsChecked="{Binding AccountOperations.GetFollowers,FallbackValue=false}"
+                                                            />
+                                                        <CheckBox 
+                                                            Content="المُتابعون"
+                                                            Grid.Column="1"
+                                                           IsChecked="{Binding AccountOperations.GetFollowings,FallbackValue=true}"
+
+                                                            />
+                                                    </Grid>
+                                                </GroupBox>
+                                                <Grid Grid.Row="1">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition/>
+                                                        <RowDefinition/>
+                                                    </Grid.RowDefinitions>
+                                                    <RadioButton Grid.Column="0"
+                                                             Grid.Row="1"
                                                              Margin="1,0,5,0"
                                                              Content="متابعة"
                                                              IsChecked="{Binding AccountOperations.FollowAll,FallbackValue=false}"/>
-                                                <RadioButton Grid.Column="1"
+                                                    <RadioButton Grid.Column="1"
+                                                             Grid.Row="1"
                                                              Margin="1,0,5,0" 
                                                              Content="الغاء المتابعة"
                                                              IsChecked="{Binding AccountOperations.UnFollowAll,FallbackValue=false}"/>
-                                                <RadioButton Grid.Column="2" IsChecked="True" Content="لاشيء"/>
+                                                    <RadioButton Grid.Column="2" Grid.Row="1"  IsChecked="True" Content="لاشيء"/>
+                                                </Grid>
                                             </Grid>
+                                     
                                         </GroupBox>
                                     </dxlc:LayoutItem>
                                     <dxlc:LayoutItem LabelPosition="Top"  Name="IsGetFollowup" LabelHorizontalAlignment="Right" Margin="0,3,0,0">
@@ -477,7 +633,7 @@
                                                   AutoGenerateColumns="KeepOld"
                                                   CurrentItem="{Binding Login,UpdateSourceTrigger=PropertyChanged}" 
                                                   SelectedItems="{Binding SelectedItems,UpdateSourceTrigger=PropertyChanged}"
-                                                  ItemsSource="{Binding Source={x:Static local:CollectionsHelper.Followers}}"  SelectionMode="Row"  >
+                                                  ItemsSource="{Binding Followers}"  SelectionMode="Row"  >
 
                                     <dxg:GridControl.Columns>
                                         <dxg:GridColumn FieldName="اسم المستخدم" Binding="{Binding Username}" />
@@ -583,7 +739,7 @@
                  
                 </dx:DXTabControl>
             </dx:DXTabItem>
-            <dx:DXTabItem Header="التعليقات" >
+            <dx:DXTabItem Header="التعليقات" MouseEnter="PostsAndCommentsSectionEVN">
                 <dx:DXTabItem.Icon>
                     <fa:ImageAwesome Icon="Comments" Foreground="#FF202340"/>
                 </dx:DXTabItem.Icon>
@@ -611,7 +767,7 @@
                 </Grid>
             </dx:DXTabItem>
 
-            <dx:DXTabItem Header="البحث"  >
+            <dx:DXTabItem Header="البحث" MouseEnter="SearchSectionEVN">
                 <dx:DXTabItem.Icon>
                     <fa:ImageAwesome Icon="Search" Foreground="#FF202340"/>
                 </dx:DXTabItem.Icon>
