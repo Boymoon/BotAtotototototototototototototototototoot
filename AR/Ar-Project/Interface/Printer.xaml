@@ -1,0 +1,44 @@
+﻿<dx:DXWindow
+    
+    
+    
+         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+        xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+        xmlns:local="clr-namespace:Ar_Project"
+        xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"   xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" x:Class="Ar_Project.Printer"
+       Height="505.5" Width="420"  ResizeMode="CanMinimize" KeyDown="Window_KeyDown" Loaded="Window_Loaded">
+    <Grid>
+        <Button x:Name="Print" FontFamily="pack://application:,,,/fonts/#FontAwesome"  HorizontalAlignment="Right" Margin="0,213.237,4.571,0" Width="36.167" Height="32" VerticalAlignment="Top" Click="Print_Click">
+            <Image Source="/Pascal;component/images/Print_16x16.png"/>
+
+
+
+
+
+        </Button>
+        <TextBox x:Name="Barcode" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Margin="19.5,65.998,31,0"/>
+        <TextBox x:Name="Name" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Margin="19.5,115.523,31,0" IsEnabled="False"/>
+        <TextBox x:Name="price" TextWrapping="Wrap" Margin="19.5,166.547,31,0" Height="23" VerticalAlignment="Top" IsEnabled="False" d:LayoutOverrides="VerticalAlignment"/>
+        <TextBlock x:Name="textBlock" HorizontalAlignment="Right" Height="23.334" Margin="0,42.998,32.666,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="60.667" Foreground="#FF272525" Text=":رقم الباركود&#xA;"/>
+        <TextBlock x:Name="textBlock_Copy" HorizontalAlignment="Right" Height="19.084" Margin="0,96.335,30.666,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="57.417" Foreground="#FF272525" Text=":اسم المنتج"/>
+        <TextBlock x:Name="textBlock_Copy1" HorizontalAlignment="Right" Margin="0,147.167,31.166,0" TextWrapping="Wrap" Width="52.167" Foreground="#FF272525" Text=":سعر البيع" Height="19.584" VerticalAlignment="Top"/>
+        <Border BorderBrush="LightGray" BorderThickness="1" Margin="0.062,248.683,-0.021,4.667"/>
+        <Border BorderBrush="LightGray" BorderThickness="1" HorizontalAlignment="Right" Margin="0,209.497,0.011,0" Width="46.667" Height="40" VerticalAlignment="Top"/>
+
+        <dxg:GridControl x:Name="DD" Margin="1.068,260.122,6,10.036" AutoGenerateColumns="None" EnableSmartColumnsGeneration="True"   AllowColumnMRUFilterList="False" IsFilterEnabled="False" AllowMRUFilterList="False" SelectionMode="Cell">
+            <dxg:GridControl.Columns>
+                <dxg:GridColumn FieldName="اسم المنتج" Binding="{Binding Name}"/>
+                <dxg:GridColumn FieldName="سعر البيع" Binding="{Binding Price}"/>
+                <dxg:GridColumn FieldName="رقم الباركود" Binding="{Binding Barcode}"/>
+            </dxg:GridControl.Columns>
+            <dxg:GridControl.View>
+                <dxg:TableView AllowPerPixelScrolling="True" ShowGroupPanel="False" ShowTotalSummary="True" AllowEditing="False" AutoWidth="False"/>
+            </dxg:GridControl.View>
+        </dxg:GridControl>
+        <TextBlock x:Name="textBlock1" Margin="0,226.835,46.328,0" TextWrapping="Wrap" Foreground="#FF070827" HorizontalAlignment="Right" Width="64.651" Height="18.5" VerticalAlignment="Top"><Run FlowDirection="RightToLeft" Text="الاجمالي:"/></TextBlock>
+        <TextBlock x:Name="Pricce" Margin="0,227.832,114.232,0" TextWrapping="Wrap" Foreground="#FF101011" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Top"><Run FlowDirection="RightToLeft" Text="0"/></TextBlock>
+
+    </Grid>
+</dx:DXWindow>

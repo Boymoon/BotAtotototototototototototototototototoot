@@ -1,0 +1,41 @@
+﻿<dx:DXWindow
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+    xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
+    x:Class="Ar_Project.Design.SeinProduct"
+    Title=" " Height="350" Width="518" Background="#FF333333" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" WindowStyle="ToolWindow" Foreground="{x:Null}"
+    >
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="70*"/>
+            <ColumnDefinition Width="100*"/>
+            <ColumnDefinition Width="90*"/>
+            <ColumnDefinition Width="115*"/>
+            <ColumnDefinition Width="25*"/>
+            <ColumnDefinition Width="112*"/>
+        </Grid.ColumnDefinitions>
+        <TextBox x:Name="name" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Margin="-18,15.825,5,0" TextAlignment="Right" Grid.ColumnSpan="4" Grid.Column="1" />
+        <Button x:Name="btnsearch" Content="بحث" HorizontalAlignment="Left" Margin="3,16.188,0,0" VerticalAlignment="Top" Width="63" Grid.Column="5" Height="22.772" Click="btnsearch_Click">
+            <Button.Effect>
+                <DropShadowEffect BlurRadius="1" ShadowDepth="3"/>
+            </Button.Effect>
+        </Button>
+        <dxg:GridControl x:Name="GridData" AutoGenerateColumns="None" EnableSmartColumnsGeneration="True" Margin="2,85,2,2" Grid.ColumnSpan="6">
+            <dxg:GridControl.Columns>
+                <dxg:GridColumn FieldName="اسم المنتج" Binding="{Binding name}"/>
+                <dxg:GridColumn FieldName="سعر المنتج" Binding="{Binding price}"/>
+                <dxg:GridColumn FieldName="تاريخ بيع المنتج" Binding="{Binding Date}"/>
+
+            </dxg:GridControl.Columns>
+            <dxg:GridControl.View>
+                <dxg:TableView AllowPerPixelScrolling="True" ShowTotalSummary="True" AllowEditing="False" AutoWidth="True"/>
+            </dxg:GridControl.View>
+        </dxg:GridControl>
+        <RadioButton x:Name="year" Content="السنة الحالية" VerticalAlignment="Top" Margin="5.09,48,1,0" Foreground="White" Grid.Column="1"/>
+        <RadioButton x:Name="mounth" Content="الشهر الحالي" VerticalAlignment="Top" Margin="7,48,-10.91,0" Foreground="White" Grid.Column="2"/>
+        <RadioButton x:Name="day" Content="اليوم الحالي" VerticalAlignment="Top" Margin="22,48,-0.91,0" Foreground="White" Grid.Column="3"/>
+    </Grid>
+</dx:DXWindow>

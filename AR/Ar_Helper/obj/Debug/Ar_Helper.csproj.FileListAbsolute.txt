@@ -1,0 +1,9 @@
+C:\Users\Root\Documents\Visual Studio 2015\Projects\DXApplication3\Ar_Helper\bin\Debug\Ar_Helper.dll
+C:\Users\Root\Documents\Visual Studio 2015\Projects\DXApplication3\Ar_Helper\bin\Debug\Ar_Helper.pdb
+C:\Users\Root\Documents\Visual Studio 2015\Projects\DXApplication3\Ar_Helper\obj\Debug\Ar_Helper.csprojResolveAssemblyReference.cache
+C:\Users\Root\Documents\Visual Studio 2015\Projects\DXApplication3\Ar_Helper\obj\Debug\Ar_Helper.csproj.CoreCompileInputs.cache
+C:\Users\Root\Documents\Visual Studio 2015\Projects\DXApplication3\Ar_Helper\obj\Debug\Ar_Helper.dll
+C:\Users\Root\Documents\Visual Studio 2015\Projects\DXApplication3\Ar_Helper\obj\Debug\Ar_Helper.pdb
+C:\Users\Root\Documents\Visual Studio 2015\Projects\DXApplication3\Ar_Helper\bin\Debug\System.Data.SQLite.dll
+C:\Users\Root\Documents\Visual Studio 2015\Projects\DXApplication3\Ar_Helper\bin\Debug\System.Data.SQLite.xml
+C:\Users\Root\Documents\Visual Studio 2015\Projects\DXApplication3\Ar_Helper\bin\Debug\System.Data.SQLite.dll.config

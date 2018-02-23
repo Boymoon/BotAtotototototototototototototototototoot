@@ -1,0 +1,105 @@
+﻿<dx:DXWindow
+     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+    xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"  x:Class="Ar_Project.Design.func"
+    Height="611" Width="418"  ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="39*"/>
+            <ColumnDefinition Width="64*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="142"/>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="107"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="19"/>
+            <RowDefinition Height="229"/>
+            <RowDefinition Height="3"/>
+            <RowDefinition Height="22.5"/>
+            <RowDefinition Height="3.5"/>
+        </Grid.RowDefinitions>
+        <Border x:Name="S2" BorderBrush="#FF515151" BorderThickness="1" Grid.Row="5" Grid.ColumnSpan="2" Margin="0,0,0,10" Visibility="Hidden"/>
+
+        <dxg:GridControl x:Name="DD" Margin="5,5,4,13" AutoGenerateColumns="None"  EnableSmartColumnsGeneration="True"   AllowColumnMRUFilterList="False" IsFilterEnabled="False" AllowMRUFilterList="False" SelectionMode="Cell" Grid.Row="5" Grid.ColumnSpan="2" Visibility="Hidden">
+            <dxg:GridControl.Columns>
+                <dxg:GridColumn FieldName="اسم المنتج" Binding="{Binding NAME}" VisibleIndex="0"/>
+                <dxg:GridColumn FieldName="سعر البيع" Binding="{Binding PRICE}" VisibleIndex="1"/>
+                <dxg:GridColumn FieldName="سعر التكلفة" Binding="{Binding PRICE_A}" VisibleIndex="2"/>
+                <dxg:GridColumn FieldName="رقم الباركود" Binding="{Binding BARCODE}" VisibleIndex="4"/>
+                <dxg:GridColumn FieldName="كمية المنتج" Binding="{Binding QUANTITY}" VisibleIndex="3" />
+                <dxg:GridColumn FieldName="الخصم" Binding="{Binding Dis}" VisibleIndex="5"/>
+                <dxg:GridColumn FieldName="الاجمالي" Binding="{Binding Price_F}" VisibleIndex="6" />
+            </dxg:GridControl.Columns>
+            <dxg:GridControl.View>
+                <dxg:TableView AllowPerPixelScrolling="False" ShowTotalSummary="True"  AllowEditing="False" AutoWidth="True" ShowGroupPanel="False"/>
+            </dxg:GridControl.View>
+        </dxg:GridControl>
+        <TextBox x:Name="name" Height="22" TextWrapping="Wrap" VerticalAlignment="Top" Margin="60,40,42,0" TextAlignment="Right" Grid.ColumnSpan="2"/>
+        <TextBlock x:Name="textBlock" HorizontalAlignment="Right" TextWrapping="Wrap" Text=":اسم المنتج" VerticalAlignment="Top" Foreground="#FF101011" TextAlignment="Right" Margin="0,19,43,0" Width="64" Height="16" Grid.Column="1" Visibility="Hidden"/>
+        <TextBox x:Name="bar" Height="23" TextWrapping="Wrap" VerticalAlignment="Bottom" Margin="60,0,42,26" TextAlignment="Right" Grid.ColumnSpan="2"/>
+        <TextBlock x:Name="textBlock_Copy" HorizontalAlignment="Right" TextWrapping="Wrap" Text=":رقم الباركود" VerticalAlignment="Bottom" Foreground="#FF101011" TextAlignment="Right" Margin="0,0,43,54" Width="84" Height="16" Grid.Column="1" Visibility="Hidden"/>
+        <TextBox x:Name="pri_a"  TextWrapping="Wrap" Margin="60,4,42,106" TextAlignment="Right" Grid.Row="1" TextChanged="pri_a_TextChanged" Grid.ColumnSpan="2" Grid.RowSpan="2" Visibility="Hidden"/>
+        <TextBox x:Name="pri" TextWrapping="Wrap" Margin="0,33,42,51" TextAlignment="Right" Grid.Row="2" Grid.Column="1" Visibility="Hidden"/>
+        <TextBlock x:Name="TX_Copy" HorizontalAlignment="Right" TextWrapping="Wrap" Text=":سعر التكلفة" Foreground="#FF101011" TextAlignment="Right" Margin="0,0,43,25" Width="84" VerticalAlignment="Bottom" Height="16" Grid.Column="1" Grid.RowSpan="2" Visibility="Hidden"/>
+        <TextBlock x:Name="TX" HorizontalAlignment="Right" TextWrapping="Wrap" Text=":سعر البيع" VerticalAlignment="Top" Foreground="#FF101011" TextAlignment="Right" Margin="0,12,43,0" Width="64" Grid.Row="2" Height="16" Grid.Column="1" Visibility="Hidden"/>
+        <TextBox x:Name="qua" Height="23" TextWrapping="Wrap" VerticalAlignment="Bottom" Margin="60,0,42,27" TextAlignment="Right" Grid.Row="2" Grid.ColumnSpan="2" Grid.RowSpan="2" Visibility="Hidden"/>
+        <TextBlock x:Name="textBlock_Copy2" HorizontalAlignment="Right" TextWrapping="Wrap" Text=":كمية المنتج" VerticalAlignment="Bottom" Foreground="#FF101011" TextAlignment="Right" Margin="0,0,43,23" Width="64" Grid.Row="2" Height="16" Grid.Column="1" Visibility="Hidden"/>
+        <Button x:Name="btn_add" Click="btn_add_Click" Content="اضافة " Margin="135,15,92,4" Grid.Row="3" Grid.RowSpan="2" Grid.ColumnSpan="2" Visibility="Hidden">
+            <Button.Effect>
+                <DropShadowEffect ShadowDepth="2"/>
+            </Button.Effect>
+        </Button>
+        <!--
+        Margin="0,33,42,51"
+        -->
+        <TextBox x:Name="name_Copy" Text="{Binding SelectedItem.NAME, ElementName=DD}" Height="22" TextWrapping="Wrap" VerticalAlignment="Top" Margin="60,40,42,0" TextAlignment="Right" Grid.ColumnSpan="2" Visibility="Hidden"/>
+        <TextBox x:Name="bar_Copy" Text="{Binding SelectedItem.BARCODE, ElementName=DD}" Height="23" TextWrapping="Wrap" VerticalAlignment="Bottom" Margin="60,0,42,26"  TextAlignment="Right" Grid.ColumnSpan="2" Visibility="Hidden"/>
+        <dxe:TextEdit x:Name="pri_a_Copy"   TextWrapping="Wrap" Margin="60,4,42,106" Text="{Binding SelectedItem.PRICE_A, ElementName=DD}" HorizontalContentAlignment="Right" GotFocus="pri_a_Copy_GotFocus" Grid.Row="1" Visibility="Hidden" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
+        <dxe:TextEdit x:Name="pri_Copy" Text="{Binding SelectedItem.PRICE, ElementName=DD}" TextWrapping="Wrap"   HorizontalContentAlignment="Right"  Margin="0,33,42,51"   Visibility="Hidden" Grid.Row="2" Grid.ColumnSpan="1" Grid.Column="1" />
+        <TextBox x:Name="qua_Copy" Text="{Binding SelectedItem.QUANTITY, ElementName=DD}" Height="23" TextWrapping="Wrap" VerticalAlignment="Bottom" Margin="60,0,42,27" TextAlignment="Right" Grid.Row="2" Grid.ColumnSpan="2" Grid.RowSpan="2" Visibility="Hidden"/>
+        <Button x:Name="btn_add_Copy" Click="btn_add_Copy_Click" Content="تعديل" Margin="135,7,92,12" Grid.Row="3" Grid.ColumnSpan="2" Grid.RowSpan="2" Visibility="Hidden">
+            <Button.Effect>
+                <DropShadowEffect ShadowDepth="2"/>
+            </Button.Effect>
+        </Button>
+        <TextBlock x:Name="MA_ID" Text="{Binding SelectedItem.ID, ElementName=DD}" HorizontalAlignment="Left" Height="30" Margin="0,-60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Foreground="#FF101011"><Run/><LineBreak/><Run/></TextBlock>
+        <TextBox x:Name="maName" Height="22" TextWrapping="Wrap" VerticalAlignment="Top" Margin="60,40,42,0" TextAlignment="Right" Visibility="Hidden" Grid.ColumnSpan="2"/>
+        <TextBlock x:Name="textBlock_Copy3" HorizontalAlignment="Right" TextWrapping="Wrap" Text=":اسم المورد" VerticalAlignment="Top" Foreground="#FF101011" TextAlignment="Right" Margin="0,19,43,0" Width="64" Height="16" Visibility="Hidden" Grid.Column="1"/>
+        <TextBox x:Name="maBar" Height="23" TextWrapping="Wrap" VerticalAlignment="Bottom" Margin="60,0,42,26" TextAlignment="Right" Visibility="Hidden" Grid.ColumnSpan="2"/>
+        <TextBlock x:Name="textBlock_Copy4" HorizontalAlignment="Right" TextWrapping="Wrap" Text=":رقم الباركود" VerticalAlignment="Bottom" Foreground="#FF101011" TextAlignment="Right" Margin="0,0,43,54" Width="84" Visibility="Hidden" Height="16" Grid.Column="1"/>
+        <dxg:GridControl x:Name="DDD" Margin="5,58,4,26" AutoGenerateColumns="None" EnableSmartColumnsGeneration="True"   AllowColumnMRUFilterList="False" IsFilterEnabled="False" AllowMRUFilterList="False" SelectionMode="Cell" Grid.Row="2" Grid.RowSpan="4" Visibility="Hidden" Grid.ColumnSpan="2">
+            <dxg:GridControl.Columns>
+                <dxg:GridColumn FieldName="اسم المورد" Binding="{Binding NAME}"/>
+                <dxg:GridColumn FieldName="رقم هاتف المورد" Binding="{Binding NUM}"/>
+            </dxg:GridControl.Columns>
+            <dxg:GridControl.View>
+                <dxg:TableView AllowPerPixelScrolling="True" ShowTotalSummary="True"  AllowEditing="False" AutoWidth="True" ShowGroupPanel="False"/>
+            </dxg:GridControl.View>
+        </dxg:GridControl>
+        <Button x:Name="btnMA" Click="btnMA_Click" Content="اضافة " Margin="135,136,92,2" Visibility="Hidden" Grid.ColumnSpan="2" Grid.RowSpan="2">
+            <Button.Effect>
+                <DropShadowEffect ShadowDepth="2"/>
+            </Button.Effect>
+        </Button>
+        <Border x:Name="B" BorderBrush="#FF515151" BorderThickness="1" Margin="3,52,2,25" Grid.Row="2" Grid.RowSpan="4" Visibility="Hidden" Grid.ColumnSpan="2"/>
+        <TextBlock x:Name="MA_ID_Copy" Text="{Binding SelectedItem.ID, ElementName=DDD}" Height="30" Margin="4,-60,132,0" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Column="1"><Run/><LineBreak/><Run/></TextBlock>
+        <TextBlock x:Name="L" HorizontalAlignment="Right" TextWrapping="Wrap" Text=":رقم الهاتف" VerticalAlignment="Bottom" Foreground="#FF101011" TextAlignment="Right" Margin="0,0,43,54" Width="84" Height="16" Visibility="Hidden" Grid.Column="1"/>
+        <TextBox x:Name="maName_Copy" Text="{Binding SelectedItem.NAME, ElementName=DDD}" Height="22" TextWrapping="Wrap" VerticalAlignment="Top" Margin="60,40,42,0" TextAlignment="Right" Visibility="Hidden" Grid.ColumnSpan="2"/>
+        <TextBox x:Name="maBar_Copy" Text="{Binding SelectedItem.NUM, ElementName=DDD}" Height="23" TextWrapping="Wrap" VerticalAlignment="Bottom" Margin="60,0,42,26" TextAlignment="Right" Visibility="Hidden" Grid.ColumnSpan="2"/>
+        <Button x:Name="btnMAEd" Click="btnMAEd_Click" Content="تعديل" Margin="135,136,92,2" Visibility="Hidden" Grid.ColumnSpan="2" Grid.RowSpan="2">
+            <Button.Effect>
+                <DropShadowEffect ShadowDepth="2"/>
+            </Button.Effect>
+        </Button>
+        <dxe:TextEdit x:Name="Dis_add" Height="23" Margin="60,33,0,0" Grid.Row="2" VerticalAlignment="Top" Width="96" NullText="0%" Visibility="Hidden"/>
+        <TextBlock x:Name="Tx_Add" HorizontalAlignment="Right" TextWrapping="Wrap" Text=":الخصم" VerticalAlignment="Top" Foreground="#FF101011" TextAlignment="Right" Margin="0,12,0,0" Width="64" Grid.Row="2" Height="16" Visibility="Hidden"/>
+        <dxe:TextEdit x:Name="Dis_edit" HorizontalAlignment="Left" Text="{Binding SelectedItem.Dis, ElementName=DD}" Height="23" Margin="60,33,0,0" Grid.Row="2" VerticalAlignment="Top" Width="96" NullText="0%" Visibility="Visible"/>
+        <TextBlock x:Name="Tx_Edit" HorizontalAlignment="Right" TextWrapping="Wrap" Text=":الخصم" VerticalAlignment="Top" Foreground="#FF101011" TextAlignment="Right" Margin="0,12,0,0" Width="64" Grid.Row="2" Height="16"/>
+
+
+
+    </Grid>
+</dx:DXWindow>
